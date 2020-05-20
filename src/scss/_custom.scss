@@ -1,0 +1,77 @@
+// Here you can add other styles
+.search-result em {
+    font-weight: bolder;
+    color: darkgreen;
+}
+
+.active-pink-2 input.form-control[type=text]:focus:not([readonly]) {
+    border-bottom: 1px solid #f48fb1;
+    box-shadow: 0 1px 0 0 #f48fb1;
+}
+.active-pink input.form-control[type=text] {
+    border-bottom: 1px solid #f48fb1;
+    box-shadow: 0 1px 0 0 #f48fb1;
+}
+.active-purple-2 input.form-control[type=text]:focus:not([readonly]) {
+    border-bottom: 1px solid #ce93d8;
+    box-shadow: 0 1px 0 0 #ce93d8;
+}
+.active-purple input.form-control[type=text] {
+    border-bottom: 1px solid #ce93d8;
+    box-shadow: 0 1px 0 0 #ce93d8;
+}
+.active-cyan-2 input.form-control[type=text]:focus:not([readonly]) {
+    border-bottom: 1px solid #4dd0e1;
+    box-shadow: 0 1px 0 0 #4dd0e1;
+}
+.active-cyan input.form-control[type=text] {
+    border-bottom: 1px solid #4dd0e1;
+    box-shadow: 0 1px 0 0 #4dd0e1;
+}
+.active-cyan .fa, .active-cyan-2 .fa {
+    color: #4dd0e1;
+}
+.active-purple .fa, .active-purple-2 .fa {
+    color: #ce93d8;
+}
+.active-pink .fa, .active-pink-2 .fa {
+    color: #f48fb1;
+}
+
+.search-input {
+    // color: white;
+    border: 0;
+    outline: 0;
+    // width: 0;
+    // background-color: #353b48;
+    // caret-color:transparent;
+    caret-color:red;
+    font-size: 2em;
+    // line-height: 40px;
+    transition: width 0.4s linear;
+}
+
+.c-icon-2xl {
+    width: 2rem;
+    height: 2rem;
+    font-size: 2rem;
+
+    display: inline-block;
+    color: inherit;
+    text-align: center;
+    fill: currentColor;
+    
+}
+.c-icon {
+    display: inline-block;
+    color: inherit;
+    text-align: center;
+    fill: currentColor;
+    width: 1rem;
+    height: 1rem;
+    font-size: 1rem;
+}
+
+.vh-25 {
+    max-height: 25vh !important;
+}
