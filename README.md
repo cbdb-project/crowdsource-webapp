@@ -1,9 +1,9 @@
 # CBDB Browser
-A prototype for browsing and search experience of CBDB (China Biographical Database Project).
+A prototype webapp to browse and search CBDB (China Biographical Database Project).
 
 Current features: 
  - Instant Search (via Elastic Search)
- - Social Affiliations
+ - Social Affiliations Graph
 
 (c) 2020 Lei
 
