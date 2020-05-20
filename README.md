@@ -1,4 +1,4 @@
-#CBDB Browser
+# CBDB Browser
 A prototype for browsing and search experience of CBDB (China Biographical Database Project).
 
 Current features: 
