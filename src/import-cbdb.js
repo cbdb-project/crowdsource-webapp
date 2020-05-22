@@ -44,7 +44,7 @@ async function createIndex() {
 
 // const sqlite3 = require('sqlite3').verbose();
 // connSqlite();
-const db = better('/Users/tomding/code/cbdbapp/cbdb.db');
+const db = better('./cbdb.db');
 function connSqlite() {
     // db = new sqlite3.Database('/Users/tomding/code/cbdbapp/cbdb.db', sqlite3.OPEN_READONLY, (err) => {
     //     if (err) {
@@ -59,7 +59,7 @@ function connSqlite() {
 
 async function importAll() {
 
-    const limit = 10000;
+    const limit = 3000;
     ppl_query = "select * from biog_main limit " + limit;
     status_query = "select sd.*,sc.c_status_desc,sc.c_status_desc_chn \
             from status_data as sd \

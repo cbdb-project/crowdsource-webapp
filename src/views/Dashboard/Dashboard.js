@@ -291,7 +291,7 @@ class Dashboard extends Component {
 
   queryAndUpdate(q) {
     this.setState({ isLoading: true });
-    fetch('http://localhost:5000/api/search?q=' + q)
+    fetch('http://' + window.location.hostname + ':5000/api/search?q=' + q)
       .then(res => res.json())
       .then((data) => {
         this.setState({ isLoading: false })
