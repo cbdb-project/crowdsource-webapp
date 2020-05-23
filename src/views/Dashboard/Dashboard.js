@@ -1,3 +1,5 @@
+import * as R from 'ramda'
+
 import React, { Component, lazy, Suspense, Fragment, useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactModal from 'react-modal';
@@ -327,8 +329,38 @@ class Dashboard extends Component {
     // }
   }
 
-  searchTyping(e) {
-    console.log("Typing ... ");
+  lastEvents = {};
+  handlers = [];
+  searchTyping(e, doubleTap) {
+    if (!doubleTap) {
+	    var st = this.searchTyping;
+	    // var ne = R.clone(e);
+	    var ne = {};
+	    ne = Object.assign(ne, e);
+	    this.lastEvents[e.target] = {};
+	    this.lastEvents[e.target].t = Date.now();
+	    console.log(e.target.value + " 1st triggered .. @" + this.lastEvents[e.target].t);
+
+	    	for (var i = 0; i < this.handlers.length; i++) {
+	    		clearInterval(this.handlers[i]);
+	    	}
+	    this.handlers.push(setInterval(function() {
+		   st(ne, true) 
+	    }, 600));  
+	    return;
+    } else {
+	    // Some new event triggered in between
+	    var passed = (Date.now() - this.lastEvents[e.target].t) 
+	    console.log("2nd trigger " + e.target.value + " // " + passed);
+	    if (passed < 500)
+		    return;
+	    else {
+	    	for (var i = 0; i < this.handlers.length; i++) {
+	    		clearInterval(this.handlers[i]);
+	    	}
+	    }
+	    console.log("2nd trigger executed! " + e.target.value);
+    }
     var q = e.target.value;
     if (q) {
       this.queryAndUpdate(q);
@@ -350,6 +382,7 @@ class Dashboard extends Component {
 
 
   renderSearchBox() {
+    this.searchTyping = this.searchTyping.bind(this);
     return (
       <Fragment>
 
@@ -409,9 +442,9 @@ class Dashboard extends Component {
                     </td>
                     <td>
                       {Object.entries(row._highlights).map( (high,i) => { 
-                        console.log(high);
+                        // console.log(high);
                         return (
-                      <div>
+                      <div key={index+"hh_" + i}>
                         <div className="small text-muted">
                           <span>{Object.values(high)[0]}</span>
                         </div>
