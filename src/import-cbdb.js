@@ -44,7 +44,7 @@ async function createIndex() {
 
 // const sqlite3 = require('sqlite3').verbose();
 // connSqlite();
-const db = better('/Users/tomding/code/cbdbapp/cbdb.db');
+const db = better('./cbdb.db');
 function connSqlite() {
     // db = new sqlite3.Database('/Users/tomding/code/cbdbapp/cbdb.db', sqlite3.OPEN_READONLY, (err) => {
     //     if (err) {
@@ -59,7 +59,7 @@ function connSqlite() {
 
 async function importAll() {
 
-    const limit = 10000;
+    const limit = 50000;
     ppl_query = "select * from biog_main limit " + limit;
     status_query = "select sd.*,sc.c_status_desc,sc.c_status_desc_chn \
             from status_data as sd \
@@ -90,9 +90,9 @@ async function importAll() {
             this._pointer++;
         }
         if (arr.length == 0) {
-            console.log(" * No data found ||  " + this._pointer + ": " + (this._pointer < data.length?data[this._pointer].c_personid:""));
+            // console.log(" * No data found ||  " + this._pointer + ": " + (this._pointer < data.length?data[this._pointer].c_personid:""));
         } else {
-            console.log("  * entries: " + arr.length + " || " + this._pointer + ": " + (this._pointer < data.length?data[this._pointer].c_personid:""));
+            // console.log("  * entries: " + arr.length + " || " + this._pointer + ": " + (this._pointer < data.length?data[this._pointer].c_personid:""));
         }
         return arr;
     } }
@@ -109,6 +109,7 @@ async function importAll() {
 
     const rows = db.prepare(ppl_query).all();
     console.log("Size of ppl: " + rows.length)
+    const flush_size = 100;
     try {
         var i = 0;
         for (const row of rows) {
@@ -122,8 +123,15 @@ async function importAll() {
             people.push({ index: { _index: 'cbdb', _type: 'biog' } });
             people.push(row);
             i++;
+	    if (i % flush_size == 0) {
+		console.log("Attempt to flush ...");
+		resp = await client.bulk({ body: people });
+		people = [];
+		console.log("Flushed: " + flush_size);
+	    }
         }
-        resp = await client.bulk({ body: people });
+	if (people.length > 0)
+        	resp = await client.bulk({ body: people });
         if (resp.errors && resp.items[0]) {
             for (r of resp.items) {
                 console.log(r.index);
