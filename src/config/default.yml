@@ -1,0 +1,24 @@
+authentication:
+  # secret for signing jwt tokens
+  secret: cbdbsecret
+
+  # strategies that are used in authentication
+  # create endpoint when doing initial websocket
+  # authentication or exchanging credentials to
+  # a jwt token
+  authStrategies:
+    - local
+
+  # entity is how to name the "user"
+  # in your context.params, e.g. context.params.user
+  entity: user
+  # service is the name of your users service
+  service: users
+
+
+  # local strategy options
+  local:
+    usernameField: email
+    passwordField: password
+
+  

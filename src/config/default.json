@@ -1,0 +1,9 @@
+{
+    "authentication": {
+        "hello": "hello",
+        "local": {
+            "usernameField": "email",
+            "passwordField": "password"
+        }
+    }
+}

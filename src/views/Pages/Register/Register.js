@@ -1,7 +1,50 @@
 import React, { Component } from 'react';
 import { Button, Card, CardBody, CardFooter, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 
+import { Redirect } from 'react-router-dom'
+
+
+import createFeathersClient from '@feathersjs/feathers'
+import auth from '@feathersjs/authentication-client'
+import socketio from '@feathersjs/socketio-client'
+import io from 'socket.io-client'
+const socket = io('http://localhost:5000');
+const feathers = createFeathersClient()
+// const client = feathers();
+
+feathers.configure(socketio(socket))
+feathers.configure(
+  auth({
+    storage: window.localStorage,
+    storageKey: 'access-token',
+    path: '/authentication'
+  })
+)
+
+
 class Register extends Component {
+  constructor(props) {
+    super(props);
+
+    // this.setState({
+    //   client: client
+    // });
+  }
+  handleSubmit(evt) {
+    feathers.service('users').create({
+      nickname: this.state.nickname,
+      email: this.state.email,
+      password: this.state.password,
+    })
+    this.props.history.push('/login?status=reg')
+  }
+
+  handleChange(event) {
+    var p = {
+    };
+    p[event.target.id] = event.target.value;
+    this.setState(p);
+  }
   render() {
     return (
       <div className="app flex-row align-items-center">
@@ -10,7 +53,7 @@ class Register extends Component {
             <Col md="9" lg="7" xl="6">
               <Card className="mx-4">
                 <CardBody className="p-4">
-                  <Form>
+                  <Form onSubmit={this.handleSubmit.bind(this)}>
                     <h1>Register</h1>
                     <p className="text-muted">Create your account</p>
                     <InputGroup className="mb-3">
@@ -19,21 +62,24 @@ class Register extends Component {
                           <i className="icon-user"></i>
                         </InputGroupText>
                       </InputGroupAddon>
-                      <Input type="text" placeholder="Username" autoComplete="username" />
+                      <Input type="text" id="email" onChange={this.handleChange.bind(this)} placeholder="Email" autoComplete="username" />
                     </InputGroup>
                     <InputGroup className="mb-3">
                       <InputGroupAddon addonType="prepend">
-                        <InputGroupText>@</InputGroupText>
+                        <InputGroupText>
+                          <i className="icon-user"></i>
+                        </InputGroupText>
                       </InputGroupAddon>
-                      <Input type="text" placeholder="Email" autoComplete="email" />
+                      <Input type="text" id="nickname" onChange={this.handleChange.bind(this)} placeholder="Nickname" autoComplete="username" />
                     </InputGroup>
+                   
                     <InputGroup className="mb-3">
                       <InputGroupAddon addonType="prepend">
                         <InputGroupText>
                           <i className="icon-lock"></i>
                         </InputGroupText>
                       </InputGroupAddon>
-                      <Input type="password" placeholder="Password" autoComplete="new-password" />
+                      <Input type="password" id="password" onChange={this.handleChange.bind(this)}  placeholder="Password" autoComplete="new-password" />
                     </InputGroup>
                     <InputGroup className="mb-4">
                       <InputGroupAddon addonType="prepend">
@@ -41,21 +87,12 @@ class Register extends Component {
                           <i className="icon-lock"></i>
                         </InputGroupText>
                       </InputGroupAddon>
-                      <Input type="password" placeholder="Repeat password" autoComplete="new-password" />
+                      <Input type="password" id="password" onChange={this.handleChange.bind(this)} placeholder="Repeat password" autoComplete="new-password" />
                     </InputGroup>
                     <Button color="success" block>Create Account</Button>
                   </Form>
                 </CardBody>
-                <CardFooter className="p-4">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <Button className="btn-facebook mb-1" block><span>facebook</span></Button>
-                    </Col>
-                    <Col xs="12" sm="6">
-                      <Button className="btn-twitter mb-1" block><span>twitter</span></Button>
-                    </Col>
-                  </Row>
-                </CardFooter>
+
               </Card>
             </Col>
           </Row>
