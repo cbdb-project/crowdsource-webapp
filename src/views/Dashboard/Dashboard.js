@@ -1,7 +1,7 @@
-import * as R from 'ramda'
+// import * as R from 'ramda'
 
-import React, { Component, lazy, Suspense, Fragment, useState, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import React, { Component, Fragment, } from 'react';
+import { ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactModal from 'react-modal';
 
 import {
@@ -16,7 +16,7 @@ import CardBody from 'reactstrap/lib/CardBody';
 import Badge from 'reactstrap/lib/Badge';
 import Circos from 'circos';
 import * as _ from 'lodash';
-import * as d3 from "d3";
+// import * as d3 from "d3";
 
 // import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 // import { getStyle, hexToRgba } from '@coreui/coreui/dist/js/coreui-utilities'
@@ -40,7 +40,7 @@ class AssocModal extends Component {
     this.setToggle = this.setToggle.bind(this);
     console.log("Assoc Modal constructor props: ");
     console.log(this.props);
-    
+
 
   }
 
@@ -76,12 +76,12 @@ class AssocModal extends Component {
   }
 
 
-  
+
   renderSocialCircle(collection) {
-    const peopleMatches = [];
-    var exists = {};
+
+
     var affiliates = {};
-    var target;
+
 
     console.log("Affiliate constructed - " + Object.values(affiliates).length);
     console.log(affiliates);
@@ -96,12 +96,12 @@ class AssocModal extends Component {
 
     // Find that person first
     for (const p of collection) {
-      if (p.c_personid == targetid) {
+      if (p.c_personid === targetid) {
         target = p;
       }
     }
     const affiliates = target.assoc_data;
-    
+
     const peopleIds = {};
     const peopleMatches = _.intersectionWith(collection, affiliates, (b, a) => {
       if (a.c_assoc_id === b.c_personid && !peopleIds[a.c_assoc_id]) {
@@ -147,7 +147,7 @@ class AssocModal extends Component {
     ]
     var circos = new Circos({
       container: '#assocChart',
-      width: width ,
+      width: width,
       height: width,
     })
 
@@ -164,7 +164,7 @@ class AssocModal extends Component {
         len: 10,
       });
       if (d.assoc_data == null) {
-        return;
+        return (null);
       }
       if (chordMappings[d.c_personid] == null) {
 
@@ -172,14 +172,14 @@ class AssocModal extends Component {
       }
       await d.assoc_data.map((assoc) => {
         if (assoc == null) {
-          return;
+          return (null);
         }
 
 
         // Filter to associations among 1st-degree affiliates
         for (const p of people) {
 
-          if (p.c_personid == assoc.c_assoc_id) {
+          if (p.c_personid === assoc.c_assoc_id) {
             var chord = {
               color: colors[j++ % colors.length],
               assoc_desc: assoc.c_assoc_desc_chn,
@@ -206,6 +206,7 @@ class AssocModal extends Component {
             chordData.push(chord);
           }
         }
+        return (null);
 
       });
 
@@ -257,7 +258,7 @@ class AssocModal extends Component {
           <ModalHeader toggle={this.setToggle}>Social Affiliations</ModalHeader>
           <ModalBody>
             <Card id="assocChart" className="vh-100">
-              
+
             </Card>
           </ModalBody>
           <ModalFooter>
@@ -333,33 +334,33 @@ class Dashboard extends Component {
   handlers = [];
   searchTyping(e, doubleTap) {
     if (!doubleTap) {
-	    var st = this.searchTyping;
-	    // var ne = R.clone(e);
-	    var ne = {};
-	    ne = Object.assign(ne, e);
-	    this.lastEvents[e.target] = {};
-	    this.lastEvents[e.target].t = Date.now();
-	    console.log(e.target.value + " 1st triggered .. @" + this.lastEvents[e.target].t);
+      var st = this.searchTyping;
+      // var ne = R.clone(e);
+      var ne = {};
+      ne = Object.assign(ne, e);
+      this.lastEvents[e.target] = {};
+      this.lastEvents[e.target].t = Date.now();
+      console.log(e.target.value + " 1st triggered .. @" + this.lastEvents[e.target].t);
 
-	    	for (var i = 0; i < this.handlers.length; i++) {
-	    		clearInterval(this.handlers[i]);
-	    	}
-	    this.handlers.push(setInterval(function() {
-		   st(ne, true) 
-	    }, 600));  
-	    return;
+      for (var i = 0; i < this.handlers.length; i++) {
+        clearInterval(this.handlers[i]);
+      }
+      this.handlers.push(setInterval(function () {
+        st(ne, true)
+      }, 600));
+      return;
     } else {
-	    // Some new event triggered in between
-	    var passed = (Date.now() - this.lastEvents[e.target].t) 
-	    console.log("2nd trigger " + e.target.value + " // " + passed);
-	    if (passed < 500)
-		    return;
-	    else {
-	    	for (var i = 0; i < this.handlers.length; i++) {
-	    		clearInterval(this.handlers[i]);
-	    	}
-	    }
-	    console.log("2nd trigger executed! " + e.target.value);
+      // Some new event triggered in between
+      var passed = (Date.now() - this.lastEvents[e.target].t)
+      console.log("2nd trigger " + e.target.value + " // " + passed);
+      if (passed < 500)
+        return;
+      else {
+        for (var i = 0; i < this.handlers.length; i++) {
+          clearInterval(this.handlers[i]);
+        }
+      }
+      console.log("2nd trigger executed! " + e.target.value);
     }
     var q = e.target.value;
     if (q) {
@@ -371,11 +372,11 @@ class Dashboard extends Component {
     var btn = e.target.id;
     // console.log("Button ... ");
     // console.log(btn);
-    if (btn == "btnListView") {
+    if (btn === "btnListView") {
       this.setState({ view: "list" })
-    } else if (btn == "btnCardView") {
+    } else if (btn === "btnCardView") {
       this.setState({ view: "card" })
-    } else if (btn == "btnGraphView") {
+    } else if (btn === "btnGraphView") {
       this.setState({ view: "graph" })
     }
   }
@@ -398,19 +399,19 @@ class Dashboard extends Component {
           </Col>
         </Row>
 
-        {(this.state.results.length > 0)? (
-        <div>
+        {(this.state.results.length > 0) ? (
+          <div>
 
-          <Button className="btn-ghost-dark" onClick={this.viewToggle} >
-            <i className="c-icon-2xl cil-align-left" id="btnListView"></i>
-          </Button>
+            <Button className="btn-ghost-dark" onClick={this.viewToggle} >
+              <i className="c-icon-2xl cil-align-left" id="btnListView"></i>
+            </Button>
 
-          <Button className="btn-ghost-dark" onClick={this.viewToggle}>
-            <i className="c-icon-2xl cil-applications" id="btnCardView" ></i>
-          </Button>
+            <Button className="btn-ghost-dark" onClick={this.viewToggle}>
+              <i className="c-icon-2xl cil-applications" id="btnCardView" ></i>
+            </Button>
 
-        </div>
-        ):null}
+          </div>
+        ) : null}
       </Fragment>
     )
   }
@@ -441,20 +442,21 @@ class Dashboard extends Component {
 
                     </td>
                     <td>
-                      {Object.entries(row._highlights).map( (high,i) => { 
+                      {Object.entries(row._highlights).map((high, i) => {
                         // console.log(high);
                         return (
-                      <div key={index+"hh_" + i}>
-                        <div className="small text-muted">
-                          <span>{Object.values(high)[0]}</span>
-                        </div>
-                        <div className="search-result" dangerouslySetInnerHTML={{ __html: Object.values(high)[1] }}>
-                        </div>
-                        {
-                          // console.log(Object.values(row._highlights)[0][0])
-                        }
-                      </div>
-                      )})}
+                          <div key={index + "hh_" + i}>
+                            <div className="small text-muted">
+                              <span>{Object.values(high)[0]}</span>
+                            </div>
+                            <div className="search-result" dangerouslySetInnerHTML={{ __html: Object.values(high)[1] }}>
+                            </div>
+                            {
+                              // console.log(Object.values(row._highlights)[0][0])
+                            }
+                          </div>
+                        )
+                      })}
                     </td>
                   </tr>
                 )
@@ -475,7 +477,7 @@ class Dashboard extends Component {
     this.assocModal.current.setToggle();
   }
   _renderCard(item) {
-    let modifiers = item.c_female == "1" ? "border-secondary text-white bg-gradient-warning" : "border-primary bg-gradient-primary  text-white ";
+    let modifiers = item.c_female === "1" ? "border-secondary text-white bg-gradient-warning" : "border-primary bg-gradient-primary  text-white ";
     return (
       <Col className="col-sm-4">
         <Card >
@@ -496,11 +498,12 @@ class Dashboard extends Component {
 
                 );
               }
+              return (null);
             })
             }
             <div>
               Notes:
-            {item.c_notes} 
+            {item.c_notes}
             </div>
 
           </CardBody>
@@ -541,8 +544,8 @@ class Dashboard extends Component {
         {/* {this.renderGraph()} */}
         <AssocModal ref={this.assocModal} personid={this.state.personSelected} collection={this.state.results}></AssocModal>
         <div>
-          {(this.state.view == "list") && this.renderListView()}
-          {(this.state.view == "card") && this.renderCardView()}
+          {(this.state.view === "list") && this.renderListView()}
+          {(this.state.view === "card") && this.renderCardView()}
 
         </div>
       </Fragment >

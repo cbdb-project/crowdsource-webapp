@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Card, CardBody, CardFooter, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
-
-import { Redirect } from 'react-router-dom'
+import { Button, Card, CardBody, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 
 
 import createFeathersClient from '@feathersjs/feathers'
@@ -23,13 +21,7 @@ feathers.configure(
 
 
 class Register extends Component {
-  constructor(props) {
-    super(props);
-
-    // this.setState({
-    //   client: client
-    // });
-  }
+  
   handleSubmit(evt) {
     feathers.service('users').create({
       nickname: this.state.nickname,

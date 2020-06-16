@@ -15,24 +15,17 @@ const socket = io('http://localhost:5000');
 const client = feathers()
 client.configure(socketio(socket));
 
-client.configure(
-  auth({
-    storage: window.localStorage,
-    storageKey: 'auth-token',
-    path: '/authentication'
-  })
-)
 
 class LoginMessage extends Component {
   static Registered = "Registered successfully! Please login with your credentials.";
   static InvalidLogin = "Invalid username / password. Try again."
   render() {
-    
-    if (this.props.status==="reg")
+
+    if (this.props.status === "reg")
       return (
         <div className="alert alert-success">{LoginMessage.Registered}</div>
       )
-    else if (this.props.status==="invalid")
+    else if (this.props.status === "invalid")
       return <div className="alert alert-warning">{LoginMessage.InvalidLogin}</div>
     else
       return <div></div>
@@ -40,23 +33,39 @@ class LoginMessage extends Component {
 }
 class Login extends Component {
 
+  
 
   async handleSubmit() {
 
     console.log(this.state.email)
     console.log(this.state.password)
-    const { accessToken } = await client.authenticate({
+    try {
+
+      client.configure(
+        auth({
+          storage: window.localStorage,
+          storageKey: 'auth-token',
+          path: '/authentication'
+        })
+      )
+      const { accessToken } = await client.authenticate({
         strategy: 'local',
         email: this.state.email,
         password: this.state.password
-    })
+      })
+      console.log("authenticated!");
+      console.log(accessToken);
 
-    console.log("authenticated!");
-    console.log(accessToken);
+      localStorage.setItem('auth-token', accessToken);
 
-    localStorage.setItem('auth-token', accessToken);
 
-    this.props.history.push('/')
+    } catch (e) {
+      console.log("Login Error!")
+      console.log(e);
+    }
+
+    this.props.onLogin();
+    this.props.history.push('/collab')
 
   }
 
@@ -67,18 +76,18 @@ class Login extends Component {
     this.setState(p);
   }
   render() {
-    
+
     const { location: { search } } = this.props;
     const { status } = parse(search);
-    
+
 
     return (
       <div className="app flex-row align-items-center">
         <Container>
-        <Row className="justify-content-center">
-        <Col md="8">
-          <LoginMessage status={status} ></LoginMessage>
-          </Col>
+          <Row className="justify-content-center">
+            <Col md="8">
+              <LoginMessage status={status} ></LoginMessage>
+            </Col>
           </Row>
           <Row className="justify-content-center">
             <Col md="8">
@@ -102,7 +111,7 @@ class Login extends Component {
                             <i className="icon-lock"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="password" id="password"  onChange={this.handleChange.bind(this)} placeholder="Password" autoComplete="current-password" />
+                        <Input type="password" id="password" onChange={this.handleChange.bind(this)} placeholder="Password" autoComplete="current-password" />
                       </InputGroup>
                       <Row>
                         <Col xs="6">

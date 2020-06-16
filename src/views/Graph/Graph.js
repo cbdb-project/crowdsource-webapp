@@ -1,14 +1,8 @@
-import React, { Component, lazy, Suspense, Fragment } from 'react';
+import React, { Component, } from 'react';
 import {
   Card,
-  Col,
-  Row,
-  Table,
+  
 } from 'reactstrap';
-import Button from 'reactstrap/lib/Button';
-import CardHeader from 'reactstrap/lib/CardHeader';
-import CardBody from 'reactstrap/lib/CardBody';
-import Badge from 'reactstrap/lib/Badge';
 
 
 class Graph extends Component {
