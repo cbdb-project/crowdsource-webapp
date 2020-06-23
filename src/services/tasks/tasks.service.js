@@ -3,11 +3,17 @@ const cbdb = better('./cbdb.db');
 
 const hooks = require('./tasks.hooks.js')
 const taskdb = better('./tasks.db');
+const {BadRequest } = require('@feathersjs/errors');
+
 
 module.exports = function tasks(app) {
     app.use('/tasks', new TaskService())
     app.service('tasks').hooks(hooks)
     console.log("hooks installed for tasks.")
+
+    app.use('/proposals', new ProposalService())
+
+    console.log("loaded proposal service.")
 }
 
 class TaskService {
@@ -21,27 +27,33 @@ class TaskService {
     async get(id, params) {
         try {
             console.log("Task service: get");
-            var q = "select data from tasks where id=" + id;
+            var q = "select id,author,data from tasks where id=" + id;
             var dt = taskdb.prepare(q).all();
             if (dt.length == 0) {
                 return [];
             }
             const task = JSON.parse(dt[0].data);
+            task.id = dt[0].id;
+
+            const fields = Object.entries(task.fields);
+            // Find the primary key
+            var pkField, pkCol;
+            for (var i = 0; i < fields.length; i++) {
+                // console.log(" ++ " + fields[i][1].type);
+                if (fields[i][1].type === "key") {
+                    pkField = fields[i][0];
+                    pkCol = i;
+                }
+            }
+            console.log("pk name = " + pkField);
+            task.pkField = pkField;
+            task.pkCol = pkCol;
 
             if (!params || !params.query || !params.query.hasOwnProperty("proposals") || params.query.proposals.split(",").length == 0) {
                 return task;
             }
 
-            const fields = Object.entries(task.fields);
-            // Find the primary key
-            var pkField;
-            for (var i = 0; i < fields.length; i++) {
-                // console.log(" ++ " + fields[i][1].type);
-                if (fields[i][1].type === "key") {
-                    pkField = fields[i][0];
-                }
-            }
-            console.log("pk name = " + pkField);
+
 
             var ps = params.query.proposals.split(",");
 
@@ -107,7 +119,7 @@ class ProposalService {
     * 
     */
     async create(proposal, params) {
-        console.log(params);
+        console.log(proposal);
         if (!proposal.hasOwnProperty("task_id") || !proposal.hasOwnProperty("data") || !proposal.hasOwnProperty("author")) {
             const error = "Error creating new proposal: missing task_id, data, or author";
             console.log(error);
@@ -119,7 +131,8 @@ class ProposalService {
             const q = "insert into proposals(task_id, author, lastupdate, data) values(@task_id,@author,date('now'), json(@data));"
             const st = taskdb.prepare(q);
             const r = st.run({ task_id: proposal.task_id, author: proposal.author, data: JSON.stringify(proposal.data) });
-            console.log("Size of status: " + r)
+            console.log(r);
+            console.log("Inserted proposal");
         } catch (e) {
             return Promise.reject(e);
         }

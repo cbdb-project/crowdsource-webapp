@@ -40,7 +40,7 @@ class Login extends Component {
     console.log(this.state.email)
     console.log(this.state.password)
     try {
-
+      console.log(await client);
       client.configure(
         auth({
           storage: window.localStorage,

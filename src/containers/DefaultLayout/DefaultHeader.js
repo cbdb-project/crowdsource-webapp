@@ -67,10 +67,10 @@ class DefaultHeader extends Component {
 
         <Nav className="d-md-down-none" navbar>
           <NavItem className="px-3">
-            <NavLink to="/collab" className="nav-link" >Collab Tasks</NavLink>
+            <NavLink to="/collab" className="nav-link" >Tasks</NavLink>
           </NavItem>
           <NavItem className="px-3">
-            <Link to="/users" className="nav-link">Users</Link>
+            <Link to="/proposals" className="nav-link">Proposals</Link>
           </NavItem>
 
         </Nav>

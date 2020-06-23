@@ -6,6 +6,7 @@ const cbdb = better('./cbdb.db');
 const feathers = require('@feathersjs/feathers')
 const express = require('@feathersjs/express')
 const socketio = require('@feathersjs/socketio');
+const cors = require('cors')
 
 const { NotFound, GeneralError, BadRequest } = require('@feathersjs/errors');
 
@@ -22,6 +23,8 @@ app.configure(configuration())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.errorHandler());
+app.use(cors());
+
 
 // Socket binding
 app.configure(socketio());
@@ -31,18 +34,21 @@ app.configure(express.rest());
 const auth = require('./auth')
 app.configure(auth)
 
+const person  = require( './services/person/person.service')
+app.configure(person);
+
 const tasks  = require( './services/tasks/tasks.service')
-tasks(app);
+app.configure(tasks);
+
 // app.configure(tasks)
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
 users(app);
-
 
 app.use('/people', {
   async find(params) {

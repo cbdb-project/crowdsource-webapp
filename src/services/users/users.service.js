@@ -11,17 +11,6 @@ module.exports = function users(app) {
     }
   });
 
-  userDb.schema.dropTableIfExists('users').createTable('users', function (table) {
-    table.increments('id');
-    table.string('email');
-    table.string('password');
-    table.string('nickname');
-    table.timestamps('created');
-  }).then(() => console.log("table created"))
-  .catch((err) => { console.log(err); throw err })
-  .finally(() => {
-      // knex.destroy();
-  });
 
   const options = {
     name: 'users',

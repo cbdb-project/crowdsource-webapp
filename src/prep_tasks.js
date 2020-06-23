@@ -3,6 +3,7 @@ const better = require('better-sqlite3')
 const csv = require('csv');
 const parse = require('csv-parse/lib/sync');
 const fs = require('fs').promises;
+const knex = require('knex');
 
 
 // const sqlite3 = require('sqlite3').verbose();
@@ -14,7 +15,8 @@ async function dropTasks() {
     q = "drop table tasks";
     st = taskdb.prepare(q);
     r = st.run();
-    console.log("Size of status: " + r)
+    console.log("Result of drop tasks: ")
+    console.log(r);
 }
 
 async function dropProposals() {
@@ -34,10 +36,34 @@ async function createProposals() {
 }
 async function createTasks() {
     create_tasks = "create table tasks ( \
-        id INTEGER PRIMARY KEY autoincrement, data json);"
+        id INTEGER PRIMARY KEY autoincrement, author INTEGER, data json,lastupdate DATETIME );"
     st = taskdb.prepare(create_tasks);
     r = st.run();
-    // console.log("Result of create tasks: " + r)
+    console.log("Result of create tasks: ")
+    console.log(r);
+}
+
+const userDb = knex({
+    client: 'sqlite3',
+    connection: {
+        filename: './user.db'
+    }
+});
+async function createUsers() {
+    try {
+
+        userDb.schema.dropTableIfExists('users').createTable('users', function (table) {
+            table.increments('id');
+            table.string('email');
+            table.string('password');
+            table.string('nickname');
+            table.timestamps('created');
+        });
+        console.log("user table created")
+
+    }
+    catch (err) { console.log(err); throw err }
+
 }
 
 async function constructQuery(task) {
@@ -99,7 +125,7 @@ async function _valTask(task, data) {
 
 }
 
-const FIELD_TYPES = ["key","person", "","key","int", "number", "string"]
+const FIELD_TYPES = ["key", "person", "", "key", "int", "number", "string"]
 
 // Generate missing fields meta-data, guess field type based on data,
 // and fill in the fields into the task definition.
@@ -121,9 +147,9 @@ async function autofillFields(task, data) {
             s = fname.split("=");
             fname = s[0]
             type = s[1]
-            if (type !== "key") 
+            if (type !== "key")
                 input = true;
-            
+
         }
 
         if (!FIELD_TYPES.includes(type)) {
@@ -158,13 +184,13 @@ async function fillTaskByCsv(task, csvfile, header = true) {
         records.shift();
         records.shift();
     }
-        
+
     var recMap = {};
     var pkName;
     var pkIndex = 0;
     // console.log(JSON.stringify(task);)
     const fields = Object.entries(task.fields);
-    for (var i = 0;i < fields.length; i++) {
+    for (var i = 0; i < fields.length; i++) {
         if (fields[i][1].type === "key") {
             pkName = fields[i][1].field_name;
             pkIndex = i;
@@ -289,51 +315,6 @@ async function addTasks() {
     t.title = "Identify authors of correspondences with 张邦奇 ";
     t.type = "revise";
     t.fields = {}
-    // {
-    //     name: "Assoc id",
-    //     input: false,
-    //     field_name: "assoc_id",
-    //     type: "int",
-    // },
-    // {
-    //     name: "Letter title",
-    //     input: false,
-    //     field_name: "title",
-    //     type: "string",
-    // },
-    // {
-    //     name: "Source",
-    //     input: false,
-    //     field_name: "source",
-    //     type: "string",
-    // },
-    // {
-    //     name: "Pages",
-    //     field_name: "pages",
-    //     input: false,
-    //     type: "string",
-
-    // },
-    // {
-    //     name: "Recepient Id",
-    //     field_name: "c_assoc_id",
-    //     input: false,
-    //     type: "int",
-    // },
-    // {
-    //     name: "Recepient Name",
-    //     field_name: "person_name",
-    //     input: true,
-    //     type: "string",
-    //     // validators: [{
-    //     //     operator: "and",
-    //     //     type: "in_table",
-    //     //     data: {
-    //     //         c_table_name:"biog_main",
-    //     //         c_table_field:"c_personid"
-    //     //     }
-    //     // }]
-    // }
 
     t.src_type = "json_data"
     // t.data = "data/all-letters.csv"
@@ -342,11 +323,13 @@ async function addTasks() {
     console.log('task filled ...')
     console.log(t);
 
-    t.status = "open";
-    t.created = new Date();
-    q = "insert into tasks(data) values(json(@data));"
+    // t.status = "open";
+    // t.lastupdate = new Date();
+    // t.author = 1
+    
+    q = "insert into tasks(author,data,lastupdate) values(@author, json(@data), @lastupdate);"
     st = taskdb.prepare(q);
-    r = st.run({ data: JSON.stringify(t) });
+    r = st.run({ author: 1, lastupdate: new Date().toString(), data: JSON.stringify(t) });
     // console.log("Size of status: " + r)
 }
 
@@ -359,6 +342,7 @@ async function main() {
     await createProposals();
     await addProposals();
     await validateProposals();
+     createUsers();
 }
 main();
 

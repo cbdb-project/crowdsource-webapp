@@ -64,6 +64,7 @@ class DefaultLayout extends Component {
 
     } catch (error) {
       console.log(error);
+      // console.log(await client.authentication.removeAccessToken());
       if (!this.props.history)
         this.props.history = [];
       console.log(this.props.history);
