@@ -4,6 +4,7 @@ const Dashboard = React.lazy(() => import('./views/Dashboard'));
 const Graph = React.lazy(() => import('./views/Graph'));
 
 const Collab = React.lazy(() => import('./views/Collab'));
+const Proposals = React.lazy(() => import('./views/Proposals'));
 
 const Login = React.lazy(() => import('./views/Pages/Login'));
 
@@ -15,6 +16,7 @@ const routes = [
   { path: '/dashboard', name: 'CDBB Web', component: Dashboard },
   { path: '/graph', name: 'CDBB Graph', component: Graph },
   { path: '/collab', name: 'CDBB Collab', component: Collab },
+  { path: '/proposals', name: 'CDBB Collab', component: Proposals },
   { path: '/login', name: 'CDBB Login', component: Login },
   { path: '/register', name: 'CDBB Login', component: Register },
   

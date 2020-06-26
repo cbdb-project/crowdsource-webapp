@@ -3,7 +3,7 @@ const cbdb = better('./cbdb.db');
 
 const hooks = require('./tasks.hooks.js')
 const taskdb = better('./tasks.db');
-const {BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('@feathersjs/errors');
 
 
 module.exports = function tasks(app) {
@@ -24,6 +24,7 @@ class TaskService {
     async create(data) {
     }
 
+
     async get(id, params) {
         try {
             console.log("Task service: get");
@@ -32,7 +33,7 @@ class TaskService {
             if (dt.length == 0) {
                 return [];
             }
-            const task = JSON.parse(dt[0].data);
+            var task = JSON.parse(dt[0].data);
             task.id = dt[0].id;
 
             const fields = Object.entries(task.fields);
@@ -52,36 +53,66 @@ class TaskService {
             if (!params || !params.query || !params.query.hasOwnProperty("proposals") || params.query.proposals.split(",").length == 0) {
                 return task;
             }
+            var ps = params.query.proposals === "all" ? "all" : params.query.proposals.split(",");
 
+            task = await this.mergeProposal(task, ps, pkField);
+            console.log(task.data);
 
+            // Filter to items only with proposals
+            if (params && params.query && params.query.hasOwnProperty("proposedOnly")) {
+                console.log("full proposal  ...");
+                console.log(task.proposals);
+                const filtered = {};
+                const props = Object.keys(task.proposals);
+                const dataIds = Object.keys(task.data);
+                const intersect = dataIds.filter(value => props.includes(value))
 
-            var ps = params.query.proposals.split(",");
-
-            task.proposals = {};
-
-            // Merge with all proposal values 
-            for (var i = 0; i < ps.length; i++) {
-                const propItems = (await new ProposalService().get(parseInt(ps[i]))).data;
-                // console.log(proposal);
-                // propItems = Object.entries(proposal.fields);
-                for (var k = 0; k < propItems.length; k++) {
-                    const pkVal = propItems[k][pkField];
-                    console.log("pk val = " + pkVal);
-                    if (!task.proposals[pkVal]) {
-                        task.proposals[pkVal] = [];
-                    }
-                    task.proposals[pkVal].push(propItems[k]);
+                for (var i = 0; i < intersect.length; i++) {
+                    filtered[intersect[i]] = task.data[intersect[i]];
                 }
+                task.data = filtered;
+                
             }
-            console.log(" === Get === with proposals merged ===");
-            console.log(JSON.stringify(task));
-            console.log(" === end === ");
+            console.log("Filtered proposal ...");
+
+            console.log(task);
+        
             return task;
-
-
         } catch (e) {
             console.log(e);
         }
+    }
+
+    async mergeProposal(task, ps, pkField) {
+        task.proposals = {};
+
+        if (ps === "all") {
+            ps = await new ProposalService().byTaskId(task.id);
+        } else {
+            for (var i = 0; i < ps.length; i++) {
+                var pid = ps[i];
+                ps[i] = (await new ProposalService().get(parseInt(pid))).data;
+            }
+        }
+
+        // Merge with all proposal values 
+        for (var i = 0; i < ps.length; i++) {
+
+            const propItems = JSON.parse(ps[i].data);
+            
+            for (var k = 0; k < propItems.length; k++) {
+                const pkVal = propItems[k][pkField];
+                if (!task.proposals[pkVal]) {
+                    task.proposals[pkVal] = [];
+                }
+                task.proposals[pkVal].push(propItems[k]);
+            }
+        }
+        // console.log(" === Get === with proposals merged ===");
+        // console.log(JSON.stringify(task, null, 4));
+        // console.log(" === end === ");
+        return task;
+
 
     }
     async find() {
@@ -100,6 +131,18 @@ class TaskService {
 
 class ProposalService {
     constructor() {
+
+    }
+
+
+    async byTaskId(tid) {
+        console.log("Proposal service: by task id");
+        var q = "select * from proposals where task_id=" + tid;
+        var dt = taskdb.prepare(q).all();
+        if (dt.length == 0) {
+            return [];
+        }
+        return dt;
 
     }
 
