@@ -103,12 +103,7 @@
 
 .multifield.accepted {
   // background-image: linear-gradient(to right, #16bffd, rgb(5, 220, 55) 75%, transparent 75%);
-  background-image: linear-gradient(
-    to right,
-   
-    rgb(72, 72, 72) 10%,
-    rgb(72, 72, 72) 100%
-  );
+  background-image: linear-gradient(to right, rgb(72, 72, 72) 10%, rgb(72, 72, 72) 100%);
   background-size: 70% 0.3em;
   background-repeat: no-repeat;
 }
@@ -158,15 +153,47 @@ body.modal-open {
   position: static;
 }
 
+body.ReactModal__Body--open > :not(.ReactModalPortal) {
+  -webkit-filter: blur(2px);
+  -moz-filter: blur(2px);
+  -o-filter: blur(v);
+  -ms-filter: blur(2px);
+  filter: blur(2px);
+}
+
+.react-autosuggest__input {
+  border-color: cornflowerblue;
+  border-top-width: 0px;
+  // height: 100%;
+  border-radius: 0;
+  border-right-width: 0px;
+  border-left-width: 0px;
+}
+
+.cardoption {
+  background-color: #efefef;
+}
+.cardoption svg {
+  background-color: #efefef;
+  fill: #efefef;
+}
+
+.cardaccepted svg {
+  fill: rgb(41, 41, 41);
+  // background-color: rgb(123, 123, 123) ;
+}
+
 .cardoption:hover svg {
-  fill:  rgb(5, 220, 55) ;
+  fill: rgb(97, 219, 240);
+  background-color: rgb(123, 123, 123);
 }
 
 .cardoption:hover {
   cursor: pointer;
-  background-color: rgb(72, 72, 72) ;
+  background-color: rgb(123, 123, 123);
   background-size: 100% 100%;
-  color: white;
+  font-style: bold;
+  color: rgba(255, 255, 255, 0.762);
 }
 
 .field-input {

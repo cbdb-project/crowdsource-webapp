@@ -154,26 +154,26 @@ class ProposeValueModal extends Component {
       // console.log(thi)
       return (
         <Modal isOpen={this.props.isOpen} className="modal-small " style={{ overlay: { position: "absolute", right: "auto", bottom: "auto", top: this._absPos(this.props.currField).top, left: this._absPos(this.props.currField).left } }} >
-          <div className="modal-dialog  " role="document">
+          <div className="modal-dialog  mt-0 mb-0  " role="document">
   
             <div className="modal-content">
   
-              <div className="container mt-3">
+              {/* <div className="modal-header">
                 <h5 className="float-left">{this.renderTitle()}</h5>
                 <div className="float-right">
-                  <button type="button" className="btn btn-light " data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
+                  <button type="button" className=" pt-1 pb-1 pr-2 pl-2 btn btn-light " data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
                     <svg className="bi bi-x" width="0.8em" height="0.8em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                       <path fillRule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z" />
                       <path fillRule="evenodd" d="M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z" />
                     </svg>
                   </button>
                 </div>
-              </div>
+              </div> */}
   
               <div className="modal-body ">
                 <div className="container ">
                   <div className="row">
-                    <div className="float-left col ml-0 col-sm-8">{this.renderField()}</div>
+                    <div className="float-left pl-0 col ml-0 mr-3 col-sm-8" style={{height:"100%"}}>{this.renderField()}</div>
                     <button type="button" className="ml-2 btn btn-primary" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
                       {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
                       <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -260,6 +260,7 @@ class ProposeValueModal extends Component {
       return (
         <Autosuggest
           suggestions={suggestions}
+          className="personinput"
           onSuggestionsFetchRequested={onSuggestionsFetchRequested.bind(this)}
           onSuggestionsClearRequested={onSuggestionsClearRequested.bind(this)}
           onSuggestionSelected={onSuggestionSelected.bind(this)}

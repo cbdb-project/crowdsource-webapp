@@ -68,12 +68,13 @@ class PickProposalModal extends Component {
     // console.log(thi)
     return (
       <Modal isOpen={this.props.isOpen} className="modal-small " style={{ overlay: { position: "absolute", right: "auto", bottom: "auto", top: this._absPos(this.props.currField).top, left: this._absPos(this.props.currField).left } }} >
-        <div className="modal-dialog  " role="document">
+        <div className="modal-dialog mt-0 mb-0 " role="document">
 
           <div className="modal-content">
-            <div className="modal-body ">
+          <div className="modal-header"><b>Adopt a proposal </b></div>
+            <div className="modal-body pt-2 ">
               <div className="container ">
-                {this.renderField()}
+                {this.renderProposals()}
               </div>
               {this.renderPersonInfo()}
 
@@ -84,16 +85,23 @@ class PickProposalModal extends Component {
     )
   }
 
-  renderField() {
+  renderProposals() {
     // Expecting an array
-    const proposals = this.props.proposals;
-    console.log(proposals);
+    const proposals = (this.props.comp)?this.props.comp.props.values:[];
+    console.log(this.props.comp);
+    // console.log(proposals);
     return (
       <div>
+        
         {(proposals) && proposals.map((v, index) => {
+          var styles = "cardoption";
+          if (v === this.props.comp.state.acceptedValue)
+            styles += " cardaccepted"
+          
           return (
             <div className="row" key={"pick_" + index}>
-              <div className="col card cardoption ml-1 mr-1 col-sm-8 ">
+              
+              <div className={"col card mb-2 mt-2 ml-1 mr-1 col-sm-8 " + styles}>
               <div className="row">
                 <div className="col col-8" onClick={this.handleSubmit.bind(this, v)}>{v}</div>
                 <div className="col col-2"><svg width="0.8em" height="0.8em" viewBox="0 0 16 16" className="bi bi-check2-circle" fill="white" xmlns="http://www.w3.org/2000/svg">
@@ -103,9 +111,10 @@ class PickProposalModal extends Component {
                 </div>
                 </div>
               </div>
-              <div className="col   ml-1 mr-1 col-sm-2 ">
+              <div className="col  mb-2 mt-2 ml-1  ml-1 mr-1 col-sm-2 ">
               (lei)
               </div>
+              
             </div>
             
           )
