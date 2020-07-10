@@ -67,12 +67,17 @@ class DefaultHeader extends Component {
 
         <Nav className="d-md-down-none" navbar>
           <NavItem className="px-3">
-            <NavLink to="/collab" className="nav-link" >Tasks</NavLink>
+            <NavLink to="/collab" className="nav-link">Work on task</NavLink>
           </NavItem>
           <NavItem className="px-3">
-            <Link to="/proposals" className="nav-link">Proposals</Link>
+            <Link to="/proposals" className="nav-link">Review proposals</Link>
           </NavItem>
-
+          <NavItem className="px-3">
+            <Link to="/proposals" className="nav-link">Import task</Link>
+          </NavItem>
+          <NavItem className="px-3">
+            <Link to="/proposals" className="nav-link">Export</Link>
+          </NavItem>
         </Nav>
         <Nav className="ml-auto mr-3" navbar>
           

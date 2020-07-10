@@ -148,6 +148,10 @@
   background-repeat: no-repeat;
 }
 
+.align-bottom > tbody > tr > td{
+  vertical-align: bottom;
+}
+
 body.modal-open {
   // overflow:hidden;
   position: static;
