@@ -72,10 +72,9 @@ class ReviewProposalModal extends Component {
     renderValue(value, fieldDef) {
       // console.log("Rendeirng ...");
       // console.log(fieldDef);
-      if (fieldDef.type === "person")
+      if (fieldDef.type === "person" && value.hasOwnProperty("c_name_chn"))
         return value.c_name_chn;
       else {
-  
         return value;
       }
     }
@@ -105,9 +104,9 @@ class ReviewProposalModal extends Component {
       var editedTdClass = tdClass + " bg-info"
   
       return (
-        <Modal isOpen={this.props.isOpen} className="" >
-          <div className="modal-dialog modal-dialog-centered modal-lg " role="document">
-            <div className="modal-content">
+        <Modal isOpen={this.props.isOpen} className="modal-dialog modal-lg" >
+          <div className="  modal-dialog-centered" role="document">
+            <div className="modal-content ">
   
               <div className="container mt-3"><h4 className="float-left">Review proposals</h4>
                 <div className="float-right">
@@ -126,7 +125,7 @@ class ReviewProposalModal extends Component {
                   {this.renderMessage()}
                 </div>
                 <div className="container " style={this.state.showMessaging ? { display: "none" } : {}}>
-                  <div className="container-fluid">
+                  <div className="container-fluid modal-table-wrapper">
                     <Table responsive className=" mb-0">
                       <thead className="thead-light ">
                         <tr className=" ">

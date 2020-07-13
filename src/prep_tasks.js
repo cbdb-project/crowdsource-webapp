@@ -132,7 +132,11 @@ const FIELD_TYPES = ["key", "person", "", "key", "int", "number", "string"]
 // This requires the first row of the data to be field_name (like in csv file).
 async function autofillFields(task, data) {
     const fields = task.fields;
+    
+    // field identifiers
     const df_names = data[0];
+
+    // friendly field names
     const df_fnames = data[1];
 
     for (var i = 0; i < df_names.length; i++) {
@@ -149,7 +153,6 @@ async function autofillFields(task, data) {
             type = s[1]
             if (type !== "key")
                 input = true;
-
         }
 
         if (!FIELD_TYPES.includes(type)) {
@@ -158,17 +161,18 @@ async function autofillFields(task, data) {
 
         f = {
             field_name: fname,
+            col: i,
             name: df_fnames[i],
             type: type
         }
 
         // Run thru data to see if any empty data
-        for (var j = 1; input === false && j < data.length; j++) {
-            if (data[j][i] === "") {
-                input = true;
-                break;
-            }
-        }
+        // for (var j = 1; input === false && j < data.length; j++) {
+        //     if (data[j][i] === "") {
+        //         input = true;
+        //         break;
+        //     }
+        // }
         f.input = input;
         fields[fname] = f;
     }

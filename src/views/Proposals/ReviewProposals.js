@@ -20,6 +20,7 @@ class ReviewProposalModal extends Component {
   
     handleSubmit() {
       this.setState( {showMessaging: true, message: "success"})
+      this.props.onSubmit();
     }
     cleanup() {
       this.setState( {showMessaging: false, message: null})
@@ -38,7 +39,8 @@ class ReviewProposalModal extends Component {
       // console.log("Rendeirng ...");
       // console.log(fieldDef);
       if (fieldDef.type === "person")
-        return value.c_name_chn;
+        // return value.c_name_chn;
+        return value;
       else {
   
         return value;
@@ -48,34 +50,39 @@ class ReviewProposalModal extends Component {
     renderMessage() {
       if (this.state.message === "success")
         return (
-          <h3>Proposal submitted successfully!</h3>
+          <h3>Changes submitted successfully!</h3>
         )
       else if (this.state.message === "error")
         return (
-          <h3>Error! Failed to submit proposal.</h3>
+          <h3>Error! Failed to submit changes.</h3>
         );
       else
         return (
-          <h3>Unknown internal state.</h3>
+          <h3>Error! Unknown internal state.</h3>
         )
     }
   
     render() {
       // if (Object.entries(this.props.data).length >0)
       // (this.props.cols) && (console.log(Object.entries(this.props.cols)));
-      var cols = Object.values(this.props.cols);
+      console.log(this.props.data);
+      const data = this.props.data;
+      var cols = (data && Object.keys(data).length > 0) ? Object.values(data)[0]: [];
+      console.log(cols);
+
       var count = cols.length;
       var tdClass = ""
       // col-" + Math.floor(11 / count)"
       var editedTdClass = tdClass + " bg-info"
-      console.log(cols);
+      
   
       return (
-        <Modal isOpen={this.props.isOpen} className="" >
-          <div className="modal-dialog modal-dialog-centered modal-lg " role="document">
-            <div className="modal-content">
+
+        <Modal isOpen={this.props.isOpen} className="modal-dialog modal-lg" >
+          <div className="  modal-dialog-centered" role="document">
+            <div className="modal-content ">
   
-              <div className="container mt-3"><h4 className="float-left">Review proposals</h4>
+              <div className="container mt-3"><h4 className="float-left">Review adopted changes</h4>
                 <div className="float-right">
                   <button type="button" className="btn btn-light " data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
                     <svg className="bi bi-x" width="0.8em" height="0.8em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -91,19 +98,15 @@ class ReviewProposalModal extends Component {
                 <div className="container"  style={!this.state.showMessaging ? { display: "none" } : {}}>
                   {this.renderMessage()}
                 </div>
-                <div className="container " style={this.state.showMessaging ? { display: "none" } : {}}>
-                  <div className="container-fluid">
-                    <Table responsive className=" mb-0">
+                <div className="container  " style={this.state.showMessaging ? { display: "none" } : {}}>
+                  <div className="container-fluid  modal-table-wrapper">
+                    <Table responsive className=" mb-0 overflow-auto">
                       <thead className="thead-light ">
                         <tr className=" ">
-                          <th className=" "><input defaultChecked type="checkbox" id={"rsel_all"}></input></th>
                           {
-  
-                            (cols) && cols.map((field, index) => {
-                              // console.log(field);
-  
+                            (cols) && cols.map((col, index) => {  
                               return (
-                                <th className={tdClass + " "} key={"rth_" + index}>{field.name}</th>
+                                <th className={tdClass + " "} key={"rth_" + index}>{col.fieldDef.name}</th>
                               )
                             })
                           }
@@ -111,26 +114,25 @@ class ReviewProposalModal extends Component {
                       </thead>
                       <tbody>
   
-                        {(this.props.data) && Object.entries(this.props.data).map((r, i) => {
-                          var values = r[1];
-                          console.log(values);
+                        {(data) && Object.values(data).map((row, i) => {
+                          // var values = r[1]);
+                          console.log(row);
                           return (
                             <tr className=" " key={"rtr_" + i}>
-                              <td className=""><input defaultChecked type="checkbox" id={"rsel_" + i}></input></td>
+                              {/* <td className=""><input defaultChecked type="checkbox" id={"rsel_" + i}></input></td> */}
                               {
-                                cols.map((c, j) => {
-                                  if (values[c.col]) {
+                                row.map((v, j) => {
                                     return (
-                                      <td className={values[c.col].edited?editedTdClass:tdClass} key={"rtd_" + i + "_" + j}>
-                                        {this.renderValue(values[c.col].value, values[c.col].fieldDef)}
+                                      <td className={v.edited?editedTdClass:tdClass} key={"rtd_" + i + "_" + j}>
+                                        {this.renderValue(v.value,v.fieldDef)}
                                       </td>
                                     )
-                                  } else {
-                                    return (
-                                      <td className={tdClass} key={"rtd_" + i + "_" + j}>
-                                      </td>
-                                    )
-                                  }
+                                  // } else {
+                                  //   return (
+                                  //     <td className={tdClass} key={"rtd_" + i + "_" + j}>
+                                  //     </td>
+                                  //   )
+                                  // }
   
                                 })
                               }

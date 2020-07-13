@@ -11,9 +11,9 @@ module.exports = {
   before: {
     all: [],
     find: [authenticate('jwt'),setUser],
-    get: [authenticate('jwt'),setUser],
+    get: [],
     create: [hashPassword('password')],
-    update: [authenticate('jwt'), hashPassword('password')],
+    update: [],
     // patch: [authenticate('local'), hashPassword()],
     remove: [authenticate('jwt'),setUser]
   },

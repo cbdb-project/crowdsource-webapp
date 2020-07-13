@@ -3,7 +3,7 @@ import MultiField from "./MultiField.js";
 import { Card, Dropdown } from 'react-bootstrap';
 
 import {
-  
+
   Table,
 } from 'reactstrap';
 import PickProposalModal from './PickProposal.js';
@@ -16,8 +16,8 @@ class Proposals extends Component {
     this.state = {
       tasks: [],
       myTask: null,
-      acceptedValues: {},
-      proposedFieldCols: {},
+      affectedRows: {},
+      affectedCols: {},
       reviewProposal: false,
       isLoading: true,
     };
@@ -56,11 +56,6 @@ class Proposals extends Component {
   }
 
 
-  reviewClicked(e) {
-    this.setState({ reviewProposal: true })
-
-  }
-
   renderMyTask() {
     if (!this.state.myTask) {
       return null;
@@ -74,7 +69,7 @@ class Proposals extends Component {
 
     return (
       <div className="">
-        
+
         <div className="row align-items-center justify-content-between mt-0 mb-1">
 
           <div className="col col-sm-auto">
@@ -103,47 +98,49 @@ class Proposals extends Component {
             </div>
           </div>
           <div className="col col-sm-auto">
-            <i>({Object.values(this.state.acceptedValues).length} rows touched)</i>
+            <i>({Object.values(this.state.affectedRows).length} rows touched)</i>
           </div>
 
         </div>
 
-          <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
-            <thead className="thead-light">
-              <tr>
-                {
-                  (this.state.myFields) && this.state.myFields.map((field, index) => {
-                    // console.log(field);
-                    return (
-                      <th key={"th_" + index}>{field.name}</th>
-                    )
-                  })
-                }
-              </tr>
-            </thead>
-            <tbody>
+        <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
+          <thead className="thead-light">
+            <tr>
               {
-
-                data.map((row, index) => {
-                  console.log(row);
-                  const pk = this.state.myFields ? row[this.state.myTask.pkCol] : -1
+                (this.state.myFields) && this.state.myFields.map((field, index) => {
+                  // console.log(field);
                   return (
-                    <tr key={"_c_" + index}>
-                      {row.map((origValue, vindex) => {
-                        return (
-                          <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex}>
-                            {this.renderMultiField(origValue, pk, index, vindex)}
-                          </td>
-                        )
-                      })}
-                    </tr>
+                    <th key={"th_" + index}>{field.name}</th>
                   )
                 })
               }
-            </tbody>
-          </Table>
+            </tr>
+          </thead>
+          <tbody>
+            {
 
-        
+              data.map((row, index) => {
+                console.log(row);
+                const pk = this.state.myFields ? row[this.state.myTask.pkCol] : -1
+                console.log(row[0]);
+                console.log(this.state.myTask);
+                return (
+                  <tr key={"_c_" + index}>
+                    {row.map((origValue, vindex) => {
+                      return (
+                        <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex}>
+                          {this.renderMultiField(origValue, pk, index, vindex)}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })
+            }
+          </tbody>
+        </Table>
+
+
       </div>
     )
   }
@@ -152,17 +149,23 @@ class Proposals extends Component {
   }
 
 
+  _onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+  }
+
+
   renderMultiField(origValue, pk, index, vindex) {
     var displayValue = origValue;
     if (!this.state.myFields) {
       return (<div></div>)
     }
+    console.log(pk);
     const task = this.state.myTask;
     const proposals = task.proposals[pk];
     const fieldName = this.state.myFields[vindex].field_name;
-    // console.log(proposals);
+    console.log(proposals);
 
-    const pValues = [];
+    var pValues = [];
 
     for (var i = 0; i < proposals.length; i++) {
       // console.log("Added field prop value ..." + proposals[i]);
@@ -171,7 +174,10 @@ class Proposals extends Component {
         pValues.push(proposals[i][fieldName]);
       }
     }
-    if ((!origValue || origValue === "") && pValues.length > 0) {
+
+    pValues = pValues.filter(this._onlyUnique);
+
+    if (pValues.length > 0) {
       displayValue = <MultiField fieldDef={this.state.myFields ? this.state.myFields[vindex] : null}
         row={index} col={vindex} id={"_c_" + index + "_" + vindex}
         primaryKey={pk}
@@ -185,43 +191,46 @@ class Proposals extends Component {
   }
 
 
-  // Expecting a person object
+
+
+  reviewClicked(e) {
+    // this.copyHeaders();
+    this.setState({ reviewProposal: true })
+  }
+
+  // Upon a proposed value being accepted
   onProposalAccepted(value) {
     const comp = this.state.editingFieldComp;
-    const accepted = this.state.acceptedValues;
     comp.setState({ acceptedValue: value });
 
+    // Add affected row to the list
+    const aRows = this.state.affectedRows;
     const pk = comp.props.primaryKey;
     const col = comp.props.col;
     const field = comp.props.fieldDef;
-    if (!accepted[pk])
-      accepted[pk] = {};
+    const row = comp.props.row;
+    const data = Object.values(this.state.myTask.data)[row];
+    const fields = this.state.myFields;
 
-    accepted[pk][col] = {
+    // Copy over the row if empty
+    if (!aRows[pk]) {
+      aRows[pk] = [];
+      for (var i = 0; i < fields.length; i++) {
+        aRows[pk][i] = {
+          col: i,
+          fieldDef: fields[i],
+          value: data[i],
+          edited: false
+        }
+      }
+    }
+
+    aRows[pk][col] = {
       col: col,
       value: value,
       fieldDef: field,
       edited: true
     }
-
-    // // HACKY: Standard headers
-    // const data = Object.values(this.state.myTask.data)[comp.props.row];
-
-    // var fieldCols = this.state.proposedFieldCols;
-    // fieldCols[comp.props.col] = comp.props.fieldDef;
-    // fieldCols[comp.props.col].col = comp.props.col;
-
-    // for (var i = 0; i < 4; i++) {
-    //   fieldCols[i] = this.state.myFields[i];
-    //   fieldCols[i].col = i;
-    //   adopted[comp.props.primaryKey][i] = {
-    //     col: i,
-    //     // row: comp.props.row,
-    //     fieldDef: this.state.myFields[i],
-    //     value: data[i],
-    //     edited: false
-    //   }
-    // }
 
     this.onFieldEditorClosed();
   }
@@ -232,6 +241,29 @@ class Proposals extends Component {
     window.scrollTo(0, this.windowOffset);
   }
 
+  async onSubmit() {
+    // Transform all affected rows into proper array for update
+    const aRows = this.state.affectedRows;
+    const pks = Object.keys(aRows);
+    const rows = Object.values(aRows);
+
+    const updated = {};
+
+    for (var i = 0; i < pks.length; i++) {
+      const d = [];
+      for (var j = 0; j < rows[i].length; j++) {
+        d[j] = rows[i][j].value;
+      }
+      updated[pks[i]]=d;
+    }
+    console.log(updated);
+
+    const t = await this.props.client.service('tasks').update(this.state.myTask.id, updated);
+
+    console.log(t);
+
+
+  }
   onReviewClosed() {
     this.setState({ reviewProposal: false });
     document.body.setAttribute('style', '');
@@ -243,6 +275,9 @@ class Proposals extends Component {
       // console.log("hi");
       // return console.log(task);
     });
+    const disable = (Object.values(this.state.affectedRows).length === 0) ? true : "";
+    console.log("Enabled: " + Object.values(this.state.affectedRows).length);
+    console.log("Enabled: " + disable);
     return (
       <div>
         <div></div>
@@ -250,7 +285,7 @@ class Proposals extends Component {
           <div className="col mr-2 col-sm-auto">
           </div>
           <div className="col mr-2 col-sm-auto float-right">
-            <button type="button" onClick={this.reviewClicked.bind(this)} className="btn mr-2 col col-sm-auto btn-primary float-right mb-3 " data-dismiss="modal" >
+            <button type="button" disabled={disable} onClick={this.reviewClicked.bind(this)} className="btn mr-2 col col-sm-auto btn-primary float-right mb-3 " data-dismiss="modal" >
               <svg className="bi bi-cloud-upload mr-2" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4.887 6.2l-.964-.165A2.5 2.5 0 1 0 3.5 11H6v1H3.5a3.5 3.5 0 1 1 .59-6.95 5.002 5.002 0 1 1 9.804 1.98A2.501 2.501 0 0 1 13.5 12H10v-1h3.5a1.5 1.5 0 0 0 .237-2.981L12.7 7.854l.216-1.028a4 4 0 1 0-7.843-1.587l-.185.96z" />
                 <path fillRule="evenodd" d="M5 8.854a.5.5 0 0 0 .707 0L8 6.56l2.293 2.293A.5.5 0 1 0 11 8.146L8.354 5.5a.5.5 0 0 0-.708 0L5 8.146a.5.5 0 0 0 0 .708z" />
@@ -261,7 +296,7 @@ class Proposals extends Component {
           <div className="col col-sm-auto float-right">
 
 
-            <button type="button" onClick={this.reviewClicked.bind(this)} className="btn col col-sm-auto  btn-warning float-right mb-3 " data-dismiss="modal" >
+            <button type="button" disabled={disable} onClick={this.reviewClicked.bind(this)} className="btn col col-sm-auto  btn-warning float-right mb-3 " data-dismiss="modal" >
               <svg width="1em" height="1em" viewBox="0 0 16 16" className="mr-2 bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z" />
               </svg>
@@ -271,8 +306,6 @@ class Proposals extends Component {
         <Card>
 
           <Card.Body>
-
-            <hl></hl>
 
 
             <div>
@@ -297,13 +330,15 @@ class Proposals extends Component {
           // fieldDef={this.state.fieldDef}
           // proposals={this.state.currFieldProposals}
           currField={this.state.currField}></PickProposalModal>
-      <ReviewProposalModal isOpen={this.state.reviewProposal}
-          cols={this.state.proposedFieldCols}
+
+        <ReviewProposalModal isOpen={this.state.reviewProposal}
+          // cols={this.state.affectedCols}
           onClosed={this.onReviewClosed.bind(this)}
           userid={this.props.user ? this.props.user.id : -1}
           client={this.props.client}
+          onSubmit={this.onSubmit.bind(this)}
           task={this.state.myTask}
-          data={this.state.acceptedValues}
+          data={this.state.affectedRows}
         />
 
         <div>

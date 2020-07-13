@@ -6,36 +6,110 @@ const taskdb = better('./tasks.db');
 const { BadRequest } = require('@feathersjs/errors');
 
 
+
 module.exports = function tasks(app) {
     app.use('/tasks', new TaskService())
     app.service('tasks').hooks(hooks)
     console.log("hooks installed for tasks.")
-
     app.use('/proposals', new ProposalService())
-
     console.log("loaded proposal service.")
 }
 
 class TaskService {
 
     constructor() {
+        // super();
     }
 
     async create(data) {
     }
 
+    _paginate(data, page, perPage) {
+        page -= 1;
+        if (page < 0) {
+            page = 0;
+        }
+        var start = page * perPage;
+        var end = start + perPage - 1;
+
+        const values = Object.values(data);
+        const keys = Object.keys(data);
+        
+        if (end > keys.length)
+            end = keys.length;
+
+        // data.length = Object.keys(data).length;
+
+        const filtered = {};
+        // console.log(start);
+        // console.log(keys.length);
+        for (var i = start; i <= end; i ++) {
+            filtered[keys[i]] = values[i];
+        }
+        // console.log(filtered);
+
+        return {data: filtered, pages: Math.ceil(keys.length / perPage), total: keys.length};
+    }
+
+    _pageOptions(params) {
+        var p = {};
+        if (!params || !params.query || !params.query.page) {
+            p.page = 1;
+        }else {
+            p.page = params.query.page
+        }
+        if (!params || !params.query || !params.query.perPage) {
+            p.perPage = 25;
+        } else {
+            p.perPage = params.query.perPage;
+        }
+        
+        
+        return p;
+    }
+
+    async getRaw(id) {
+        console.log("Task service: getRaw");
+            
+        var q = "select id,author,data from tasks where id=" + id;
+        var dt = taskdb.prepare(q).all();
+        if (dt.length == 0) {
+            return [];
+        }
+        const task = JSON.parse(dt[0].data);
+        return task;
+    }
 
     async get(id, params) {
         try {
             console.log("Task service: get");
+            
             var q = "select id,author,data from tasks where id=" + id;
             var dt = taskdb.prepare(q).all();
             if (dt.length == 0) {
                 return [];
             }
+            const {page, perPage} = this._pageOptions(params);
+            
             var task = JSON.parse(dt[0].data);
-            task.id = dt[0].id;
-
+            const {data, pages, total} = this._paginate(task.data, page, perPage);
+            Object.assign(task, {
+                page: page,
+                perPage: perPage,
+                data: data,
+                pages: pages,
+                total: total,
+                id: dt[0].id,
+                author: dt[0].author
+            })
+            // task.page = 
+            // task.data = data;
+            // task.pages = pages;
+            // task.total = total;
+            // task.id = dt[0].id;
+            // task.author = dt[0].author;
+            
+            
             const fields = Object.entries(task.fields);
             // Find the primary key
             var pkField, pkCol;
@@ -71,12 +145,12 @@ class TaskService {
                     filtered[intersect[i]] = task.data[intersect[i]];
                 }
                 task.data = filtered;
-                
+
             }
             console.log("Filtered proposal ...");
 
             console.log(task);
-        
+
             return task;
         } catch (e) {
             console.log(e);
@@ -99,7 +173,7 @@ class TaskService {
         for (var i = 0; i < ps.length; i++) {
 
             const propItems = JSON.parse(ps[i].data);
-            
+
             for (var k = 0; k < propItems.length; k++) {
                 const pkVal = propItems[k][pkField];
                 if (!task.proposals[pkVal]) {
@@ -108,13 +182,49 @@ class TaskService {
                 task.proposals[pkVal].push(propItems[k]);
             }
         }
-        // console.log(" === Get === with proposals merged ===");
-        // console.log(JSON.stringify(task, null, 4));
-        // console.log(" === end === ");
+        console.log(" === Get === with proposals merged ===");
+        console.log(JSON.stringify(task.proposals, null, 4));
+        console.log(" === end === ");
         return task;
 
 
     }
+
+    /* Update line items in a task
+       e.g.
+       task.data: {
+           '35': [
+            "張邦奇",
+            "1",
+            "與余子華",
+            "致書Y",
+            "余本",
+            "128347"
+           ]
+        }
+    */
+    async update(id, nData, params) {
+        const task = await this.getRaw(id);
+        // console.log(task);
+        const info = task;
+        console.log("Task::update ... " + id);
+
+        const q = "update tasks set data=json(@data) where id=@id";
+        const stmt = taskdb.prepare(q);
+
+        // Update the original data pkg with new updates
+        const pks = Object.keys(nData);
+
+        for (var i = 0; i < pks.length; i++) {
+            info.data[pks[i]] = nData[pks[i]];
+        }
+        console.log("new data to be upated ... ");
+        console.log(info);
+        const t = stmt.run({ data: JSON.stringify(info), id: id })
+        console.log(t);
+        console.log("Task::update done");
+    }
+
     async find() {
         try {
             var q = "select data from tasks"
@@ -180,6 +290,7 @@ class ProposalService {
             return Promise.reject(e);
         }
     }
+
 
 
     async _valProposalField(def, value) {

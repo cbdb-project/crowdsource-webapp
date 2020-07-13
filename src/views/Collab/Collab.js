@@ -19,8 +19,8 @@ class Collab extends Component {
     this.state = {
       tasks: [],
       currentTask: null,
-      proposedValues: {},
-      proposedFieldCols: {},
+      affectedRows: {},
+      affectedCols: {},
       reviewProposal: false,
       isLoading: true,
     };
@@ -59,7 +59,7 @@ class Collab extends Component {
 
   reviewProposal() {
     console.log("All fields touched ...");
-    var rows = Object.entries(this.state.proposedValues);
+    var rows = Object.entries(this.state.affectedRows);
     for (var i = 0; i < rows.length; i++) {
       var row = Object.entries(rows[i][1]);
       console.log(row);
@@ -74,7 +74,7 @@ class Collab extends Component {
 
 
   discardClicked(e) {
-    this.setState({ proposedValues: {} });
+    this.setState({ affectedRows: {} });
   }
 
   reviewClicked(e) {
@@ -118,7 +118,7 @@ class Collab extends Component {
             </div>
           </div>
           <div className="col col-sm-auto">
-            <i>({Object.values(this.state.proposedValues).length} rows touched)</i>
+            <i>({Object.values(this.state.affectedRows).length} rows touched)</i>
           </div>
 
         </div>
@@ -184,7 +184,7 @@ class Collab extends Component {
   // Expecting a person object
   onFieldEdited(value) {
     var comp = this.state.editingFieldComp;
-    var proposed = this.state.proposedValues
+    var proposed = this.state.affectedRows
     this.state.editingFieldComp.setState({ edited: true, proposedValue: value });
     if (!proposed[comp.props.primaryKey])
       proposed[comp.props.primaryKey] = {};
@@ -200,7 +200,7 @@ class Collab extends Component {
 
     // console.log(Object.values(this.state.currentTask.data));
 
-    var fieldCols = this.state.proposedFieldCols;
+    var fieldCols = this.state.affectedCols;
     fieldCols[comp.props.col] = comp.props.fieldDef;
     fieldCols[comp.props.col].col = comp.props.col;
 
@@ -292,13 +292,14 @@ class Collab extends Component {
           onClosed={this.onFieldEditorClosed.bind(this)}
           fieldDef={this.state.fieldDef}
           currField={this.state.currField}></ProposeValueModal>
+        
         <ReviewProposalModal isOpen={this.state.reviewProposal}
-          cols={this.state.proposedFieldCols}
+          cols={this.state.affectedCols}
           onClosed={this.onReviewClosed.bind(this)}
           userid={this.props.user ? this.props.user.id : -1}
           client={this.props.client}
           task={this.state.currentTask}
-          data={this.state.proposedValues}
+          data={this.state.affectedRows}
         />
         {/* // onSubmit={this.onFieldEdited.bind(this)}
           // onClosed={this.onFieldEditorClosed.bind(this)}

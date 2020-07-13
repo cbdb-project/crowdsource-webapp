@@ -91,6 +91,26 @@
   cursor: pointer;
 }
 
+.modal-table-wrapper {
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: 45vh;
+  max-width: 100vw;
+}
+
+.modal-table-wrapper::-webkit-scrollbar {
+  width: 1em;
+}
+
+.modal-table-wrapper::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.modal-table-wrapper::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+}
+
 .multifield {
   background-position-y: bottom;
   background-repeat: repeat-x;
@@ -148,16 +168,17 @@
   background-repeat: no-repeat;
 }
 
-.align-bottom > tbody > tr > td{
+.align-bottom > tbody > tr > td {
   vertical-align: bottom;
 }
 
 body.modal-open {
-  // overflow:hidden;
   position: static;
 }
 
-body.ReactModal__Body--open > :not(.ReactModalPortal) {
+.ReactModal__Body--open > #root {
+  overflow:hidden;
+  
   -webkit-filter: blur(2px);
   -moz-filter: blur(2px);
   -o-filter: blur(v);
