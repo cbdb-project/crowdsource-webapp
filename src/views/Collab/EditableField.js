@@ -9,12 +9,21 @@ class EditableField extends Component {
     this.state = {
       editText: props.value,
       editable: props.editable,
+      pk: props.primaryKey,
       editing: false
     };
     this.element = {};
   }
   componentWillReceiveProps(newProps) {
-    this.setState({ editable: newProps.editable })
+    
+    
+    // console.log("Prop changs: " + newProps.primaryKey + "/" + this.state.pk);
+    if (newProps.proposed) {
+      this.setState({edited: true});
+    } else {
+      this.setState({edited: false});
+    }
+    this.setState({ editable: newProps.editable, pk: newProps.primaryKey })
   }
 
   handleEdit(e) {
@@ -22,8 +31,6 @@ class EditableField extends Component {
     // // var myModalInstance = new BSN.Modal("#person-picker", {
     // //   backdrop: 'static',
     // // });
-
-
     // myModalInstance.show();
     console.log("Clicked ...");
     console.log(this.props);
@@ -46,12 +53,13 @@ class EditableField extends Component {
   }
 
   renderValue() {
-    if (this.state.proposedValue) {
+    if (this.props.proposed) {
+      console.log(this.props.proposed);
       if (this.props.fieldDef.type === "person")
-        return this.state.proposedValue.c_name_chn;
+        return this.props.proposed.value.c_name_chn;
       else {
-        console.log(this.state.proposedValue);
-        return this.state.proposedValue;
+        console.log(this.props.proposed);
+        return this.props.proposed.value;
       }
 
     } else {

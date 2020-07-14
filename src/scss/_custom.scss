@@ -91,6 +91,24 @@
   cursor: pointer;
 }
 
+a.paginate:not([href]) {
+  font-weight: bold;
+  cursor: pointer;
+  color: rgb(0, 109, 225);
+  &:hover {
+    text-decoration: underline;
+    font-size: 1em;
+  }
+}
+
+a.paginate.current:not([href]) {
+  color: darkblue;
+  // text-decoration: underline;
+  font-size: 1em;
+
+
+}
+
 .modal-table-wrapper {
   overflow-y: auto;
   overflow-x: auto;

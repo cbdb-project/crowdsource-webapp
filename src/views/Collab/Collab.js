@@ -11,7 +11,53 @@ import {
 } from 'reactstrap';
 
 // const tasks = client.service('tasks');
+class Paginate extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      current: 1
+    }
+  }
+  MAX = 10;
 
+  async gotoPage(e) {
+    // console.log(e);
+    // console.log("Page value:" + e.target.value);
+    const page = Number.parseInt(e.target.text);
+    await this.props.onPaging(page)
+    this.setState({current: page})
+  }
+
+  render() {
+    const total = this.props.total;
+    const current = this.state.current;
+
+    const pages = [];
+
+    
+    var start = Math.floor((current - this.MAX/2))
+    if (start < 1)
+      start = 1;
+
+    console.log("current page: " + current)
+    for (var i = start;i <= total; i++) {
+      const isCurrent = (i == current) ? "current" : "";
+      // console.log("current decor applied: " + var + " / " + i);
+      pages.push(<a key={"pg_" + i} value={i} className={"paginate ml-1 mr-1 " + isCurrent} onClick={this.gotoPage.bind(this)}>{i}</a>);
+      if ((i - start + 1) >= this.MAX) {
+        pages.push(<Fragment key="pg_etc">... </Fragment>);
+        pages.push(<a key={"pg_" + total} className="paginate ml-1 mr-1" onClick={this.gotoPage.bind(this)}>{total}</a>);
+        break;
+      }
+    }
+      
+    return (
+      <div className="mt-2 mb-2">
+        Page: [ {pages} ]
+      </div>
+    )
+  }
+}
 class Collab extends Component {
 
   constructor(props) {
@@ -28,6 +74,15 @@ class Collab extends Component {
   }
 
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
+
+
+  async onPaging(page) {
+    console.log("Query for page " + page);
+    const t = await this.props.client.service('tasks').get(1, {query: {page: page}});
+    console.log("new data");
+    console.log(t);
+    this.setState({ currentTask: t });
+  }
 
   async componentWillMount() {
     const t = await this.props.client.service('tasks').get(1);
@@ -123,6 +178,7 @@ class Collab extends Component {
 
         </div>
 
+        <Paginate total={this.state.currentTask.pages} onPaging={this.onPaging.bind(this)}/>
         <Table hover responsive className="table-outline align-bottom mb-0 d-none d-sm-table">
           <thead className="thead-light">
             <tr>
@@ -139,14 +195,17 @@ class Collab extends Component {
           <tbody>
             {
               data.map((row, index) => {
-                if (index === 0)
-                  return (null)
+                // if (index === 0)
+                //   return (null)
                 if (this.state.fields) {
                   // var fs = Object.entries(this.state.currentTask.fields);
                   // console.log(fs[5][1].input)
                 }
                 // console.log(row);
-
+                const pk = this.state.fields ? row[this.state.currentTask.pkCol] : -1;
+                if (!this.state.affectedRows[pk]) {
+                  this.state.affectedRows[pk] = {};
+                }
                 return (
 
                   <tr key={"_c_" + index}>
@@ -155,13 +214,16 @@ class Collab extends Component {
                         // console.log("This fields ...");
                         // console.log(this.state.fields[vindex]);
                       }
+                      
                       return (
                         <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex} className="td-bottom">
                           <EditableField fieldDef={this.state.fields ? this.state.fields[vindex] : null}
                             row={index} col={vindex} id={"_c_" + index + "_" + vindex}
-                            primaryKey={this.state.fields ? row[this.state.currentTask.pkCol] : -1}
+                            primaryKey={pk}
                             onFieldClicked={this.onFieldClicked.bind(this)}
-                            editable={(!this.state.fields) ? false : Object.entries(this.state.currentTask.fields)[vindex][1].input} value={field}>
+                            editable={(!this.state.fields) ? false : Object.entries(this.state.currentTask.fields)[vindex][1].input} 
+                            proposed={this.state.affectedRows[pk][vindex]}
+                            value={field}>
                           </EditableField>
                         </td>
                       )
@@ -185,7 +247,8 @@ class Collab extends Component {
   onFieldEdited(value) {
     var comp = this.state.editingFieldComp;
     var proposed = this.state.affectedRows
-    this.state.editingFieldComp.setState({ edited: true, proposedValue: value });
+    // this.state.editingFieldComp.setState({ edited: true, proposedValue: value });
+    
     if (!proposed[comp.props.primaryKey])
       proposed[comp.props.primaryKey] = {};
     proposed[comp.props.primaryKey][comp.props.col] = {
@@ -253,7 +316,7 @@ class Collab extends Component {
                 <path fillRule="evenodd" d="M5 8.854a.5.5 0 0 0 .707 0L8 6.56l2.293 2.293A.5.5 0 1 0 11 8.146L8.354 5.5a.5.5 0 0 0-.708 0L5 8.146a.5.5 0 0 0 0 .708z" />
                 <path fillRule="evenodd" d="M8 6a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0v-8A.5.5 0 0 1 8 6z" />
               </svg>
-          Submit Changes</button>
+          Submit Proposals</button>
           </div>
           <div className="col col-sm-auto float-right">
 
@@ -266,14 +329,8 @@ class Collab extends Component {
           </div>
         </div>
         <Card>
-
           <Card.Body>
-
-            <hl></hl>
-
-
             <div>
-
               {this.renderCurrTask()}
             </div>
 

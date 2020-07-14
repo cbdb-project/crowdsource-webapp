@@ -28,8 +28,12 @@ class ReviewProposalModal extends Component {
       const items = [];
       pData = Object.entries(pData);
       for (var i = 0; i < pData.length; i++) {
+        
         var key = pData[i][0];
         var cols = Object.values(pData[i][1]);
+        // Skip empty rows
+        if (cols.length === 0)
+          continue;
         var item = {};
         for (var j = 0; j < cols.length; j++) {
           if (!cols[j].edited) {
@@ -145,6 +149,8 @@ class ReviewProposalModal extends Component {
   
                         {(this.props.data) && Object.entries(this.props.data).map((r, i) => {
                           var values = r[1];
+                          if (Object.keys(r[1]).length === 0)
+                            return;
                           return (
                             <tr className=" " key={"rtr_" + i}>
                               <td className=""><input defaultChecked type="checkbox" id={"rsel_" + i}></input></td>

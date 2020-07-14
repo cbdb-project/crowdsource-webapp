@@ -24,7 +24,7 @@ class TaskService {
     async create(data) {
     }
 
-    _paginate(data, page, perPage) {
+    _paginate(data, page, perPage, target) {
         page -= 1;
         if (page < 0) {
             page = 0;
@@ -38,17 +38,23 @@ class TaskService {
         if (end > keys.length)
             end = keys.length;
 
-        // data.length = Object.keys(data).length;
-
         const filtered = {};
-        // console.log(start);
-        // console.log(keys.length);
         for (var i = start; i <= end; i ++) {
             filtered[keys[i]] = values[i];
         }
-        // console.log(filtered);
 
-        return {data: filtered, pages: Math.ceil(keys.length / perPage), total: keys.length};
+        // Set properties if a target is specified
+        var props = {
+            
+                data: filtered, pages: Math.ceil(keys.length / perPage), total: keys.length
+            
+        }
+        if (target) {
+            Object.assign(target, props);
+            return target;
+        } else {
+            return props;
+        }
     }
 
     _pageOptions(params) {
@@ -80,6 +86,10 @@ class TaskService {
         return task;
     }
 
+
+
+    
+
     async get(id, params) {
         try {
             console.log("Task service: get");
@@ -92,24 +102,14 @@ class TaskService {
             const {page, perPage} = this._pageOptions(params);
             
             var task = JSON.parse(dt[0].data);
-            const {data, pages, total} = this._paginate(task.data, page, perPage);
+            // const {data, pages, total} = this._paginate(task.data, page, perPage);
             Object.assign(task, {
                 page: page,
                 perPage: perPage,
-                data: data,
-                pages: pages,
-                total: total,
                 id: dt[0].id,
                 author: dt[0].author
             })
-            // task.page = 
-            // task.data = data;
-            // task.pages = pages;
-            // task.total = total;
-            // task.id = dt[0].id;
-            // task.author = dt[0].author;
-            
-            
+
             const fields = Object.entries(task.fields);
             // Find the primary key
             var pkField, pkCol;
@@ -125,7 +125,7 @@ class TaskService {
             task.pkCol = pkCol;
 
             if (!params || !params.query || !params.query.hasOwnProperty("proposals") || params.query.proposals.split(",").length == 0) {
-                return task;
+                return this._paginate(task.data, page, perPage, task);
             }
             var ps = params.query.proposals === "all" ? "all" : params.query.proposals.split(",");
 
@@ -151,7 +151,8 @@ class TaskService {
 
             console.log(task);
 
-            return task;
+            return this._paginate(task.data, page, perPage, task);
+
         } catch (e) {
             console.log(e);
         }
