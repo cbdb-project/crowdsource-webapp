@@ -76,7 +76,7 @@ class DefaultHeader extends Component {
             <Link to="/proposals" className="nav-link">Import task</Link>
           </NavItem>
           <NavItem className="px-3">
-            <Link to="/proposals" className="nav-link">Export</Link>
+            <Link to="/export" className="nav-link">Export</Link>
           </NavItem>
         </Nav>
         <Nav className="ml-auto mr-3" navbar>

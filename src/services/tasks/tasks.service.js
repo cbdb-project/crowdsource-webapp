@@ -34,20 +34,20 @@ class TaskService {
 
         const values = Object.values(data);
         const keys = Object.keys(data);
-        
+
         if (end > keys.length)
             end = keys.length;
 
         const filtered = {};
-        for (var i = start; i <= end; i ++) {
+        for (var i = start; i <= end; i++) {
             filtered[keys[i]] = values[i];
         }
 
         // Set properties if a target is specified
         var props = {
-            
-                data: filtered, pages: Math.ceil(keys.length / perPage), total: keys.length
-            
+
+            data: filtered, pages: Math.ceil(keys.length / perPage), total: keys.length
+
         }
         if (target) {
             Object.assign(target, props);
@@ -61,7 +61,7 @@ class TaskService {
         var p = {};
         if (!params || !params.query || !params.query.page) {
             p.page = 1;
-        }else {
+        } else {
             p.page = params.query.page
         }
         if (!params || !params.query || !params.query.perPage) {
@@ -69,14 +69,14 @@ class TaskService {
         } else {
             p.perPage = params.query.perPage;
         }
-        
-        
+
+
         return p;
     }
 
     async getRaw(id) {
         console.log("Task service: getRaw");
-            
+
         var q = "select id,author,data from tasks where id=" + id;
         var dt = taskdb.prepare(q).all();
         if (dt.length == 0) {
@@ -88,19 +88,19 @@ class TaskService {
 
 
 
-    
+
 
     async get(id, params) {
         try {
             console.log("Task service: get");
-            
+
             var q = "select id,author,data from tasks where id=" + id;
             var dt = taskdb.prepare(q).all();
             if (dt.length == 0) {
                 return [];
             }
-            const {page, perPage} = this._pageOptions(params);
-            
+            const { page, perPage } = this._pageOptions(params);
+
             var task = JSON.parse(dt[0].data);
             // const {data, pages, total} = this._paginate(task.data, page, perPage);
             Object.assign(task, {
@@ -124,16 +124,31 @@ class TaskService {
             task.pkField = pkField;
             task.pkCol = pkCol;
 
-            if (!params || !params.query || !params.query.hasOwnProperty("proposals") || params.query.proposals.split(",").length == 0) {
+            if (!params || !params.query) {
                 return this._paginate(task.data, page, perPage, task);
             }
-            var ps = params.query.proposals === "all" ? "all" : params.query.proposals.split(",");
 
-            task = await this.mergeProposal(task, ps, pkField);
-            console.log(task.data);
+            // Filter to proposals that are being edited (i.e. proposal applied)
+            if (params.query.hasOwnProperty("edited")) {
+                console.log("Edited only!");
+                const filtered = {};
+                var pks = Object.keys(task.data);
+                console.log(task.edited);
+                pks = pks.filter((key) => { return (task.edited[key] === "true") });
+                pks.forEach((pk) => { filtered[pk] = task.data[pk] })
+                return this._paginate(filtered, page, perPage, task);
+            }
+
+            if (params.query.hasOwnProperty("proposals")) {
+
+                var ps = params.query.proposals === "all" ? "all" : params.query.proposals.split(",");
+
+                task = await this.mergeProposal(task, ps, pkField);
+                console.log(task.data);
+            }
 
             // Filter to items only with proposals
-            if (params && params.query && params.query.hasOwnProperty("proposedOnly")) {
+            if (params.query.hasOwnProperty("proposedOnly")) {
                 console.log("full proposal  ...");
                 console.log(task.proposals);
                 const filtered = {};
@@ -148,6 +163,7 @@ class TaskService {
 
             }
             console.log("Filtered proposal ...");
+
 
             console.log(task);
 
@@ -205,9 +221,9 @@ class TaskService {
         }
     */
     async update(id, nData, params) {
-        const task = await this.getRaw(id);
+
         // console.log(task);
-        const info = task;
+        const info = await this.getRaw(id);
         console.log("Task::update ... " + id);
 
         const q = "update tasks set data=json(@data) where id=@id";
@@ -215,9 +231,10 @@ class TaskService {
 
         // Update the original data pkg with new updates
         const pks = Object.keys(nData);
-
+        info.edited = {};
         for (var i = 0; i < pks.length; i++) {
             info.data[pks[i]] = nData[pks[i]];
+            info.edited[pks[i]] = "true";
         }
         console.log("new data to be upated ... ");
         console.log(info);
@@ -291,6 +308,7 @@ class ProposalService {
             return Promise.reject(e);
         }
     }
+
 
 
 

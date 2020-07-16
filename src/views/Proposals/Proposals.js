@@ -248,6 +248,7 @@ class Proposals extends Component {
     const rows = Object.values(aRows);
 
     const updated = {};
+    
 
     for (var i = 0; i < pks.length; i++) {
       const d = [];
@@ -255,6 +256,8 @@ class Proposals extends Component {
         d[j] = rows[i][j].value;
       }
       updated[pks[i]]=d;
+      // Flag it as edited
+      updated[pks[i]]["_edited"] = true;
     }
     console.log(updated);
 

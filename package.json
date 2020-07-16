@@ -33,6 +33,7 @@
     "chart.js": "^2.8.0",
     "circos": "^2.1.0",
     "classnames": "^2.2.6",
+    "convert-array-to-csv": "^2.0.0",
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
     "csv": "^5.3.2",
