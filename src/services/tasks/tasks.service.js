@@ -86,14 +86,9 @@ class TaskService {
         return task;
     }
 
-
-
-
-
     async get(id, params) {
         try {
             console.log("Task service: get");
-
             var q = "select id,author,data from tasks where id=" + id;
             var dt = taskdb.prepare(q).all();
             if (dt.length == 0) {
@@ -101,13 +96,17 @@ class TaskService {
             }
             const { page, perPage } = this._pageOptions(params);
 
+            var orig = dt[0];
             var task = JSON.parse(dt[0].data);
             // const {data, pages, total} = this._paginate(task.data, page, perPage);
             Object.assign(task, {
                 page: page,
                 perPage: perPage,
-                id: dt[0].id,
-                author: dt[0].author
+                id: orig.id,
+                author: orig.author,
+                edited: task.edited ? task.edited : {},
+                finalized: task.finalized ? task.finalized : {},
+
             })
 
             const fields = Object.entries(task.fields);
@@ -129,28 +128,38 @@ class TaskService {
             }
 
             // Filter to proposals that are being edited (i.e. proposal applied)
-            if (params.query.hasOwnProperty("edited")) {
-                console.log("Edited only!");
+
+            const pq = params.query;
+            const pEdited = pq.hasOwnProperty("edited") ? pq.edited : null;
+            const pFinalized = pq.hasOwnProperty("finalized") ? pq.finalized : null;
+
+            if (pEdited || pFinalized) {
+                console.log("Edited + finalized filter: " + pEdited + "/" + pFinalized);
                 const filtered = {};
                 var pks = Object.keys(task.data);
                 console.log(task.edited);
-                pks = pks.filter((key) => { return (task.edited[key] === "true") });
+                console.log(task.finalized);
+
+                pks = pks.filter((key) => {
+                    return ((pEdited ? (task.edited[key] === pEdited || (pEdited === "false" && !task.edited[key])) : true)
+                        && (pFinalized ? (task.finalized[key] === pFinalized || (pFinalized === "false" && !task.finalized[key])) : true))
+                });
                 pks.forEach((pk) => { filtered[pk] = task.data[pk] })
-                return this._paginate(filtered, page, perPage, task);
+                task.data = filtered;
             }
 
-            if (params.query.hasOwnProperty("proposals")) {
+            if (pq.hasOwnProperty("proposals")) {
 
-                var ps = params.query.proposals === "all" ? "all" : params.query.proposals.split(",");
+                var ps = pq.proposals === "all" ? "all" : pq.proposals.split(",");
 
                 task = await this.mergeProposal(task, ps, pkField);
-                console.log(task.data);
+                // console.log(task.data);
             }
 
             // Filter to items only with proposals
-            if (params.query.hasOwnProperty("proposedOnly")) {
+            if (pq.hasOwnProperty("proposedOnly")) {
                 console.log("full proposal  ...");
-                console.log(task.proposals);
+                // console.log(task.proposals);
                 const filtered = {};
                 const props = Object.keys(task.proposals);
                 const dataIds = Object.keys(task.data);
@@ -165,13 +174,22 @@ class TaskService {
             console.log("Filtered proposal ...");
 
 
-            console.log(task);
+            // console.log(task);
 
             return this._paginate(task.data, page, perPage, task);
 
         } catch (e) {
             console.log(e);
         }
+    }
+
+
+    async markPending(id, pk) {
+        const data = await this.getRaw(id);
+        delete data.finalized[pk];
+        const q = "update tasks set data=json(@data) where id=@id";
+        const stmt = taskdb.prepare(q);
+        const t = stmt.run({ data: JSON.stringify(data), id: id })
     }
 
     async mergeProposal(task, ps, pkField) {
@@ -187,16 +205,33 @@ class TaskService {
         }
 
         // Merge with all proposal values 
+
+        const values = {};
+        const props = task.proposals;
         for (var i = 0; i < ps.length; i++) {
+            const propItems = ps[i].data;
 
-            const propItems = JSON.parse(ps[i].data);
-
+            // iterate thru each proposal
             for (var k = 0; k < propItems.length; k++) {
                 const pkVal = propItems[k][pkField];
                 if (!task.proposals[pkVal]) {
-                    task.proposals[pkVal] = [];
+                    task.proposals[pkVal] = {};
                 }
-                task.proposals[pkVal].push(propItems[k]);
+                if (!values[pkVal]) values[pkVal] = {};
+                var keys = Object.keys(propItems[k]);
+                keys = keys.filter(key => {
+                    if (!props[pkVal][key]) {
+                        props[pkVal][key] = [];
+                    }
+                    if (!values[pkVal][key]) values[pkVal][key] = [];
+                    return (new ProposalService()._isUnique(props[pkVal][key], propItems[k][key], task.fields[key]))                     
+                })
+                keys.forEach((key) => {
+                    if (key === pkField)
+                        return;
+                    props[pkVal][key].push(propItems[k][key]);
+                    // values[pkVal][key].push(propItems[k][key])
+                })
             }
         }
         console.log(" === Get === with proposals merged ===");
@@ -231,10 +266,20 @@ class TaskService {
 
         // Update the original data pkg with new updates
         const pks = Object.keys(nData);
-        info.edited = {};
+
+        // Update flags
+        //   - edited: all rows that are different from initial value
+        //   - finalized: all rows that adopted a certain proposal. 
+        //                the flag could be flipped back though.
+
+        if (!info.edited)
+            info.edited = {};
+        if (!info.finalized)
+            info.finalized = {};
         for (var i = 0; i < pks.length; i++) {
             info.data[pks[i]] = nData[pks[i]];
             info.edited[pks[i]] = "true";
+            info.finalized[pks[i]] = "true";
         }
         console.log("new data to be upated ... ");
         console.log(info);
@@ -270,8 +315,68 @@ class ProposalService {
         if (dt.length == 0) {
             return [];
         }
+        const t= (await new TaskService().get(tid));
+        const pkField = t.pkField;
+        const fieldDef = t.fields[pkField];
+        
+        dt.forEach((p) => {
+            p.data = JSON.parse(p.data);
+            p.data = this._uniqueValues(p.data, pkField, fieldDef);    
+        })
+        
+        
         return dt;
 
+    }
+
+
+    _isUnique(arr, item, fieldDef) {
+        console.log( " +++++++++");
+        console.log(fieldDef.type);
+        if (fieldDef.type === "person") {
+            console.log("Existing array:: " + JSON.stringify(arr)); 
+            console.log("item:  " + JSON.stringify(item)) ; 
+
+
+            var b = true;
+            arr.forEach(a => {
+                if (a.c_personid === item.c_personid) {
+                    console.log("not unique")
+                    b = false;
+                }
+            })
+            console.log("unique")
+            return b;
+        } else {
+            return (!arr.includes(item));
+        }
+        
+    }
+
+
+    _uniqueValues(data, pkField, fieldDef) {
+        const values = {};
+        const uniques = [];
+        for (var i = 0; i < data.length; i++) {
+            const pk = data[i][pkField];
+            const keys = Object.keys(data[i]);
+            const uniqRow = {};
+            // console.log(data[i]);
+            keys.forEach((key) => {
+                // console.log("key ... ");
+                // console.log(data[i][key]);
+                if (!values[pk]) values[pk] = {};
+                if (!values[pk][key]) values[pk][key] = [];
+                if (this._isUnique(values[pk][key],data[i][key], fieldDef)) {
+                    uniqRow[key] = data[i][key];
+                    values[pk][key].push(data[i][key]);
+                }
+                
+            })
+            uniques.push(uniqRow);
+        }
+        
+        return uniques;
     }
 
     async get(id) {
@@ -280,7 +385,13 @@ class ProposalService {
         const st = taskdb.prepare(q);
         const p = st.all()[0];
         p.data = JSON.parse(p.data);
-        console.log(p);
+        console.log(p.data);
+
+        const t= (await new TaskService().get(proposal.task_id));
+        const pkField = t.pkField;
+        const fieldDef = t.fields[pkField];
+        console.log(t.fields);
+        p.data = this._uniqueValues(p.data, pkField, fieldDef );
         return p;
     }
 
@@ -304,7 +415,19 @@ class ProposalService {
             const r = st.run({ task_id: proposal.task_id, author: proposal.author, data: JSON.stringify(proposal.data) });
             console.log(r);
             console.log("Inserted proposal");
+
+            const b = (await new TaskService().get(proposal.task_id));
+            const pkField = b.pkField;
+
+            const props = proposal.data;
+            for (var i = 0; i < props.length; i++) {
+                console.log("Pk: " + props[i][pkField]);
+                await new TaskService().markPending(proposal.task_id, props[i][pkField]);
+                console.log("Task item marked as pending.");
+            }
         } catch (e) {
+
+            console.log(e);
             return Promise.reject(e);
         }
     }
@@ -330,11 +453,12 @@ class ProposalService {
             }
             else if (v.type == "in_table") {
                 console.log("permissible in table ... ");
-                const condition = " where " + v.table_field + "=" + value;
+                const condition = " where " + v.table_field + "=" + value[v.attribute];
                 const q = "select * from " + v.table_name + condition;
                 console.log(q);
                 const dt = cbdb.prepare(q).all();
                 if (dt.length == 0) {
+                    console.log("Field value not found in specified table")
                     throw new Error("Field value not found in specified table");
                 }
             }
@@ -363,6 +487,7 @@ class ProposalService {
 
     static _validators = {
         "person": [{
+            attribute: "c_personid",
             operator: "and",
             type: "in_table",
             table_name: "biog_main",

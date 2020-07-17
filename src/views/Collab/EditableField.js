@@ -53,19 +53,23 @@ class EditableField extends Component {
   }
 
   renderValue() {
+    const type = this.props.fieldDef ? this.props.fieldDef.type : null;
     if (this.props.proposed) {
-      console.log(this.props.proposed);
-      if (this.props.fieldDef.type === "person")
-        return this.props.proposed.value.c_name_chn;
-      else {
-        console.log(this.props.proposed);
-        return this.props.proposed.value;
-      }
-
+      // console.log(this.props.proposed);
+      return this._renderByType(this.props.proposed.value, type);
     } else {
-      return this.props.value
+      return this._renderByType(this.props.value, type);
     }
   }
+
+
+  _renderByType(val, type) {
+    // console.log(type);
+    // console.log(this.props.fieldDef);
+
+    return (type && type === "person" ? val.c_name_chn : val)
+  }
+
 
   render() {
     if (this.state.editable) {
@@ -81,7 +85,7 @@ class EditableField extends Component {
       return (
         <div>
           {
-            <label>{this.props.value}</label>
+            <label>{this.renderValue()}</label>
           }
 
         </div>

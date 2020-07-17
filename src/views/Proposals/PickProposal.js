@@ -63,6 +63,17 @@ class PickProposalModal extends Component {
   };
 
 
+  renderValue(value) {
+    // console.log("Rendeirng ...");
+    // console.log(fieldDef);
+    if (this.props.fieldDef.type === "person")
+      return value.c_name_chn;
+      // return value;
+    else {
+
+      return value;
+    }
+  }
 
   render() {
     // console.log(thi)
@@ -89,7 +100,7 @@ class PickProposalModal extends Component {
     // Expecting an array
     const proposals = (this.props.comp)?this.props.comp.props.values:[];
     console.log(this.props.comp);
-    // console.log(proposals);
+    console.log(proposals);
     return (
       <div>
         
@@ -103,7 +114,7 @@ class PickProposalModal extends Component {
               
               <div className={"col card mb-2 mt-2 ml-1 mr-1 col-sm-8 " + styles}>
               <div className="row">
-                <div className="col col-8" onClick={this.handleSubmit.bind(this, v)}>{v}</div>
+                <div className="col col-8" onClick={this.handleSubmit.bind(this, v)}>{this.renderValue(v)}</div>
                 <div className="col col-2"><svg width="0.8em" height="0.8em" viewBox="0 0 16 16" className="bi bi-check2-circle" fill="white" xmlns="http://www.w3.org/2000/svg">
                   <path fillRule="evenodd" d="M15.354 2.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 9.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
                   <path fillRule="evenodd" d="M8 2.5A5.5 5.5 0 1 0 13.5 8a.5.5 0 0 1 1 0 6.5 6.5 0 1 1-3.25-5.63.5.5 0 1 1-.5.865A5.472 5.472 0 0 0 8 2.5z" />

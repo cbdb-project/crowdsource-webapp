@@ -88,15 +88,14 @@ class Collab extends Component {
     const t = await this.props.client.service('tasks').get(1);
     this.state.tasks.push(t);
     // t.fields = new Map(t.fields);
-    this.setState({ currentTask: t });
-    this.setState(this.state);
-
+    this.setState({});
+    
     const fields = [];
     console.log(t);
     Object.entries(t.fields).forEach((field, index) => {
       fields.push(field[1]);
     });
-    this.setState({ fields: fields });
+    this.setState({ fields: fields, currentTask: t  });
     // console.log(this.state.fields);
 
   }
@@ -212,12 +211,13 @@ class Collab extends Component {
                     {row.map((field, vindex) => {
                       if (this.state.fields) {
                         // console.log("This fields ...");
+                        // console.log(this.state.fields);
                         // console.log(this.state.fields[vindex]);
                       }
                       
                       return (
                         <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex} className="td-bottom">
-                          <EditableField fieldDef={this.state.fields ? this.state.fields[vindex] : null}
+                          <EditableField fieldDef={this.state.fields ? Object.values(this.state.fields)[vindex] : null}
                             row={index} col={vindex} id={"_c_" + index + "_" + vindex}
                             primaryKey={pk}
                             onFieldClicked={this.onFieldClicked.bind(this)}

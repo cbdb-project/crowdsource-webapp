@@ -35,18 +35,31 @@ class MultiField extends Component {
     this.element = el;
   }
 
-  renderValue() {
-    if (this.state.acceptedValue) {
-      if (this.props.fieldDef.type === "person")
-        return this.state.acceptedValue.c_name_chn;
-      else {
-        // console.log(this.state.acceptedValue);
-        return this.state.acceptedValue;
-      }
 
+  _renderByType(val, type) {
+    return (type === "person" ? val.c_name_chn : val)
+  }
+
+  renderValue() {
+    const type = this.props.fieldDef.type;
+    
+
+    if (this.state.acceptedValue) {
+      console.log(this.state.acceptedValue);
+
+        return this._renderByType(this.state.acceptedValue, type);
+      
     } else {
       // console.log(this.props.values);
-      return this.props.values[0];
+      
+      if (this.props.origValue) {
+        console.log(this.props.origValue);
+        return this._renderByType(this.props.origValue, type);
+      } else {
+        console.log(this.props.values[0]);
+        return this._renderByType(this.props.values[0], type);
+      }
+      
     }
   }
 

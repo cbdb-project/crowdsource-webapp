@@ -319,6 +319,8 @@ async function addTasks() {
     t.title = "Identify authors of correspondences with 张邦奇 ";
     t.type = "revise";
     t.fields = {}
+    t.edited ={};
+    t.finalized = {};
 
     t.src_type = "json_data"
     // t.data = "data/all-letters.csv"

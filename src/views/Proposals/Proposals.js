@@ -27,10 +27,9 @@ class Proposals extends Component {
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   async componentWillMount() {
-    const t = await this.props.client.service('tasks').get(1, { query: { proposals: "all", proposedOnly: "true" } });
+    const t = await this.props.client.service('tasks').get(1, { query: { proposals: "all", proposedOnly: "true", finalized: "false" } });
     this.state.tasks.push(t);
     this.setState({ myTask: t });
-    this.setState(this.state);
 
     const fields = [];
     console.log(t);
@@ -56,6 +55,17 @@ class Proposals extends Component {
   }
 
 
+  async showCompleted(e) {
+    const show = e.target.checked;
+    var filters = { proposals: "all", proposedOnly: "true" }
+    if (!show) {
+      filters.finalized = "false";
+    }
+    const t = await this.props.client.service('tasks').get(1, { query: filters });
+    this.state.tasks.push(t);
+    this.setState({ myTask: t, showCompleted: show});
+  }
+
   renderMyTask() {
     if (!this.state.myTask) {
       return null;
@@ -70,7 +80,7 @@ class Proposals extends Component {
     return (
       <div className="">
 
-        <div className="row align-items-center justify-content-between mt-0 mb-1">
+        <div className="row align-items-center justify-content-between mt-0 mb-2">
 
           <div className="col col-sm-auto">
             <div className="row align-items-center justify-items-end mb-1">
@@ -95,13 +105,27 @@ class Proposals extends Component {
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
+
+            </div>
+          </div>
+
+
+        </div>
+        <div className="row align-items-center justify-content-between mt-0 mb-1">
+          <div className="col col-sm-auto">
+
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" onClick={this.showCompleted.bind(this)} />
+              <label class="form-check-label" for="defaultCheck1">
+                Show completed tasks
+                  </label>
             </div>
           </div>
           <div className="col col-sm-auto">
             <i>({Object.values(this.state.affectedRows).length} rows touched)</i>
           </div>
-
         </div>
+
 
         <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
           <thead className="thead-light">
@@ -117,13 +141,10 @@ class Proposals extends Component {
             </tr>
           </thead>
           <tbody>
+  
             {
-
               data.map((row, index) => {
-                console.log(row);
                 const pk = this.state.myFields ? row[this.state.myTask.pkCol] : -1
-                console.log(row[0]);
-                console.log(this.state.myTask);
                 return (
                   <tr key={"_c_" + index}>
                     {row.map((origValue, vindex) => {
@@ -139,6 +160,10 @@ class Proposals extends Component {
             }
           </tbody>
         </Table>
+        { (data.length ===0)? 
+(<div> (No tasks found -- try make proposals or show completed tasks too.)</div>)
+            : <div></div>
+            }
 
 
       </div>
@@ -149,38 +174,35 @@ class Proposals extends Component {
   }
 
 
-  _onlyUnique(value, index, self) { 
+  _onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
   }
 
 
   renderMultiField(origValue, pk, index, vindex) {
-    var displayValue = origValue;
+    var displayValue;
     if (!this.state.myFields) {
       return (<div></div>)
     }
-    console.log(pk);
+    // console.log(pk);
     const task = this.state.myTask;
-    const proposals = task.proposals[pk];
+    // const proposals = Object.keys(task.proposals[pk]);
     const fieldName = this.state.myFields[vindex].field_name;
-    console.log(proposals);
+    console.log(fieldName);
 
     var pValues = [];
+    if (task.proposals.hasOwnProperty(pk) && task.proposals[pk].hasOwnProperty(fieldName))
+      pValues = task.proposals[pk][fieldName];
 
-    for (var i = 0; i < proposals.length; i++) {
-      // console.log("Added field prop value ..." + proposals[i]);
-      if (task.fields[fieldName].input && proposals[i].hasOwnProperty(fieldName)) {
+    console.log(pValues);
 
-        pValues.push(proposals[i][fieldName]);
-      }
-    }
-
-    pValues = pValues.filter(this._onlyUnique);
+    // pValues = pValues.filter(this._onlyUnique);
 
     if (pValues.length > 0) {
       displayValue = <MultiField fieldDef={this.state.myFields ? this.state.myFields[vindex] : null}
         row={index} col={vindex} id={"_c_" + index + "_" + vindex}
         primaryKey={pk}
+        origValue={origValue}
         onFieldClicked={this.onFieldClicked.bind(this)}
         values={pValues}>
       </MultiField>
@@ -248,14 +270,14 @@ class Proposals extends Component {
     const rows = Object.values(aRows);
 
     const updated = {};
-    
+
 
     for (var i = 0; i < pks.length; i++) {
       const d = [];
       for (var j = 0; j < rows[i].length; j++) {
         d[j] = rows[i][j].value;
       }
-      updated[pks[i]]=d;
+      updated[pks[i]] = d;
       // Flag it as edited
       updated[pks[i]]["_edited"] = true;
     }
@@ -265,7 +287,9 @@ class Proposals extends Component {
 
     console.log(t);
 
-
+    // Force refresh the table
+    this.setState({myTask: {data: {}}});
+    this.showCompleted({target: {checked: this.state.showCompleted}})
   }
   onReviewClosed() {
     this.setState({ reviewProposal: false });
@@ -330,7 +354,7 @@ class Proposals extends Component {
           onSubmit={this.onProposalAccepted.bind(this)}
           onClosed={this.onFieldEditorClosed.bind(this)}
           comp={this.state.editingFieldComp}
-          // fieldDef={this.state.fieldDef}
+          fieldDef={this.state.fieldDef}
           // proposals={this.state.currFieldProposals}
           currField={this.state.currField}></PickProposalModal>
 

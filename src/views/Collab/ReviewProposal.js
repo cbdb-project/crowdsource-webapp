@@ -40,10 +40,17 @@ class ReviewProposalModal extends Component {
             continue;
           }
           var field = cols[j].fieldDef;
-          if (field.type=== "person") 
-            item[field.field_name] = cols[j].value.c_personid;
-          else 
+          const v = cols[j].value;
+          if (field.type=== "person") { 
+            item[field.field_name] = {
+              c_personid: v.c_personid,
+              c_name_chn: v.c_name_chn,
+              c_name: v.c_name
+            }
+          }
+          else {
             item[field.field_name] = cols[j].value;
+          }
           item[this.props.task.pkField] = key;
         }
         items.push(item);

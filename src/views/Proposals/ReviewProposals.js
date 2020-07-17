@@ -39,8 +39,8 @@ class ReviewProposalModal extends Component {
       // console.log("Rendeirng ...");
       // console.log(fieldDef);
       if (fieldDef.type === "person")
-        // return value.c_name_chn;
-        return value;
+        return value.c_name_chn;
+        // return value;
       else {
   
         return value;
@@ -50,15 +50,15 @@ class ReviewProposalModal extends Component {
     renderMessage() {
       if (this.state.message === "success")
         return (
-          <h3>Changes submitted successfully!</h3>
+          <h4>Changes submitted successfully!</h4>
         )
       else if (this.state.message === "error")
         return (
-          <h3>Error! Failed to submit changes.</h3>
+          <b>Error! Failed to submit changes.</b>
         );
       else
         return (
-          <h3>Error! Unknown internal state.</h3>
+          <b>Error! Unknown internal state.</b>
         )
     }
   
