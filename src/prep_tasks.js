@@ -327,7 +327,7 @@ async function addTasks() {
 
     await fillTaskByCsv(t, "data/all-letters.csv")
     console.log('task filled ...')
-    console.log(t);
+    // console.log(t);
 
     // t.status = "open";
     // t.lastupdate = new Date();

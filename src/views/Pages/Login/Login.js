@@ -48,13 +48,15 @@ class Login extends Component {
           path: '/authentication'
         })
       )
-      const { accessToken } = await client.authenticate({
+      const { accessToken, user } = await client.authenticate({
         strategy: 'local',
         email: this.state.email,
         password: this.state.password
       })
       console.log("authenticated!");
       console.log(accessToken);
+      this.props.onLogin(user);
+      console.log("on login called!");
 
       localStorage.setItem('auth-token', accessToken);
 
@@ -64,7 +66,6 @@ class Login extends Component {
       console.log(e);
     }
 
-    this.props.onLogin();
     this.props.history.push('/collab')
 
   }

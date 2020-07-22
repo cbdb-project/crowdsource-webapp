@@ -7,7 +7,7 @@ const socketio = require('@feathersjs/socketio-client');
 
 const client = feathers()
 
-const socket = io('http://localhost:5000');
+const socket = io('http://' + location.hostname + ':5000');
 
 (async () => {
     client.configure(socketio(socket));

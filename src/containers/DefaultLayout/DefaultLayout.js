@@ -1,8 +1,7 @@
-import React, { Component, Suspense } from 'react';
+import React, { Component, Fragment, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { Container } from 'reactstrap';
-
 import {
   AppAside,
   AppFooter,
@@ -53,13 +52,16 @@ class DefaultLayout extends Component {
     // await this.auth();
   }
 
-  async auth() {
+  async auth(user) {
     console.log("auth()");
-    var user;
     try {
       // First try to log in with an existing JWT
-      user = (await client.reAuthenticate()).user;
-      console.log("Reauth success!")
+      if (!user)  {
+        user = (await client.reAuthenticate()).user;
+        console.log("Reauth success!")
+      } else {
+        console.log("Auth with login success!")
+      }
       console.log(user);
 
     } catch (error) {
@@ -92,8 +94,8 @@ class DefaultLayout extends Component {
 
   }
 
-  onLogin() {
-
+  onLogin(user) {
+    
   }
 
   render() {
@@ -143,7 +145,7 @@ class DefaultLayout extends Component {
                   })}
                   {(!this.state.user) ?
                     (<Redirect from="/" to="/login"/>) :
-                    (<div></div>)}
+                    (<Fragment></Fragment>)}
                   <Redirect from="/" to="/collab" user={this.state.user} client={client} />
                   
                 </Switch>
