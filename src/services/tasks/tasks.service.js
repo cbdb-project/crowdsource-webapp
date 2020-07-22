@@ -412,7 +412,7 @@ class ProposalService {
             return Promise.reject(new BadRequest(error));
         }
         try {
-            await this.validateProposal(proposal)
+            // await this.validateProposal(proposal)
             const created = new Date();
             const q = "insert into proposals(task_id, author, lastupdate, data) values(@task_id,@author,date('now'), json(@data));"
             const st = taskdb.prepare(q);

@@ -246,12 +246,14 @@ class Collab extends Component {
   // Expecting a person object
   onFieldEdited(value) {
     var comp = this.state.editingFieldComp;
-    var proposed = this.state.affectedRows
+    var affected = this.state.affectedRows
     // this.state.editingFieldComp.setState({ edited: true, proposedValue: value });
     
-    if (!proposed[comp.props.primaryKey])
-      proposed[comp.props.primaryKey] = {};
-    proposed[comp.props.primaryKey][comp.props.col] = {
+    console.log(value);
+
+    if (!affected[comp.props.primaryKey])
+      affected[comp.props.primaryKey] = {};
+    affected[comp.props.primaryKey][comp.props.col] = {
       col: comp.props.col,
       value: value,
       fieldDef: comp.props.fieldDef,
@@ -270,7 +272,7 @@ class Collab extends Component {
     for (var i = 0; i < 4; i++) {
       fieldCols[i] = this.state.fields[i];
       fieldCols[i].col = i;
-      proposed[comp.props.primaryKey][i] = {
+      affected[comp.props.primaryKey][i] = {
         col: i,
         // row: comp.props.row,
         fieldDef: this.state.fields[i],
@@ -278,7 +280,7 @@ class Collab extends Component {
         edited: false
       }
     }
-    console.log(proposed[comp.props.primaryKey]);
+    console.log(affected[comp.props.primaryKey]);
 
     this.onFieldEditorClosed();
   }

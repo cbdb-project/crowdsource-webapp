@@ -41,14 +41,26 @@ class ProposeValueModal extends Component {
 
   }
 
+  _wrapPerson(p) {
+    if (this.props.fieldDef.type === "person") {
+      if (typeof p !== "object") {
+        return {
+          c_name_chn: p
+        }
+      } else {
+        return p;
+      }
+    }
+    else {
+      return p;
+    }
+
+  }
+
   handleSubmit(e) {
     // console.log("who ami ... handle submit");
     // console.log(this)
-    var val;
-    if (this.props.fieldDef.type === "person")
-      val = this.state.pick;
-    else
-      val = this.state.value;
+    var val = this._wrapPerson(this.state.pick ? this.state.pick : this.state.value);
 
     this.props.onSubmit(val)
 
@@ -176,24 +188,24 @@ class ProposeValueModal extends Component {
                   <div className="float-left pl-0 col ml-0 mr-3" style={{ height: "100%" }}>{this.renderField()}</div>
                   <div className="col col-sm-auto">
                     <div className="row">
-                    <button type="button" className="ml-2 col-sm-auto btn btn-primary" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
-                      {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
-                      <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                        <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
-                        <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
-                      </svg>
-                      <div className="float-right ml-2">Submit</div>
-                    </button>
-                    <button type="button" className="ml-2 col-sm-auto btn btn-warning" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
-                      {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
-                      {/* <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <button type="button" className="ml-2 col-sm-auto btn btn-primary" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
+                        {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
+                        <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                          <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
+                          <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
+                        </svg>
+                        <div className="float-right ml-2">Submit</div>
+                      </button>
+                      <button type="button" className="ml-2 col-sm-auto btn btn-warning" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
+                        {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
+                        {/* <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
                         <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
                         <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
                       </svg> */}
-                      <div className="float-right ml-2">Cancel</div>
-                    </button>
+                        <div className="float-right ml-2">Cancel</div>
+                      </button>
                     </div>
                   </div>
                 </div>
