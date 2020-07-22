@@ -3,7 +3,7 @@ import {
   Card,
   
 } from 'reactstrap';
-
+const SERVER = 'http://' + window.location.hostname + ':5000'
 
 class Graph extends Component {
   constructor(props) {
@@ -16,7 +16,7 @@ class Graph extends Component {
 
   queryAndUpdate(q) {
     this.setState({ isLoading: true });
-    fetch('http://localhost:5000/api/search?q=' + q)
+    fetch(SERVER + '/api/search?q=' + q)
       .then(res => res.json())
       .then((data) => {
         this.setState({ isLoading: false })

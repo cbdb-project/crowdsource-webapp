@@ -69,7 +69,7 @@ app.use('/people', {
 
 // Start the server
 app.listen(port).on('listening', () =>
-  console.log('Feathers server listening on localhost:' + port)
+  console.log('Feathers server listening on port:' + port)
 );
 
 var elasticsearch = require('elasticsearch');

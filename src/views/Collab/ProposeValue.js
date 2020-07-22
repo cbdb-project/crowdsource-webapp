@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import Modal from 'react-modal';
 import Autosuggest from 'react-autosuggest';
+const SERVER = 'http://' + window.location.hostname + ':5000'
 
 
 class ProposeValueModal extends Component {
@@ -89,7 +90,7 @@ class ProposeValueModal extends Component {
 
   getPerson(id) {
     this.setState({ isLoading: true });
-    fetch('http://localhost:5000/person/' + id)
+    fetch(SERVER + '/person/' + id)
       .then(res => res.json())
       .then((data) => {
         this.setState({ isLoading: false })
@@ -108,7 +109,7 @@ class ProposeValueModal extends Component {
 
   queryAndUpdate(q) {
     this.setState({ isLoading: true });
-    fetch('http://localhost:5000/people?q=' + q)
+    fetch(SERVER + '/people?q=' + q)
       .then(res => res.json())
       .then((data) => {
         this.setState({ isLoading: false })
