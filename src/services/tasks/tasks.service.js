@@ -143,7 +143,7 @@ class TaskService {
 
                 pks = pks.filter((key) => {
                     // console.log(task.edited[key] + "/" + pEdited + (task.edited[key] == pEdited.toString() ));
-                    return ((pEdited ? (task.edited[key] === pEdited || (pEdited  === "false" && !task.edited[key])) : true)
+                    return ((pEdited ? (task.edited[key] === pEdited || (pEdited === "false" && !task.edited[key])) : true)
                         && (pFinalized ? (task.finalized[key] === pFinalized[key] || (pFinalized[key] === "false" && !task.finalized[key])) : true))
                 });
                 console.log(pks);
@@ -228,7 +228,7 @@ class TaskService {
                         props[pkVal][key] = [];
                     }
                     if (!values[pkVal][key]) values[pkVal][key] = [];
-                    return (new ProposalService()._isUnique(props[pkVal][key], propItems[k][key], task.fields[key]))                     
+                    return (new ProposalService()._isUnique(props[pkVal][key], propItems[k][key], task.fields[key]))
                 })
                 keys.forEach((key) => {
                     if (key === pkField)
@@ -319,42 +319,49 @@ class ProposalService {
         if (dt.length == 0) {
             return [];
         }
-        const t= (await new TaskService().get(tid));
+        const t = (await new TaskService().get(tid));
         const pkField = t.pkField;
         const fieldDef = t.fields[pkField];
-        
+
         dt.forEach((p) => {
             p.data = JSON.parse(p.data);
-            p.data = this._uniqueValues(p.data, pkField, fieldDef);    
+            p.data = this._uniqueValues(p.data, pkField, fieldDef);
         })
-        
-        
+
+
         return dt;
 
     }
 
 
     _isUnique(arr, item, fieldDef) {
-        console.log( " +++++++++");
-        console.log(fieldDef.type);
+        // console.log(" +++++++++");
+        // console.log(fieldDef.type);
         if (fieldDef.type === "person") {
-            console.log("Existing array:: " + JSON.stringify(arr)); 
-            console.log("item:  " + JSON.stringify(item)) ; 
+            // console.log("Existing array:: " + JSON.stringify(arr));
+            // console.log("item:  " + JSON.stringify(item));
 
 
             var b = true;
             arr.forEach(a => {
-                if (a.c_personid === item.c_personid) {
-                    console.log("not unique")
-                    b = false;
+                if (a.c_personid && item.c_personid) {
+                    if (a.c_personid === item.c_personid) {
+                        // console.log("not unique")
+                        b = false;
+                    }
+                } else {
+                    if (a.c_name_chn === item.c_name_chn) {
+                        // console.log("not unique")
+                        b = false;
+                    }
                 }
             })
-            console.log("unique")
+            // console.log("unique: " + b)
             return b;
         } else {
             return (!arr.includes(item));
         }
-        
+
     }
 
 
@@ -371,15 +378,15 @@ class ProposalService {
                 // console.log(data[i][key]);
                 if (!values[pk]) values[pk] = {};
                 if (!values[pk][key]) values[pk][key] = [];
-                if (this._isUnique(values[pk][key],data[i][key], fieldDef)) {
+                if (this._isUnique(values[pk][key], data[i][key], fieldDef)) {
                     uniqRow[key] = data[i][key];
                     values[pk][key].push(data[i][key]);
                 }
-                
+
             })
             uniques.push(uniqRow);
         }
-        
+
         return uniques;
     }
 
@@ -391,11 +398,11 @@ class ProposalService {
         p.data = JSON.parse(p.data);
         console.log(p.data);
 
-        const t= (await new TaskService().get(proposal.task_id));
+        const t = (await new TaskService().get(proposal.task_id));
         const pkField = t.pkField;
         const fieldDef = t.fields[pkField];
         console.log(t.fields);
-        p.data = this._uniqueValues(p.data, pkField, fieldDef );
+        p.data = this._uniqueValues(p.data, pkField, fieldDef);
         return p;
     }
 
