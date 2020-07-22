@@ -130,21 +130,25 @@ class TaskService {
             // Filter to proposals that are being edited (i.e. proposal applied)
 
             const pq = params.query;
-            const pEdited = pq.hasOwnProperty("edited") ? pq.edited : null;
-            const pFinalized = pq.hasOwnProperty("finalized") ? pq.finalized : null;
+            const pEdited = pq.hasOwnProperty("edited") ? pq.edited.toString() : null;
+            const pFinalized = pq.hasOwnProperty("finalized") ? pq.finalized.toString() : null;
 
             if (pEdited || pFinalized) {
                 console.log("Edited + finalized filter: " + pEdited + "/" + pFinalized);
                 const filtered = {};
                 var pks = Object.keys(task.data);
+                console.log(pEdited);
                 console.log(task.edited);
                 console.log(task.finalized);
 
                 pks = pks.filter((key) => {
-                    return ((pEdited ? (task.edited[key] === pEdited || (pEdited === "false" && !task.edited[key])) : true)
-                        && (pFinalized ? (task.finalized[key] === pFinalized || (pFinalized === "false" && !task.finalized[key])) : true))
+                    // console.log(task.edited[key] + "/" + pEdited + (task.edited[key] == pEdited.toString() ));
+                    return ((pEdited ? (task.edited[key] === pEdited || (pEdited  === "false" && !task.edited[key])) : true)
+                        && (pFinalized ? (task.finalized[key] === pFinalized[key] || (pFinalized[key] === "false" && !task.finalized[key])) : true))
                 });
+                console.log(pks);
                 pks.forEach((pk) => { filtered[pk] = task.data[pk] })
+                // console.log(filtered);
                 task.data = filtered;
             }
 

@@ -10,12 +10,31 @@ class Export extends Component {
             tasks: [],
         }
     }
+
+    _flatten(arr, fields) {
+        // console.log(fields);
+        var fs = Object.values(fields);
+        return arr.map((r, i) => {
+            // console.log("Current index: " + i);
+            var row = r.map((c, j) => {
+                if (fs[j].type === "person") {
+                    // console.log(c);
+                    return c.c_name_chn
+                } else return c
+            })
+            return row;
+
+        })
+
+    }
+
     async csvClicked(e) {
-        const rows = Object.values(this.state.myTask.data);
+        var rows = Object.values(this.state.myTask.data);
         const header = Object.keys(this.state.myTask.fields);
+        rows = this._flatten(rows, this.state.myTask.fields);
         try {
-            // console.log(this.state.myTask);
-            console.log(this.state.myTask.fields);
+
+            // console.log(this.state.myTask.fields);
             console.log(rows);
             var s = convertArrayToCSV(rows, {
                 header: header,
