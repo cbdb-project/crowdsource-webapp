@@ -12,7 +12,7 @@ const taskdb = better('./tasks.db');
 const cbdb = better('./cbdb.db');
 
 async function dropTasks() {
-    q = "drop table tasks";
+    q = "drop table tasks if exists";
     st = taskdb.prepare(q);
     r = st.run();
     console.log("Result of drop tasks: ")
@@ -20,7 +20,7 @@ async function dropTasks() {
 }
 
 async function dropProposals() {
-    s = "drop table proposals";
+    s = "drop table proposals if exists";
     st = taskdb.prepare(s);
     r = st.run();
     console.log("Result of create proposals: " + r)
