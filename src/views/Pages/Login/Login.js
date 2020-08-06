@@ -66,6 +66,7 @@ class Login extends Component {
     } catch (e) {
       console.log("Login Error!")
       console.log(e);
+      return;
     }
 
     this.props.history.push('/collab')

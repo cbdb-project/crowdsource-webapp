@@ -40,12 +40,18 @@ class Paginate extends Component {
       start = 1;
 
     console.log("current page: " + current)
+    if (start >= 2) {
+      pages.push(<a key={"pg_1"} value={1} className={"paginate ml-1 mr-1 "} onClick={this.gotoPage.bind(this)}>{"1 "}</a>);
+      if (start != 2) 
+        pages.push(<Fragment key="pg_etc1">... </Fragment>);
+
+    }
     for (var i = start;i <= total; i++) {
       const isCurrent = (i == current) ? "current" : "";
       // console.log("current decor applied: " + var + " / " + i);
       pages.push(<a key={"pg_" + i} value={i} className={"paginate ml-1 mr-1 " + isCurrent} onClick={this.gotoPage.bind(this)}>{i}</a>);
       if ((i - start + 1) >= this.MAX) {
-        pages.push(<Fragment key="pg_etc">... </Fragment>);
+        pages.push(<Fragment key="pg_etc2">... </Fragment>);
         pages.push(<a key={"pg_" + total} className="paginate ml-1 mr-1" onClick={this.gotoPage.bind(this)}>{total}</a>);
         break;
       }
@@ -105,6 +111,7 @@ class Collab extends Component {
     this.setState({
       currField: element, fieldDef: fieldDef,
       editingField: true, editingFieldComp: editingField,
+      fieldInitial: editingField.getRawValue()
     });
 
     this.windowOffset = window.scrollY;
@@ -350,6 +357,7 @@ class Collab extends Component {
           onSubmit={this.onFieldEdited.bind(this)}
           onClosed={this.onFieldEditorClosed.bind(this)}
           fieldDef={this.state.fieldDef}
+          initialValue={this.state.fieldInitial}
           currField={this.state.currField}></ProposeValueModal>
         
         <ReviewProposalModal isOpen={this.state.reviewProposal}

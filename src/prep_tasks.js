@@ -348,7 +348,7 @@ async function main() {
     await createProposals();
     await addProposals();
     await validateProposals();
-     createUsers();
+     await createUsers();
 }
 main();
 

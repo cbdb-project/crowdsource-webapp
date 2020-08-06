@@ -32,7 +32,10 @@ class ProposeValueModal extends Component {
 
   cleanup() {
 
-    this.setState({ pick: null, value: "", suggestions: [] });
+    this.setState({
+      pick: null, value: "", suggestions: [],
+      errorMessage: null
+    });
 
   }
 
@@ -42,7 +45,7 @@ class ProposeValueModal extends Component {
 
   }
 
-  _wrapPerson(p) {
+  _wrapPersonIf(p) {
     if (this.props.fieldDef.type === "person") {
       if (typeof p !== "object") {
         return {
@@ -58,10 +61,27 @@ class ProposeValueModal extends Component {
 
   }
 
+   isInteger(str) {
+    return /^\+?(0|[1-9]\d*)$/.test(str);
+}
+
   handleSubmit(e) {
     // console.log("who ami ... handle submit");
     // console.log(this)
-    var val = this._wrapPerson(this.state.pick ? this.state.pick : this.state.value);
+    this.setState({ errorMessage: null });
+
+    const def = this.props.fieldDef;
+    console.log("To submit value: " + this.state.value);
+    if (def.type === "int" && !this.isInteger(this.state.value)) {
+      this.setState({ errorMessage: "Error! Only an integer is allowed for this field." })
+      return;
+    }
+
+    if (def.type === "number" && isNaN(this.state.value)) {
+      this.setState({ errorMessage: "Error! Only a number is allowed for this field." })
+      return;
+    }
+    var val = this._wrapPersonIf(this.state.pick ? this.state.pick : this.state.value);
 
     this.props.onSubmit(val)
 
@@ -160,7 +180,42 @@ class ProposeValueModal extends Component {
   };
 
 
+  componentWillReceiveProps(next) {
+    console.log("will receive props!")
+    console.log(next);
+    console.log(next.fieldDef);
+    this.props = next;
+    // this.setState( {
+    //   value: "hello"
+    // })
+    if (next.initialValue) {
+      if (next.fieldDef && next.fieldDef.type === "person") {
+        var p = this._wrapPersonIf(next.initialValue)
+        this.setState({
+          value: p.c_name_chn,
+          pick: p
+        })
+        if (p.c_personid)
+          this.getPerson(p.c_personid);
+      } else {
+        this.setState({
+          value: next.initialValue
+        })
+      }
 
+    }
+  }
+
+  renderMessage() {
+    if (this.state.errorMessage) {
+      return (
+        <div className="row mt-2 mb-0 align-items-end alert alert-danger" >
+          {this.state.errorMessage}
+        </div>
+      )
+    }
+
+  }
   render() {
 
 
@@ -170,19 +225,6 @@ class ProposeValueModal extends Component {
         <div className="modal-dialog  mt-0 mb-0  " role="document">
 
           <div className="modal-content">
-
-            {/* <div className="modal-header">
-                <h5 className="float-left">{this.renderTitle()}</h5>
-                <div className="float-right">
-                  <button type="button" className=" pt-1 pb-1 pr-2 pl-2 btn btn-light " data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
-                    <svg className="bi bi-x" width="0.8em" height="0.8em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z" />
-                      <path fillRule="evenodd" d="M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z" />
-                    </svg>
-                  </button>
-                </div>
-              </div> */}
-
             <div className="modal-body ">
               <div className="container ">
                 <div className="row  align-items-end">
@@ -210,6 +252,8 @@ class ProposeValueModal extends Component {
                     </div>
                   </div>
                 </div>
+                {this.renderMessage()}
+
               </div>
 
               {this.renderPersonInfo()}
@@ -244,7 +288,8 @@ class ProposeValueModal extends Component {
       <div className="input-group">
         <input type="text" className="form-control"
           onSubmit={this.handleSubmit.bind(this)} onChange={this.handleChange.bind(this)}
-          placeholder="Input a number or string" aria-label="Recipient's username with two button addons" aria-describedby="button-addon4">
+          placeholder="Input a number or string" aria-label="Recipient's username with two button addons" aria-describedby="button-addon4"
+          value={this.state.value}>
         </input>
       </div>
     )
@@ -297,8 +342,8 @@ class ProposeValueModal extends Component {
   }
 
   renderPersonInfo() {
-
-    if (this.state.pick) {
+    const p = this.state.pick;
+    if (p && p.c_personid) {
       return (
         <div>
           <div className="modal-footer mt-3">
@@ -307,14 +352,14 @@ class ProposeValueModal extends Component {
 
             <div className="row">
 
-              <b>{this.state.pick.c_name_chn} (id =  {this.state.pick.c_personid} )</b>
+              <b>{p.c_name_chn} (id =  {p.c_personid} )</b>
 
-              <div>{this.state.pick.c_name} </div>
+              <div>{p.c_name} </div>
             </div>
             <p></p>
             <div className="row">
-              {this.state.pick.c_birth_year}
-              {this.state.pick.c_birth_nh}
+              {p.c_birth_year}
+              {p.c_birth_nh}
             </div>
             <div className="row">
               籍贯：{this.state.person && this.state.person.c_jiguan_chn}
@@ -323,12 +368,11 @@ class ProposeValueModal extends Component {
               朝代：{this.state.person && this.state.person.c_dynasty_chn}
             </div>
             <div className="row">
-              <p>{this.state.pick.c_notes} </p>
+              <p>{p.c_notes} </p>
             </div>
           </div>
 
         </div>
-
       )
     }
   }

@@ -62,6 +62,16 @@ class EditableField extends Component {
     }
   }
 
+  getRawValue() {
+    const type = this.props.fieldDef ? this.props.fieldDef.type : null;
+    if (this.props.proposed) {
+      // console.log(this.props.proposed);
+      return this.props.proposed.value;
+    } else {
+      return this.props.value;
+    }
+  }
+
 
   _renderByType(val, type) {
     // console.log(type);
