@@ -1,5 +1,8 @@
 // const proposals = require( './services/tasks/proposals.service')
 const better = require('better-sqlite3')
+const multer = require('multer')
+const ImportTask = require('./import.js');
+const importer = new ImportTask();
 const taskdb = better('./tasks.db');
 const cbdb = better('./cbdb.db');
 
@@ -34,10 +37,10 @@ app.configure(express.rest());
 const auth = require('./auth')
 app.configure(auth)
 
-const person  = require( './services/person/person.service')
+const person = require('./services/person/person.service')
 app.configure(person);
 
-const tasks  = require( './services/tasks/tasks.service')
+const tasks = require('./services/tasks/tasks.service')
 app.configure(tasks);
 
 // app.configure(tasks)
@@ -49,6 +52,31 @@ app.use(function (req, res, next) {
 });
 
 users(app);
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '.')
+  },
+  filename: function (req, file, cb) {
+    cb(null, "newtask.csv")
+  }
+})
+var upload = multer({ storage: storage }).single('file')
+
+app.post('/import', function (req, res) {
+  upload(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      return res.status(500).json(err)
+    } else if (err) {
+      return res.status(500).json(err)
+    }
+
+    importer.import("title test", "./newtask.csv")
+
+    return res.status(200).send(req.file)
+
+  })
+});
 
 app.use('/people', {
   async find(params) {
@@ -80,6 +108,9 @@ var client = new elasticsearch.Client({
   ]
 });
 
+async function search_name(q) {
+
+}
 async function search(q) {
   console.log(q);
   let body = {

@@ -25,7 +25,7 @@ class Paginate extends Component {
     // console.log("Page value:" + e.target.value);
     const page = Number.parseInt(e.target.text);
     await this.props.onPaging(page)
-    this.setState({current: page})
+    this.setState({ current: page })
   }
 
   render() {
@@ -34,19 +34,19 @@ class Paginate extends Component {
 
     const pages = [];
 
-    
-    var start = Math.floor((current - this.MAX/2))
+
+    var start = Math.floor((current - this.MAX / 2))
     if (start < 1)
       start = 1;
 
     console.log("current page: " + current)
     if (start >= 2) {
       pages.push(<a key={"pg_1"} value={1} className={"paginate ml-1 mr-1 "} onClick={this.gotoPage.bind(this)}>{"1 "}</a>);
-      if (start != 2) 
+      if (start != 2)
         pages.push(<Fragment key="pg_etc1">... </Fragment>);
 
     }
-    for (var i = start;i <= total; i++) {
+    for (var i = start; i <= total; i++) {
       const isCurrent = (i == current) ? "current" : "";
       // console.log("current decor applied: " + var + " / " + i);
       pages.push(<a key={"pg_" + i} value={i} className={"paginate ml-1 mr-1 " + isCurrent} onClick={this.gotoPage.bind(this)}>{i}</a>);
@@ -56,7 +56,7 @@ class Paginate extends Component {
         break;
       }
     }
-      
+
     return (
       <div className="mt-2 mb-2">
         Page: [ {pages} ]
@@ -81,27 +81,29 @@ class Collab extends Component {
 
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
-
   async onPaging(page) {
     console.log("Query for page " + page);
-    const t = await this.props.client.service('tasks').get(1, {query: {page: page}});
+    const t = await this.props.client.service('tasks').get(1, { query: { page: page } });
     console.log("new data");
     console.log(t);
     this.setState({ currentTask: t });
   }
 
   async componentWillMount() {
-    const t = await this.props.client.service('tasks').get(1);
-    this.state.tasks.push(t);
-    // t.fields = new Map(t.fields);
-    this.setState({});
-    
+    const tasks = await this.props.client.service('tasks').find({});
+    this.setState({ tasks: tasks })
+    if (tasks.length === 0)
+      return;
+    console.log(tasks[0].title);
+    // console.log(tasks[0].fields);
+    this.setState({ tasks: tasks })
+    const t = await this.props.client.service('tasks').get(tasks[0].id);
     const fields = [];
     console.log(t);
     Object.entries(t.fields).forEach((field, index) => {
       fields.push(field[1]);
     });
-    this.setState({ fields: fields, currentTask: t  });
+    this.setState({ fields: fields, currentTask: t });
     // console.log(this.state.fields);
 
   }
@@ -133,6 +135,14 @@ class Collab extends Component {
     }
   }
 
+  async taskChanged(e) {
+    console.log("taskChanged!");
+    console.log(e);
+    const t = await this.props.client.service('tasks').get(e.target.id);
+    this.setState({currentTask: t})
+    console.log(t);
+  }
+
 
   discardClicked(e) {
     this.setState({ affectedRows: {} });
@@ -158,21 +168,23 @@ class Collab extends Component {
               {/* <div className="col col-sm-auto"><h4>Current Task: </h4></div> */}
               <div className="col col-sm-auto">
                 <Dropdown>
-                  <Dropdown.Toggle variant="success" id="dropdown-basic">
-                    {this.state.tasks.length > 0 ? this.state.tasks[0].title : "<None>"}
+                  <Dropdown.Toggle variant="success" id="task-dropdown">
+                    {this.state.tasks.length > 0 ? this.state.currentTask.title : "<None>"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
-                    <Dropdown.Item >
-                      {
-                        this.state.tasks.map((task, index) => {
-                          if (index === 0)
-                            return;
-                          return (
-                            <a id={"task_" + index} className="dropdown-item" href="#">{index}. {task.title}</a>
-                          )
-                        })
-                      }
-                    </Dropdown.Item>
+                    {
+                      this.state.tasks.map((task, index) => {
+                        // if (index === 0)
+                        //   return;
+                        return (
+                          // <Dropdown.Item >
+                            <a onClick={this.taskChanged.bind(this)}  key={"task_" + task.id} id={task.id} className="dropdown-item" >({task.id}) {task.title}
+                            </a>
+                          // </Dropdown.Item>
+                        )
+                      })
+                    }
+
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
@@ -184,7 +196,7 @@ class Collab extends Component {
 
         </div>
 
-        <Paginate total={this.state.currentTask.pages} onPaging={this.onPaging.bind(this)}/>
+        <Paginate total={this.state.currentTask.pages} onPaging={this.onPaging.bind(this)} />
         <Table hover responsive className="table-outline align-bottom mb-0 d-none d-sm-table">
           <thead className="thead-light">
             <tr>
@@ -221,14 +233,14 @@ class Collab extends Component {
                         // console.log(this.state.fields);
                         // console.log(this.state.fields[vindex]);
                       }
-                      
+
                       return (
                         <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex} className="td-bottom">
                           <EditableField fieldDef={this.state.fields ? Object.values(this.state.fields)[vindex] : null}
                             row={index} col={vindex} id={"_c_" + index + "_" + vindex}
                             primaryKey={pk}
                             onFieldClicked={this.onFieldClicked.bind(this)}
-                            editable={(!this.state.fields) ? false : Object.entries(this.state.currentTask.fields)[vindex][1].input} 
+                            editable={(!this.state.fields) ? false : Object.entries(this.state.currentTask.fields)[vindex][1].input}
                             proposed={this.state.affectedRows[pk][vindex]}
                             value={field}>
                           </EditableField>
@@ -255,7 +267,7 @@ class Collab extends Component {
     var comp = this.state.editingFieldComp;
     var affected = this.state.affectedRows
     // this.state.editingFieldComp.setState({ edited: true, proposedValue: value });
-    
+
     console.log(value);
 
     if (!affected[comp.props.primaryKey])
@@ -359,7 +371,7 @@ class Collab extends Component {
           fieldDef={this.state.fieldDef}
           initialValue={this.state.fieldInitial}
           currField={this.state.currField}></ProposeValueModal>
-        
+
         <ReviewProposalModal isOpen={this.state.reviewProposal}
           cols={this.state.affectedCols}
           onClosed={this.onReviewClosed.bind(this)}

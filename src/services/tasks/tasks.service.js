@@ -86,6 +86,26 @@ class TaskService {
         return task;
     }
 
+    // Return metadata (only) of all tasks
+    async find(params) {
+        console.log("Task service: find all");
+        var q = "select id,author,data from tasks"
+        var dt = taskdb.prepare(q).all();
+        if (dt.length == 0) {
+            return [];
+        }
+        const tasks = [];
+        // console.log(dt);
+        
+        dt.map((d) => {
+            var task = JSON.parse(d.data);
+            var t = {id: d.id, title: task.title};
+            tasks.push(t)
+            console.log(t);
+        })
+        return tasks;
+    }
+
     async get(id, params) {
         try {
             console.log("Task service: get");
@@ -292,18 +312,18 @@ class TaskService {
         console.log("Task::update done");
     }
 
-    async find() {
-        try {
-            var q = "select data from tasks"
-            var dt = taskdb.prepare(q).all();
-            var list = [];
-            for (var i = 0; i < dt.length; i++)
-                list.push(JSON.parse(dt[dt.length - 1]["data"]));
-            return list;
-        } catch (e) {
-            console.log(e);
-        }
-    }
+    // async find() {
+    //     try {
+    //         var q = "select data from tasks"
+    //         var dt = taskdb.prepare(q).all();
+    //         var list = [];
+    //         for (var i = 0; i < dt.length; i++)
+    //             list.push(JSON.parse(dt[dt.length - 1]["data"]));
+    //         return list;
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // }
 }
 
 class ProposalService {

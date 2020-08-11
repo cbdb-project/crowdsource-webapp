@@ -129,11 +129,11 @@ class ProposeValueModal extends Component {
 
   queryAndUpdate(q) {
     this.setState({ isLoading: true });
-    fetch(SERVER + '/people?q=' + q)
+    fetch(SERVER + '/person?q=' + q)
       .then(res => res.json())
       .then((data) => {
         this.setState({ isLoading: false })
-
+        console.log(data);
         this.setState({ suggestions: data })
         if (data == null) {
           this.setState({ suggestions: [] })

@@ -73,7 +73,7 @@ class DefaultHeader extends Component {
             <Link to="/proposals" className="nav-link">Review proposals</Link>
           </NavItem>
           <NavItem className="px-3">
-            <Link to="/proposals" className="nav-link">Import task</Link>
+            <Link to="/import" className="nav-link">Import task</Link>
           </NavItem>
           <NavItem className="px-3">
             <Link to="/export" className="nav-link">Export</Link>

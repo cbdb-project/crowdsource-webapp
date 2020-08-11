@@ -6,6 +6,7 @@ const Graph = React.lazy(() => import('./views/Graph'));
 const Collab = React.lazy(() => import('./views/Collab'));
 const Proposals = React.lazy(() => import('./views/Proposals'));
 const Export = React.lazy(() => import('./views/Collab/Export.js'));
+const Import = React.lazy(() => import('./views/Collab/Import.js'));
 
 const Login = React.lazy(() => import('./views/Pages/Login'));
 
@@ -17,10 +18,11 @@ const routes = [
   { path: '/dashboard', name: 'CDBB Web', component: Dashboard },
   { path: '/graph', name: 'CDBB Graph', component: Graph },
   { path: '/collab', name: 'CDBB Collab', component: Collab },
-  { path: '/proposals', name: 'CDBB Collab', component: Proposals },
-  { path: '/export', name: 'CDBB Collab', component: Export },
+  { path: '/proposals', name: 'Review proposals', component: Proposals },
+  { path: '/export', name: 'Export tasks', component: Export },
+  { path: '/import', name: 'Import Task', component: Import },
   { path: '/login', name: 'CDBB Login', component: Login },
-  { path: '/register', name: 'CDBB Login', component: Register },
+  { path: '/register', name: 'CDBB Register', component: Register },
   
 ];
 

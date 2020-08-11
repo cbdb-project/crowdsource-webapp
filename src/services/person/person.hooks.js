@@ -10,7 +10,7 @@ const setUser = () => {
 module.exports = {
   before: {
     all: [],
-    find: [authenticate('jwt'),setUser],
+    find: [],
     // get: [authenticate('jwt'),setUser],
     create: [hashPassword('password')],
     update: [authenticate('jwt'), hashPassword('password')],

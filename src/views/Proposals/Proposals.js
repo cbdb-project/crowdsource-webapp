@@ -62,7 +62,7 @@ class Proposals extends Component {
       filters.finalized = "false";
     }
     const t = await this.props.client.service('tasks').get(1, { query: filters });
-    this.state.tasks.push(t);
+    // this.state.tasks.push(t);
     this.setState({ myTask: t, showCompleted: show});
   }
 
