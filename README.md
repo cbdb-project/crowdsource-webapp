@@ -1,4 +1,4 @@
-# CBDB Collab
+# CBDB Crowdsource
 A simple webapp to crowd source information on any fields that supplements or revises current CBDB data.
 
 Supports: 
