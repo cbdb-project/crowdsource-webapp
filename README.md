@@ -10,5 +10,5 @@ Supports:
  
 
 
-- Lei
+(C) 2020 Lei
 
