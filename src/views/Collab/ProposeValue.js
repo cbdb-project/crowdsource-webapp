@@ -14,7 +14,7 @@ class ProposeValueModal extends Component {
   }
 
   handleChange(e) {
-    // console.log("handleChange() new val");
+    console.log("handleChange() new val");
     var val = e.target.value;
 
     if (val) {
@@ -32,16 +32,24 @@ class ProposeValueModal extends Component {
 
   cleanup() {
 
+    console.log("Cleanup!");
     this.setState({
-      pick: null, value: "", suggestions: [],
+      pick: null,
+      value: "", suggestions: [],
       errorMessage: null
-    });
+    }, () => {
+
+      console.log(this.state.value);
+    }
+    );
+
 
   }
 
   handleCancel(e) {
-    this.props.onClosed();
     this.cleanup();
+    this.props.onClosed();
+
 
   }
 
@@ -61,12 +69,12 @@ class ProposeValueModal extends Component {
 
   }
 
-   isInteger(str) {
+  isInteger(str) {
     return /^\+?(0|[1-9]\d*)$/.test(str);
-}
+  }
 
   handleSubmit(e) {
-    // console.log("who ami ... handle submit");
+    console.log("who ami ... handle submit");
     // console.log(this)
     this.setState({ errorMessage: null });
 
@@ -186,9 +194,9 @@ class ProposeValueModal extends Component {
 
 
   componentWillReceiveProps(next) {
-    console.log("will receive props!")
-    console.log(next);
-    console.log(next.fieldDef);
+    // console.log("will receive props!")
+    // console.log(next);
+    // console.log(next.fieldDef);
     this.props = next;
     // this.setState( {
     //   value: "hello"
@@ -288,6 +296,8 @@ class ProposeValueModal extends Component {
   }
 
   renderRegularField() {
+    console.log("renderRegularField() ")
+    console.log(this.state.value)
     return (
 
       <div className="input-group">
@@ -332,8 +342,8 @@ class ProposeValueModal extends Component {
       });
     };
     const { suggestions } = this.state;
-    console.log("Suggestions:");
-    console.log(suggestions);
+    // console.log("Suggestions:");
+    // console.log(suggestions);
     return (
       <Autosuggest
         suggestions={suggestions}

@@ -307,7 +307,7 @@ class Collab extends Component {
   }
 
   onFieldEditorClosed() {
-    this.setState({ editingField: false });
+    this.setState({ editingField: false, fieldInitial: null });
     document.body.setAttribute('style', '');
     window.scrollTo(0, this.windowOffset);
   }
