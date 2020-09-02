@@ -24,7 +24,7 @@ class ImportTask {
 
         await this.fillTaskByCsv(t, csvPath)
         console.log('task filled ...')
-        console.log(t);
+        // console.log(t);
 
         var q = "insert into tasks(author,data,lastupdate) values(@author, json(@data), @lastupdate);"
         var st = taskdb.prepare(q);

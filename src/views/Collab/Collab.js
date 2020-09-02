@@ -70,7 +70,7 @@ class Collab extends Component {
     super(props);
     this.state = {
       tasks: [],
-      currentTask: null,
+      myTask: null,
       affectedRows: {},
       affectedCols: {},
       reviewProposal: false,
@@ -83,31 +83,30 @@ class Collab extends Component {
 
   async onPaging(page) {
     console.log("Query for page " + page);
-    const t = await this.props.client.service('tasks').get(1, { query: { page: page } });
+    const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { page: page } });
     console.log("new data");
     console.log(t);
-    this.setState({ currentTask: t });
+    this.setState({ myTask: t });
   }
 
   async componentWillMount() {
     console.log("Collab: component will mount.")
-
     const tasks = await this.props.client.service('tasks').find({});
     this.setState({ tasks: tasks })
     if (tasks.length === 0)
       return;
-    console.log(tasks[0].title);
-    // console.log(tasks[0].fields);
-    this.setState({ tasks: tasks })
+    
     const t = await this.props.client.service('tasks').get(tasks[0].id);
-    const fields = [];
     console.log(t);
+    this.switchTask(t);
+  }
+
+  switchTask(t) {
+    const fields = [];
     Object.entries(t.fields).forEach((field, index) => {
       fields.push(field[1]);
     });
-    this.setState({ fields: fields, currentTask: t });
-    // console.log(this.state.fields);
-
+    this.setState({ fields: fields, myTask: t });
   }
 
   onFieldClicked(element, editingField, fieldDef) {
@@ -137,12 +136,10 @@ class Collab extends Component {
     }
   }
 
-  async taskChanged(e) {
+  async taskChanged(id) {
     console.log("taskChanged!");
-    console.log(e);
-    const t = await this.props.client.service('tasks').get(e.target.id);
-    this.setState({currentTask: t})
-    console.log(t);
+    const t = await this.props.client.service('tasks').get(id);
+    this.switchTask(t)
   }
 
 
@@ -155,11 +152,11 @@ class Collab extends Component {
   }
 
   renderCurrTask() {
-    if (!this.state.currentTask) {
+    if (!this.state.myTask) {
       return null;
     }
 
-    const data = Object.values(this.state.currentTask.data);
+    const data = Object.values(this.state.myTask.data);
     return (
       <div className="">
 
@@ -171,18 +168,14 @@ class Collab extends Component {
               <div className="col col-sm-auto">
                 <Dropdown>
                   <Dropdown.Toggle variant="success" id="task-dropdown">
-                    {this.state.tasks.length > 0 ? this.state.currentTask.title : "<None>"}
+                    {this.state.tasks.length > 0 ? this.state.myTask.title : "<None>"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     {
                       this.state.tasks.map((task, index) => {
-                        // if (index === 0)
-                        //   return;
                         return (
-                          // <Dropdown.Item >
-                            <a onClick={this.taskChanged.bind(this)}  key={"task_" + task.id} id={task.id} className="dropdown-item" >({task.id}) {task.title}
-                            </a>
-                          // </Dropdown.Item>
+                          <Dropdown.Item onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
+                           </Dropdown.Item>
                         )
                       })
                     }
@@ -198,7 +191,7 @@ class Collab extends Component {
 
         </div>
 
-        <Paginate total={this.state.currentTask.pages} onPaging={this.onPaging.bind(this)} />
+        <Paginate total={this.state.myTask.pages} onPaging={this.onPaging.bind(this)} />
         <Table hover responsive className="table-outline align-bottom mb-0 d-none d-sm-table">
           <thead className="thead-light">
             <tr>
@@ -218,11 +211,11 @@ class Collab extends Component {
                 // if (index === 0)
                 //   return (null)
                 if (this.state.fields) {
-                  // var fs = Object.entries(this.state.currentTask.fields);
+                  // var fs = Object.entries(this.state.myTask.fields);
                   // console.log(fs[5][1].input)
                 }
                 // console.log(row);
-                const pk = this.state.fields ? row[this.state.currentTask.pkCol] : -1;
+                const pk = this.state.fields ? row[this.state.myTask.pkCol] : -1;
                 if (!this.state.affectedRows[pk]) {
                   this.state.affectedRows[pk] = {};
                 }
@@ -242,7 +235,7 @@ class Collab extends Component {
                             row={index} col={vindex} id={"_c_" + index + "_" + vindex}
                             primaryKey={pk}
                             onFieldClicked={this.onFieldClicked.bind(this)}
-                            editable={(!this.state.fields) ? false : Object.entries(this.state.currentTask.fields)[vindex][1].input}
+                            editable={(!this.state.fields) ? false : Object.entries(this.state.myTask.fields)[vindex][1].input}
                             proposed={this.state.affectedRows[pk][vindex]}
                             value={field}>
                           </EditableField>
@@ -282,9 +275,9 @@ class Collab extends Component {
     }
 
     // HACKY: Standard headers
-    const data = Object.values(this.state.currentTask.data)[comp.props.row];
+    const data = Object.values(this.state.myTask.data)[comp.props.row];
 
-    // console.log(Object.values(this.state.currentTask.data));
+    // console.log(Object.values(this.state.myTask.data));
 
     var fieldCols = this.state.affectedCols;
     fieldCols[comp.props.col] = comp.props.fieldDef;
@@ -379,7 +372,7 @@ class Collab extends Component {
           onClosed={this.onReviewClosed.bind(this)}
           userid={this.props.user ? this.props.user.id : -1}
           client={this.props.client}
-          task={this.state.currentTask}
+          task={this.state.myTask}
           data={this.state.affectedRows}
         />
         {/* // onSubmit={this.onFieldEdited.bind(this)}

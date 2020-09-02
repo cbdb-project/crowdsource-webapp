@@ -13,6 +13,9 @@ class PickProposalModal extends Component {
     };
   }
 
+  componentWillMount() {
+    Modal.setAppElement('body');
+  }
   cleanup() {
 
     this.setState({ pick: null });

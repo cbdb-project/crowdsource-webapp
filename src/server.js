@@ -71,7 +71,8 @@ app.post('/import', function (req, res) {
       return res.status(500).json(err)
     }
 
-    importer.import("title test", "./newtask.csv")
+    console.log(req.query);
+    importer.import(req.query.title, "./newtask.csv")
 
     return res.status(200).send(req.file)
 

@@ -13,6 +13,10 @@ class ReviewProposalModal extends Component {
         showMessaging: false
       }
     }
+
+    componentWillMount() {
+      Modal.setAppElement('body');
+    }
   
     renderChanges() {
   

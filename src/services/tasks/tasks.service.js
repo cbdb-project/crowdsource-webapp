@@ -175,7 +175,7 @@ class TaskService {
             if (pq.hasOwnProperty("proposals")) {
 
                 var ps = pq.proposals === "all" ? "all" : pq.proposals.split(",");
-
+                console.log(task.fields);
                 task = await this.mergeProposal(task, ps, pkField);
                 // console.log(task.data);
             }
@@ -248,6 +248,7 @@ class TaskService {
                         props[pkVal][key] = [];
                     }
                     if (!values[pkVal][key]) values[pkVal][key] = [];
+                    console.log(key);
                     return (new ProposalService()._isUnique(props[pkVal][key], propItems[k][key], task.fields[key]))
                 })
                 keys.forEach((key) => {

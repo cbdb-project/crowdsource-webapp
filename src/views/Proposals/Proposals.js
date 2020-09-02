@@ -27,19 +27,35 @@ class Proposals extends Component {
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   async componentWillMount() {
-    const t = await this.props.client.service('tasks').get(1, { query: { proposals: "all", proposedOnly: "true", finalized: "false" } });
-    this.state.tasks.push(t);
-    this.setState({ myTask: t });
+    const tasks = await this.props.client.service('tasks').find({});
+    this.setState({ tasks: tasks })
+    if (tasks.length === 0)
+      return;
 
+    const t = await this.props.client.service('tasks').get(tasks[0].id,
+      { query: { proposals: "all", proposedOnly: "true", finalized: "false" } });
+    // this.state.tasks.push(t);
+    this.switchTask(t);
+  }
+
+
+  switchTask(t) {
+    this.setState({ myTask: t })
     const fields = [];
-    console.log(t);
     Object.entries(t.fields).forEach((field, index) => {
       fields.push(field[1]);
     });
     this.setState({ myFields: fields });
-    // console.log(this.state.myFields);
-
   }
+
+  async taskChanged(id) {
+    console.log("taskChanged!");
+    console.log(id);
+    const t = await this.props.client.service('tasks').get(id, { query: { proposals: "all", proposedOnly: "true", finalized: "false" } })
+    console.log(t);
+    this.switchTask(t);
+  }
+
 
   onFieldClicked(element, editingFieldComp, fieldDef) {
     this.setState({
@@ -61,10 +77,11 @@ class Proposals extends Component {
     if (!show) {
       filters.finalized = "false";
     }
-    const t = await this.props.client.service('tasks').get(1, { query: filters });
-    // this.state.tasks.push(t);
-    this.setState({ myTask: t, showCompleted: show});
+    const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: filters });
+    this.setState({ myTask: t, showCompleted: show });
   }
+
+
 
   renderMyTask() {
     if (!this.state.myTask) {
@@ -87,21 +104,19 @@ class Proposals extends Component {
               {/* <div className="col col-sm-auto"><h4>Current Task: </h4></div> */}
               <div className="col col-sm-auto">
                 <Dropdown>
-                  <Dropdown.Toggle variant="success" id="dropdown-basic">
-                    {this.state.tasks.length > 0 ? this.state.tasks[0].title : "<None>"}
+                  <Dropdown.Toggle variant="success" id="task-dropdown">
+                    {this.state.tasks.length > 0 ? this.state.myTask.title : "<None>"}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
-                    <Dropdown.Item >
-                      {
-                        this.state.tasks.map((task, index) => {
-                          if (index === 0)
-                            return;
-                          return (
-                            <a id={"task_" + index} className="dropdown-item" href="#">{index}. {task.title}</a>
-                          )
-                        })
-                      }
-                    </Dropdown.Item>
+                    {
+                      this.state.tasks.map((task, index) => {
+                        return (
+                          <Dropdown.Item onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
+                          </Dropdown.Item>
+                        )
+                      })
+                    }
+
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
@@ -141,7 +156,7 @@ class Proposals extends Component {
             </tr>
           </thead>
           <tbody>
-  
+
             {
               data.map((row, index) => {
                 const pk = this.state.myFields ? row[this.state.myTask.pkCol] : -1
@@ -160,10 +175,10 @@ class Proposals extends Component {
             }
           </tbody>
         </Table>
-        { (data.length ===0)? 
-(<div> (No tasks found -- try make proposals or show completed tasks too.)</div>)
-            : <div></div>
-            }
+        {(data.length === 0) ?
+          (<div> (No tasks found -- try make proposals or show completed tasks too.)</div>)
+          : <div></div>
+        }
 
 
       </div>
@@ -288,8 +303,8 @@ class Proposals extends Component {
     console.log(t);
 
     // Force refresh the table
-    this.setState({myTask: {data: {}}});
-    this.showCompleted({target: {checked: this.state.showCompleted}})
+    // this.setState({ myTask: { data: {} } });
+    this.showCompleted({ target: { checked: this.state.showCompleted } })
   }
   onReviewClosed() {
     this.setState({ reviewProposal: false });
