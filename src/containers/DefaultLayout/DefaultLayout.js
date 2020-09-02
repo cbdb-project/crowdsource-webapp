@@ -59,22 +59,32 @@ class DefaultLayout extends Component {
 
   async auth() {
     console.log("auth()");
+    var user;
     try {
       // First try to log in with an existing JWT
-      var user = (await client.reAuthenticate()).user;
+      user = (await client.reAuthenticate()).user;
       console.log("Reauth success!")
-      this.setState({ user: user });
+      
       console.log(user);
-      return user;
+      
     } catch (error) {
       console.log(error);
       // // console.log(await client.authentication.removeAccessToken());
-      // if (!this.props.history)
-      //   this.props.history = [];
-      // console.log(this.props.history);
-      // this.props.history.push('/login')
+      if (!this.props.history)
+        this.props.history = [];
+      console.log(this.props.history);
+      this.props.history.push('/login')
       // return;
     }
+    if (!user && this.props.location.pathname!=="/login" && this.props.location.pathname!=="/register" ) {
+      console.log("Need login first");
+      console.log(this.props.location.pathname);
+      return (
+        (<Redirect to="/login" user={this.state.user} client={this.state.client} />)
+      )
+    }
+    this.setState({ user: user });
+    
   }
 
   redirectLogin() {
@@ -91,14 +101,9 @@ class DefaultLayout extends Component {
   async handleLogout() {
     // await client.removeAccessToken();
     this.setState({ user: null });
-
     await client.logout();
-    // this.redirectLogin();
-
-    console.log("token removed!");
-    console.log("logged out!!");
-
-
+    this.redirectLogin();
+    console.log("token removed! logged out.");
   }
 
   onLogin(client, user) {
@@ -114,14 +119,6 @@ class DefaultLayout extends Component {
 
   render() {
     
-
-    if (!this.state.user && this.props.location.pathname!=="/login" ) {
-      console.log("Need login first");
-      console.log(this.props.location.pathname);
-      return (
-        (<Redirect to="/login" user={this.state.user} client={this.state.client} />)
-      )
-    }
     return (
       <div className="app">
         <AppHeader fixed>
