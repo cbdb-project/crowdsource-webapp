@@ -52,7 +52,7 @@ const userDb = knex({
 async function createUsers() {
     try {
 
-        userDb.schema.dropTableIfExists('users').createTable('users', function (table) {
+        await userDb.schema.dropTableIfExists('users').createTable('users', function (table) {
             table.increments('id');
             table.string('email');
             table.string('password');

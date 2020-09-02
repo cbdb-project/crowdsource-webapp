@@ -14,8 +14,8 @@ const SERVER = 'http://' + window.location.hostname + ':5000'
 
 const socket = io(SERVER);
 
-const client = feathers()
-client.configure(socketio(socket));
+// const client = feathers()
+// client.configure(socketio(socket));
 
 
 class LoginMessage extends Component {
@@ -41,6 +41,7 @@ class Login extends Component {
 
     console.log(this.state.email)
     console.log(this.state.password)
+    var client = this.props.client;
     try {
       console.log(await client);
       client.configure(
@@ -57,8 +58,7 @@ class Login extends Component {
       })
       console.log("authenticated!");
       console.log(accessToken);
-      this.props.onLogin(user);
-      console.log("on login called!");
+      this.props.onLogin(client, user);
 
       localStorage.setItem('auth-token', accessToken);
 
