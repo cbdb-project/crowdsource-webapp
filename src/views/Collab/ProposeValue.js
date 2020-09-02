@@ -179,6 +179,11 @@ class ProposeValueModal extends Component {
     };
   };
 
+  componentWillMount() {
+    Modal.setAppElement('body');
+
+  }
+
 
   componentWillReceiveProps(next) {
     console.log("will receive props!")
@@ -327,6 +332,8 @@ class ProposeValueModal extends Component {
       });
     };
     const { suggestions } = this.state;
+    console.log("Suggestions:");
+    console.log(suggestions);
     return (
       <Autosuggest
         suggestions={suggestions}

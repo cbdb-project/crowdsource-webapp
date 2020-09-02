@@ -90,6 +90,8 @@ class Collab extends Component {
   }
 
   async componentWillMount() {
+    console.log("Collab: component will mount.")
+
     const tasks = await this.props.client.service('tasks').find({});
     this.setState({ tasks: tasks })
     if (tasks.length === 0)

@@ -52,8 +52,12 @@ class DefaultHeader extends Component {
       console.log("User info exists. Show logout");
       userInfo = <div> {this.props.user.email} | <a href="#" onClick={this.props.handleLogout}>logout</a></div>
     } else {
-      console.log("User not exists. No logout");
-      userInfo = <div> <a href="/login"></a></div>
+      console.log("User not exists. No navigation");
+      
+      return (
+        <React.Fragment></React.Fragment>
+      )
+      // userInfo = <div> <a href="/login"></a></div>
     }
 
     return (

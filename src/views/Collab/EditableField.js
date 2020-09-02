@@ -15,13 +15,13 @@ class EditableField extends Component {
     this.element = {};
   }
   componentWillReceiveProps(newProps) {
-    
-    
+
+
     // console.log("Prop changs: " + newProps.primaryKey + "/" + this.state.pk);
     if (newProps.proposed) {
-      this.setState({edited: true});
+      this.setState({ edited: true });
     } else {
-      this.setState({edited: false});
+      this.setState({ edited: false });
     }
     this.setState({ editable: newProps.editable, pk: newProps.primaryKey })
   }
@@ -76,8 +76,11 @@ class EditableField extends Component {
   _renderByType(val, type) {
     // console.log(type);
     // console.log(this.props.fieldDef);
-
-    return (type && type === "person" ? val.c_name_chn : val)
+    if ((type && type === "person")
+      || (val.hasOwnProperty("c_name_chn")))
+      return val.c_name_chn;
+    else
+      return val;
   }
 
 

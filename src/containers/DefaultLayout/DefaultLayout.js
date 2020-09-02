@@ -2,6 +2,8 @@ import React, { Component, Fragment, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { Container } from 'reactstrap';
+import { useLocation } from 'react-router-dom'
+
 import {
   AppAside,
   AppFooter,
@@ -36,77 +38,95 @@ client.configure(
 const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultFooter = React.lazy(() => import('./DefaultFooter'));
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
-
+// let location = useLocation();
 class DefaultLayout extends Component {
 
   constructor(props) {
     super(props);
+    this.auth();
     this.state = { client: client };
 
   }
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   async componentWillMount() {
-    await this.auth();
+
   }
 
   async componentWillUpdate() {
     // await this.auth();
   }
 
-  async auth(user) {
+  async auth() {
     console.log("auth()");
     try {
       // First try to log in with an existing JWT
-      if (!user)  {
-        user = (await client.reAuthenticate()).user;
-        console.log("Reauth success!")
-      } else {
-        console.log("Auth with login success!")
-      }
+      var user = (await client.reAuthenticate()).user;
+      console.log("Reauth success!")
+      this.setState({ user: user });
       console.log(user);
-
+      return user;
     } catch (error) {
       console.log(error);
-      // console.log(await client.authentication.removeAccessToken());
-      if (!this.props.history)
-        this.props.history = [];
-      console.log(this.props.history);
-      this.props.history.push('/login')
-      return;
+      // // console.log(await client.authentication.removeAccessToken());
+      // if (!this.props.history)
+      //   this.props.history = [];
+      // console.log(this.props.history);
+      // this.props.history.push('/login')
+      // return;
     }
-    if (user) this.setState({ user: user });
   }
 
   redirectLogin() {
+    console.log("DefaultLayout:: redirectLogin()");
     if (!this.props.history)
       this.props.history = [];
     this.props.history.push('/login')
   }
 
-  async handleLogout() {
-    // await client.removeAccessToken();
-    await client.logout();
-
-    console.log("token removed!");
-
-    this.setState({ user: null });
-    console.log("logged out!!");
-    this.redirectLogin();
+  renderOrLogin() {
 
   }
 
-  onLogin(user) {
-    
+  async handleLogout() {
+    // await client.removeAccessToken();
+    this.setState({ user: null });
+
+    await client.logout();
+    // this.redirectLogin();
+
+    console.log("token removed!");
+    console.log("logged out!!");
+
+
+  }
+
+  onLogin(client, user) {
+    console.log("DefaultLayout: on login called. Setting client.");
+    this.setState({ client: client, user: user })
+  }
+
+
+
+  componentDidMount() {
+
   }
 
   render() {
+    
 
+    if (!this.state.user && this.props.location.pathname!=="/login" ) {
+      console.log("Need login first");
+      console.log(this.props.location.pathname);
+      return (
+        (<Redirect to="/login" user={this.state.user} client={this.state.client} />)
+      )
+    }
     return (
       <div className="app">
         <AppHeader fixed>
           <Suspense fallback={this.loading()}>
-            <DefaultHeader handleLogout={this.handleLogout.bind(this)} user={this.state.user} client={client} />
+            <DefaultHeader handleLogout={this.handleLogout.bind(this)} user={this.state.user} client={this.state.client} />
           </Suspense>
         </AppHeader>
         <div className="app-body pt-2">
@@ -136,8 +156,9 @@ class DefaultLayout extends Component {
 
                         render={props => {
                           props.user = this.state.user;
-                          props.onLogin = this.auth.bind(this);
-                          props.client = client;
+                          props.onLogin = this.onLogin.bind(this);
+                          props.auth = this.redirectLogin.bind(this);
+                          props.client = this.state.client;
                           return (
                             <route.component {...props} />
                           )
@@ -145,11 +166,8 @@ class DefaultLayout extends Component {
                         } />
                     ) : (null);
                   })}
-                  {(!this.state.user) ?
-                    (<Redirect from="/" to="/login"/>) :
-                    (<Fragment></Fragment>)}
-                  <Redirect from="/" to="/collab" user={this.state.user} client={client} />
-                  
+        (<Redirect from="/" to="/collab" user={this.state.user} client={this.state.client} />)
+
                 </Switch>
               </Suspense>
             </Container>
