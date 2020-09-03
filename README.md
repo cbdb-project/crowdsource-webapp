@@ -20,10 +20,10 @@ Supports:
      
 
 ## File / Directory structure
- - src: source JS / CSS files
- - data: make sure cbdb.db, user.db, task.db etc. are accessible here in order for the app to function.
- - Dockerfile: you can use it to build your own docker container
- - public: public html files
+ - **src**: source JS / CSS files.
+ - **data**: make sure cbdb.db, user.db, task.db etc. are accessible here in order for the app to function.
+ - **Dockerfile**: you can use it to build your own docker container.
+ - **public**: public html files.
 
 ## Pre-packaged Docker Container
 Instead of running your own local setup, you could simply pull & run a docker container.
@@ -34,7 +34,9 @@ Instead of running your own local setup, you could simply pull & run a docker co
       docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -p 3000:3000 -p 5000:5000  -it tomding/cbdbapp
 
 The first command pulls the image from docker repo (run once). 
-The second one starts the container, and also mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
+The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
+Make sure the "data" docker volume contains the required data files (cbdb.db, etc.) - you can create it with "docker volume create data".
+
 Now it should be available at http://localhost:3000.
 
 
