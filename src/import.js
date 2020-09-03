@@ -4,7 +4,7 @@ const csv = require('csv');
 const parse = require('csv-parse/lib/sync');
 const fs = require('fs').promises;
 const knex = require('knex');
-const taskdb = better('./tasks.db');
+const taskdb = better('./data/tasks.db');
 
 
 // const sqlite3 = require('sqlite3').verbose();

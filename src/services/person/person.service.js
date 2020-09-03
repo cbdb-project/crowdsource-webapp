@@ -1,5 +1,5 @@
 const better = require('better-sqlite3')
-const cbdb = better('./cbdb.db');
+const cbdb = better('./data/cbdb.db');
 
 const hooks = require('./person.hooks.js')
 

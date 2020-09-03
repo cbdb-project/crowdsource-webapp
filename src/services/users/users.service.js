@@ -7,7 +7,7 @@ module.exports = function users(app) {
   const userDb = knex({
     client: 'sqlite3',
     connection: {
-      filename: './user.db'
+      filename: './data/user.db'
     }
   });
 

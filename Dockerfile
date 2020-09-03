@@ -12,6 +12,8 @@ RUN npm install nohup -g
 # RUN npm ci --only=production
 
 COPY . .
+COPY src src
+RUN node src/prep_tasks.js
 EXPOSE 3000
 EXPOSE 5000
 ENTRYPOINT "./run.sh"

@@ -29,7 +29,7 @@ class Import extends Component {
 
         data.append('file', this.state.files[0].src.file)
         try {
-            await axios.post("http://localhost:5000/import", data, config)
+            await axios.post("http://" + window.location.hostname + ":5000/import", data, config)
             const success = "Task successfully importd!"
             this.setState({ message: success, messageType: "success" })
         } catch (e) {

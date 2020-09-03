@@ -64,17 +64,20 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage }).single('file')
 
 app.post('/import', function (req, res) {
+  console.log(":: Task Import service: " + req.query.title);
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
+      console.log(err);
       return res.status(500).json(err)
     } else if (err) {
+      console.log(err);
       return res.status(500).json(err)
     }
 
     console.log(req.query);
     importer.import(req.query.title, "./newtask.csv")
 
-    return res.status(200).send(req.file)
+    return res.status(200).send("Success!")
 
   })
 });

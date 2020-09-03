@@ -8,8 +8,8 @@ const knex = require('knex');
 
 // const sqlite3 = require('sqlite3').verbose();
 // connSqlite();
-const taskdb = better('./tasks.db');
-const cbdb = better('./cbdb.db');
+const taskdb = better('./data/tasks.db');
+const cbdb = better('./data/cbdb.db');
 
 async function dropTasks() {
     q = "drop table if exists tasks ";
@@ -46,21 +46,23 @@ async function createTasks() {
 const userDb = knex({
     client: 'sqlite3',
     connection: {
-        filename: './user.db'
+        filename: './data/user.db'
     }
 });
-async function createUsers() {
+function createUsers() {
     try {
 
-        await userDb.schema.dropTableIfExists('users').createTable('users', function (table) {
+        userDb.schema.dropTableIfExists('users').createTable('users', function (table) {
             table.increments('id');
             table.string('email');
             table.string('password');
             table.string('nickname');
             table.timestamps('created');
-        });
-        console.log("user table created")
-
+        }).then(() => {
+            console.log("user table created")
+            process.exit();
+        })
+        
     }
     catch (err) { console.log(err); throw err }
 
@@ -316,7 +318,7 @@ async function validateProposals() {
 
 async function addTasks() {
     t = {};
-    t.title = "Identify authors of correspondences with 张邦奇 ";
+    t.title = "张邦奇通讯者";
     t.type = "revise";
     t.fields = {}
     t.edited ={};
@@ -348,7 +350,8 @@ async function main() {
     await createProposals();
     await addProposals();
     await validateProposals();
-     await createUsers();
+     createUsers();
+     
 }
 main();
 

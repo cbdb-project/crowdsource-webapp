@@ -227,6 +227,16 @@ class Proposals extends Component {
     return displayValue;
   }
 
+  renderValue(value) {
+    if (value.hasOwnProperty("c_name_chn")) {
+      return value.c_name_chn
+    } else if (value.hasOwnProperty("c_name")) {
+      return value.c_name
+    } 
+    return value;
+    
+  }
+
 
 
 
