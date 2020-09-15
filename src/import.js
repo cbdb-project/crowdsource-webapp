@@ -13,7 +13,7 @@ const taskdb = better('./data/tasks.db');
 const FIELD_TYPES = ["key", "person", "", "key", "int", "number", "string"]
 
 class ImportTask {
-    async import(title, csvPath ) {
+    async import(title, csvPath) {
         const t = {};
         t.title = title;
         t.type = "revise";
@@ -56,9 +56,27 @@ class ImportTask {
         }
         console.log("pk =" + pkName);
         records.map((v, i) => {
-            recMap[v[pkIndex]] = v;
+            const row = [];
+            for (var i = 0; i < v.length; i++) {
+                row[i] = {};
+                if (fields[i][1].type === "person" && v[i].includes("=")) {
+
+                    const [name, id] = v[i].split("=")
+                    // console.log(name + " :: " + id);
+                    row[i] = {};
+                    row[i].c_name_chn = name;
+                    row[i].c_personid = id;
+
+                } else {
+                    row[i] = (' ' + v[i]).slice(1);
+                    // Object.assign(row[i], v[i]);
+                    // row[i] = v[i];
+                }
+            }
+            recMap[v[pkIndex]] = row;
             delete recMap[v[pkIndex]].pkName
         });
+        console.log(recMap);
         task.data = recMap;
     }
 

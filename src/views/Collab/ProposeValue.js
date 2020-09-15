@@ -19,7 +19,7 @@ class ProposeValueModal extends Component {
 
     if (val) {
       // console.log(val);
-      this.setState({ value: val })
+      this.setState({ value: val, pick: null })
       if (val.trim() !== "")
         this.queryAndUpdate(val);
       else
@@ -54,6 +54,8 @@ class ProposeValueModal extends Component {
   }
 
   _wrapPersonIf(p) {
+    console.log("Wrap person:")
+    console.log(p);
     if (this.props.fieldDef.type === "person") {
       if (typeof p !== "object") {
         return {
@@ -296,8 +298,7 @@ class ProposeValueModal extends Component {
   }
 
   renderRegularField() {
-    console.log("renderRegularField() ")
-    console.log(this.state.value)
+    // console.log("renderRegularField()")
     return (
 
       <div className="input-group">

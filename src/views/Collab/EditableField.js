@@ -74,11 +74,14 @@ class EditableField extends Component {
 
 
   _renderByType(val, type) {
-    // console.log(type);
-    // console.log(this.props.fieldDef);
-    if ((type && type === "person")
-      || (val.hasOwnProperty("c_name_chn")))
-      return val.c_name_chn;
+    // console.log(val);
+    if ((val.hasOwnProperty("c_personid"))) {
+      if ((val.hasOwnProperty("c_name_chn")))
+        return val.c_name_chn + " (" + val["c_personid"] + ")";
+      else if (val.hasOwnProperty("c_name"))
+        return val.c_name + " (" + val["c_personid"] + ")";
+    }
+
     else
       return val;
   }

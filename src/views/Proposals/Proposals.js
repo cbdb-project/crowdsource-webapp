@@ -27,17 +27,46 @@ class Proposals extends Component {
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   async componentWillMount() {
-    const tasks = await this.props.client.service('tasks').find({});
-    this.setState({ tasks: tasks })
-    if (tasks.length === 0)
+    if (!this.props.user) {
+      await this.props.auth();
       return;
+    }
+    try {
+      const tasks = await this.props.client.service('tasks').find({});
+      this.setState({ tasks: tasks })
+      if (tasks.length === 0)
+        return;
 
-    const t = await this.props.client.service('tasks').get(tasks[0].id,
-      { query: { proposals: "all", proposedOnly: "true", finalized: "false" } });
-    // this.state.tasks.push(t);
-    this.switchTask(t);
+      var taskId = tasks[0].id;
+      const storedId = localStorage.getItem("myTask");
+      if (storedId && this.taskIdExists(tasks,storedId)) {
+        taskId = storedId;
+      }
+
+      const t = await this.props.client.service('tasks').get(taskId,
+        { query: { proposals: "all", proposedOnly: "true", finalized: "false" } });
+      // this.state.tasks.push(t);
+      this.switchTask(t);
+    } catch (e) {
+      if (e.name === "NotAuthenticated") {
+        this.props.auth();
+      }
+      console.log(e);
+
+    }
   }
 
+
+  taskIdExists(tasks, id) {
+    var exists = false;
+    tasks.forEach((t) => {
+      console.log(t.id == id);
+      if (t.id == id) {
+        exists = true;
+      }
+    })
+    return exists;
+  }
 
   switchTask(t) {
     this.setState({ myTask: t })
@@ -222,7 +251,7 @@ class Proposals extends Component {
         values={pValues}>
       </MultiField>
     } else {
-      displayValue = <div>{origValue}</div>
+      displayValue = <div>{this.renderValue(origValue)}</div>
     }
     return displayValue;
   }
@@ -232,13 +261,17 @@ class Proposals extends Component {
       return value.c_name_chn
     } else if (value.hasOwnProperty("c_name")) {
       return value.c_name
-    } 
+    }
     return value;
-    
+
   }
 
 
 
+  discardClicked(e) {
+    this.setState({ affectedRows: {} });
+
+  }
 
   reviewClicked(e) {
     // this.copyHeaders();
@@ -348,7 +381,7 @@ class Proposals extends Component {
           <div className="col col-sm-auto float-right">
 
 
-            <button type="button" disabled={disable} onClick={this.reviewClicked.bind(this)} className="btn col col-sm-auto  btn-warning float-right mb-3 " data-dismiss="modal" >
+            <button type="button" disabled={disable} onClick={this.discardClicked.bind(this)} className="btn col col-sm-auto  btn-warning float-right mb-3 " data-dismiss="modal" >
               <svg width="1em" height="1em" viewBox="0 0 16 16" className="mr-2 bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z" />
               </svg>

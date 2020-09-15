@@ -43,14 +43,14 @@ class DefaultLayout extends Component {
 
   constructor(props) {
     super(props);
-    this.auth();
+    
     this.state = { client: client };
 
   }
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   async componentWillMount() {
-
+    await this.auth();
   }
 
   async componentWillUpdate() {
@@ -58,31 +58,37 @@ class DefaultLayout extends Component {
   }
 
   async auth() {
-    console.log("auth()");
+    console.log("DefaultLayout::auth()");
     var user;
     try {
       // First try to log in with an existing JWT
       user = (await client.reAuthenticate()).user;
       console.log("Reauth success!")
-      
       console.log(user);
       
     } catch (error) {
+      console.log("Reauth failed. Error below.");
       console.log(error);
-      // // console.log(await client.authentication.removeAccessToken());
-      if (!this.props.history)
-        this.props.history = [];
-      console.log(this.props.history);
-      this.props.history.push('/login')
+      console.log(await client.authentication.removeAccessToken());
+      this.redirectLogin();
+      return;
+      // if (!this.props.history)
+      //   this.props.history = [];
+      // console.log(this.props.history);
+      // this.props.history.push('/login')
       // return;
     }
-    if (!user && this.props.location.pathname!=="/login" && this.props.location.pathname!=="/register" ) {
-      console.log("Need login first");
-      console.log(this.props.location.pathname);
-      return (
-        (<Redirect to="/login" user={this.state.user} client={this.state.client} />)
-      )
+    if (!user) {
+      this.redirectLogin();
+      return;
     }
+    // if (!user && this.props.location.pathname!=="/login" && this.props.location.pathname!=="/register" ) {
+    //   console.log("Need login first");
+    //   console.log(this.props.location.pathname);
+    //   return (
+    //     (<Redirect to="/login" user={this.state.user} client={this.state.client} />)
+    //   )
+    // }
     this.setState({ user: user });
     
   }
@@ -154,7 +160,7 @@ class DefaultLayout extends Component {
                         render={props => {
                           props.user = this.state.user;
                           props.onLogin = this.onLogin.bind(this);
-                          props.auth = this.redirectLogin.bind(this);
+                          props.auth = this.auth.bind(this);
                           props.client = this.state.client;
                           return (
                             <route.component {...props} />

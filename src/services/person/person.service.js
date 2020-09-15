@@ -42,7 +42,7 @@ class PersonService {
             console.log("Person service: find");
             console.log(params);
             var kw = "%" + params.query.q.replace(" ","%") + "%"
-            var q = "select b.* from biog_main b where b.c_name like @kw or b.c_name_chn like @kw limit 20"
+            var q = "select b.* from biog_main b where b.c_name like @kw or b.c_name_chn like @kw or b.c_personid like @kw limit 20"
             var dt = await cbdb.prepare(q).all({kw:kw});
             
             if (dt.length == 0) {

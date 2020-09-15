@@ -53,7 +53,7 @@ class Import extends Component {
     }
 
     handleErrors(e) {
-        this.setState({ message: "Error occurred during import: " + e.toString(), messageType: "error" });
+        this.setState({ message: "Error occurred during import: " + e[0].toString(), messageType: "error" });
 
         console.log(e);
     }
@@ -63,7 +63,8 @@ class Import extends Component {
         return (
             <Files
                 multiple={false} maxSize="10mb" multipleMaxSize="10mb"
-                accept={["text/csv", ".csv", ".txt", ".tsv"]}
+                accept={["text/plain","text/x-csv","text/csv","application/x-csv",
+                "text/comma-separated-values","text/tab-separated-values","application/csv","application/vnd.ms-excel",".csv", ".txt", ".tsv"]}
                 onSuccess={this.handleSuccess.bind(this)}
                 onError={this.handleErrors.bind(this)}
             >

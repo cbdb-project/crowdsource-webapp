@@ -39,11 +39,11 @@ class Login extends Component {
 
   async handleSubmit() {
 
-    console.log(this.state.email)
-    console.log(this.state.password)
+    console.log("Login::handleSubmit()");
+    console.log("credentials: " + this.state.email + " / " + this.state.password)
     var client = this.props.client;
+
     try {
-      console.log(await client);
       client.configure(
         auth({
           storage: window.localStorage,
@@ -59,7 +59,6 @@ class Login extends Component {
       console.log("authenticated!");
       console.log(accessToken);
       this.props.onLogin(client, user);
-
       localStorage.setItem('auth-token', accessToken);
 
 
@@ -98,7 +97,7 @@ class Login extends Component {
               <CardGroup>
                 <Card className="p-4">
                   <CardBody>
-                    <Form onSubmit={this.handleSubmit.bind(this)}>
+                    <Form >
                       <h1>Login</h1>
                       <p className="text-muted">Sign In to your account</p>
                       <InputGroup className="mb-3">
@@ -119,10 +118,10 @@ class Login extends Component {
                       </InputGroup>
                       <Row>
                         <Col xs="6">
-                          <Button color="primary" className="px-4">Login</Button>
+                          <Button onClick={this.handleSubmit.bind(this)} color="primary" className="px-4">Login</Button>
                         </Col>
                         <Col xs="6" className="text-right">
-                          <Button color="link" className="px-0">Forgot password?</Button>
+                          {/* <Button color="link" className="px-0">Forgot password?</Button> */}
                         </Col>
                       </Row>
                     </Form>

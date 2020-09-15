@@ -65,7 +65,14 @@ class ReviewProposalModal extends Component {
       console.log(this.props.data);
       var proposal = this._makeProposal(this.props.data);
      
-      var a = await this.props.client.service('proposals').create(proposal);
+      try {
+        var a = await this.props.client.service('proposals').create(proposal);
+      } catch (e) {
+        if (e.name === "NotAuthenticated") {
+          await this.props.auth();
+          return;
+        }
+      }
       console.log(a);
     }
     cleanup() {

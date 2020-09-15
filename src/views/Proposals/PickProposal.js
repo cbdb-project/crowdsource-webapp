@@ -115,7 +115,7 @@ class PickProposalModal extends Component {
           return (
             <div className="row" key={"pick_" + index}>
               
-              <div className={"col card mb-2 mt-2 ml-1 mr-1 col-sm-8 " + styles}>
+              <div className={"col card mb-2 mt-2 ml-1 mr-1 col-sm-10 " + styles}>
               <div className="row">
                 <div className="col col-8" onClick={this.handleSubmit.bind(this, v)}>{this.renderValue(v)}</div>
                 <div className="col col-2"><svg width="0.8em" height="0.8em" viewBox="0 0 16 16" className="bi bi-check2-circle" fill="white" xmlns="http://www.w3.org/2000/svg">
@@ -124,9 +124,6 @@ class PickProposalModal extends Component {
                 </svg>
                 </div>
                 </div>
-              </div>
-              <div className="col  mb-2 mt-2 ml-1  ml-1 mr-1 col-sm-2 ">
-              (lei)
               </div>
               
             </div>

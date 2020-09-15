@@ -37,7 +37,14 @@ class MultiField extends Component {
 
 
   _renderByType(val, type) {
-    return (type === "person" ? val.c_name_chn : val)
+    // console.log(type);
+    // console.log(this.props.fieldDef);
+    if ((val.hasOwnProperty("c_name_chn")))
+      return val.c_name_chn;
+    else if (val.hasOwnProperty("c_name"))
+      return val.c_name;
+    else
+      return val;
   }
 
   renderValue() {

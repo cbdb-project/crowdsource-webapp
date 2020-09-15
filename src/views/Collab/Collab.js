@@ -83,22 +83,65 @@ class Collab extends Component {
 
   async onPaging(page) {
     console.log("Query for page " + page);
-    const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { page: page } });
-    console.log("new data");
-    console.log(t);
-    this.setState({ myTask: t });
+    try {
+      const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { page: page } });
+      console.log("new data");
+      console.log(t);
+      this.setState({ myTask: t });
+    } catch (e) {
+      if (e.name === "NotAuthenticated") {
+        await this.props.auth();
+      }
+    }
+
   }
 
   async componentWillMount() {
     console.log("Collab: component will mount.")
-    const tasks = await this.props.client.service('tasks').find({});
-    this.setState({ tasks: tasks })
-    if (tasks.length === 0)
+    if (!this.props.user) {
+      await this.props.auth();
       return;
-    
-    const t = await this.props.client.service('tasks').get(tasks[0].id);
-    console.log(t);
-    this.switchTask(t);
+    }
+    try {
+      console.log("Loading tasks ...");
+      const tasks = await this.props.client.service('tasks').find({});
+      this.setState({ tasks: tasks })
+      if (tasks.length === 0)
+        return;
+
+
+      var taskId = tasks[0].id;
+      
+      const storedId = localStorage.getItem("myTask");
+      console.log("stored id:" + storedId);
+      if (storedId && this.taskIdExists(tasks,storedId)) {
+        console.log("yes! using stored id:" + storedId)
+
+        taskId = storedId;
+      }
+      console.log(taskId);
+      const t = await this.props.client.service('tasks').get(taskId);
+
+      console.log(t);
+      this.switchTask(t);
+    } catch (e) {
+      if (e.name === "NotAuthenticated") {
+        await this.props.auth();
+      }
+      console.log(e);
+    }
+  }
+
+
+  taskIdExists(tasks, id) {
+    var exists = false;
+    tasks.forEach((t) => {
+      console.log(t.id == id);
+      if (t.id == id) {
+        exists = true;
+      }
+    })
+    return exists;
   }
 
   switchTask(t) {
@@ -106,7 +149,8 @@ class Collab extends Component {
     Object.entries(t.fields).forEach((field, index) => {
       fields.push(field[1]);
     });
-    this.setState({ fields: fields, myTask: t });
+    this.setState({ fields: fields, myTask: t, affectedRows: {} });
+    localStorage.setItem("myTask", t.id);
   }
 
   onFieldClicked(element, editingField, fieldDef) {
@@ -138,8 +182,14 @@ class Collab extends Component {
 
   async taskChanged(id) {
     console.log("taskChanged!");
-    const t = await this.props.client.service('tasks').get(id);
-    this.switchTask(t)
+    try {
+      const t = await this.props.client.service('tasks').get(id);
+      this.switchTask(t)
+    } catch (e) {
+      if (e.name === "NotAuthenticated") {
+        await this.props.auth();
+      }
+    }
   }
 
 
@@ -149,6 +199,23 @@ class Collab extends Component {
 
   reviewClicked(e) {
     this.setState({ reviewProposal: true })
+  }
+
+  rowsEdited() {
+    var rows = Object.values(this.state.affectedRows);
+    var count = 0;
+    for (var i = 0; i < rows.length; i++) {
+      var cols = Object.entries(rows[i]);
+      var affected = false;
+      for (var j = 0; j < cols.length; j++) {
+        if (cols[j][1].edited) {
+          affected = true;
+          break;
+        }
+      }
+      if (affected) count++;
+    }
+    return count;
   }
 
   renderCurrTask() {
@@ -174,8 +241,8 @@ class Collab extends Component {
                     {
                       this.state.tasks.map((task, index) => {
                         return (
-                          <Dropdown.Item onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
-                           </Dropdown.Item>
+                          <Dropdown.Item key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
+                          </Dropdown.Item>
                         )
                       })
                     }
@@ -186,7 +253,7 @@ class Collab extends Component {
             </div>
           </div>
           <div className="col col-sm-auto">
-            <i>({Object.values(this.state.affectedRows).length} rows touched)</i>
+            <i>({this.rowsEdited()} rows touched)</i>
           </div>
 
         </div>
@@ -262,9 +329,6 @@ class Collab extends Component {
     var comp = this.state.editingFieldComp;
     var affected = this.state.affectedRows
     // this.state.editingFieldComp.setState({ edited: true, proposedValue: value });
-
-    console.log(value);
-
     if (!affected[comp.props.primaryKey])
       affected[comp.props.primaryKey] = {};
     affected[comp.props.primaryKey][comp.props.col] = {
@@ -335,8 +399,6 @@ class Collab extends Component {
           Submit Proposals</button>
           </div>
           <div className="col col-sm-auto float-right">
-
-
             <button type="button" onClick={this.discardClicked.bind(this)} className="btn col col-sm-auto  btn-warning float-right mb-3 " data-dismiss="modal" >
               <svg width="1em" height="1em" viewBox="0 0 16 16" className="mr-2 bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z" />
