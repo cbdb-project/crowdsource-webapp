@@ -58,11 +58,11 @@ Here's a valid example:
 
     line=key,writer,sequence,person_id,title,assoc_type=string,assoc_name_chn=string,assoc_personid=person
 
-An an invalid one: 
+And an invalid one: 
 
     line=key,writer=key,sequence,person_id,title,assoc_type=,assoc_name_chn=string,assoc_personid=person
 
-*Hint*: multiple primary keys, and one empty colunn type
+*Problems*: multiple primary keys ("line" and "writer"), and empty column type ("assoc_type")
 
 ### Second line: user friendly column name (mandatory)
 Those are the column names presented to end user. 
