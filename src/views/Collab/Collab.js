@@ -114,9 +114,8 @@ class Collab extends Component {
       
       const storedId = localStorage.getItem("myTask");
       console.log("stored id:" + storedId);
-      if (storedId && this.taskIdExists(tasks,storedId)) {
+      if (storedId && storedId!="" && this.taskIdExists(tasks,storedId)) {
         console.log("yes! using stored id:" + storedId)
-
         taskId = storedId;
       }
       console.log(taskId);

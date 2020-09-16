@@ -25,7 +25,7 @@ class ProposeValueModal extends Component {
       else
         this.setState({ suggestions: [] });
     } else {
-      this.setState({ value: "", suggestions: [] })
+      this.setState({ value: "", suggestions: [], pick: null })
     }
 
   }
@@ -144,10 +144,12 @@ class ProposeValueModal extends Component {
       .then((data) => {
         this.setState({ isLoading: false })
         console.log(data);
-        this.setState({ suggestions: data })
         if (data == null) {
-          this.setState({ suggestions: [] })
+          data = [];
         }
+        data.unshift({ c_name: "Suggest this as a new person", useUserInput: true })
+
+        this.setState({ suggestions: data })
         // console.log("Query result size: " + data.length);
         // if (data.length > 0)
         //   console.log(data[0]);
@@ -233,6 +235,7 @@ class ProposeValueModal extends Component {
   }
   render() {
 
+    const disabled = (this.state.pick ? "" : "disabled");
 
     // console.log(thi)
     return (
@@ -246,7 +249,7 @@ class ProposeValueModal extends Component {
                   <div className="float-left pl-0 col ml-0 mr-3" style={{ height: "100%" }}>{this.renderField()}</div>
                   <div className="col col-sm-auto">
                     <div className="row">
-                      <button type="button" className="ml-2 col-sm-auto btn btn-primary" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
+                      <button type="button" disabled={disabled} className="ml-2 col-sm-auto btn btn-primary" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
                         {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
                         <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                           <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
@@ -255,7 +258,7 @@ class ProposeValueModal extends Component {
                         </svg>
                         <div className="float-right ml-2">Submit</div>
                       </button>
-                      <button type="button" className="ml-2 col-sm-auto btn btn-warning" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
+                      <button type="button"  className="ml-2 col-sm-auto btn btn-warning" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
                         {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
                         {/* <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
@@ -312,20 +315,36 @@ class ProposeValueModal extends Component {
   }
 
   renderPersonField() {
-    const renderSuggestion = suggestion => (
-      <div>{suggestion.c_name_chn} ({suggestion.c_personid})</div>
-    );
+    const renderSuggestion = suggestion => {
+      var text;
+      if (suggestion.c_name_chn) {
+        text = suggestion.c_name_chn;
+      } else if (suggestion.c_name) {
+        text = suggestion.c_name;
+      }
+      if (suggestion.c_personid) {
+        text += " (" + suggestion.c_personid + ")";
+      }
+      return (<div>{text}</div>)
+    };
     const getSuggestionValue = suggestion => {
       // console.log(suggestion);
       return suggestion.c_personid;
     }
 
     const onSuggestionSelected = (evt, props) => {
-
+      var textValue = props.suggestion.c_name_chn;
+      var value = props.suggestion;
+      if (props.suggestion.useUserInput) {
+        textValue = this.state.value;
+        value = {c_name_chn: textValue}
+        value.newPerson = true;
+      }
       this.setState({
-        value: props.suggestion.c_name_chn,
-        pick: props.suggestion
+        value: textValue,
+        pick: value
       });
+      console.log("Getting person id:" + props.suggestion.c_personid)
       this.getPerson(props.suggestion.c_personid);
 
     }
@@ -345,54 +364,111 @@ class ProposeValueModal extends Component {
     const { suggestions } = this.state;
     // console.log("Suggestions:");
     // console.log(suggestions);
+
+
+    var renderPersonId = () => {
+      const p = this.state.pick;
+      var text;
+      if (p && p.newPerson) {
+        text = <div>(NEW)</div>
+      } else if (p && p.c_personid) {
+        text = <div>(id {p.c_personid})</div>
+      } else {
+        text = <div></div>
+      }
+
+      return (
+        <Fragment>
+          {text}
+        </Fragment>
+      )
+    }
+
     return (
-      <Autosuggest
-        suggestions={suggestions}
-        className="personinput"
-        onSuggestionsFetchRequested={onSuggestionsFetchRequested.bind(this)}
-        onSuggestionsClearRequested={onSuggestionsClearRequested.bind(this)}
-        onSuggestionSelected={onSuggestionSelected.bind(this)}
-        getSuggestionValue={getSuggestionValue.bind(this)}
-        renderSuggestion={renderSuggestion.bind(this)}
-        inputProps={{ placeholder: "Search a person", value: this.state.value, onSubmit: this.handleSubmit.bind(this), onChange: this.handleChange.bind(this) }}
-      />
+      <Fragment>
+        <div className="row">
+          <div className="col col-sm-7" style={{ height: "100%" }}>
+
+            <Autosuggest
+              suggestions={suggestions}
+              className="personinput" 
+              onSuggestionsFetchRequested={onSuggestionsFetchRequested.bind(this)}
+              onSuggestionsClearRequested={onSuggestionsClearRequested.bind(this)}
+              onSuggestionSelected={onSuggestionSelected.bind(this)}
+              getSuggestionValue={getSuggestionValue.bind(this)}
+              renderSuggestion={renderSuggestion.bind(this)}
+              inputProps={{ placeholder: "Search a person", value: this.state.value, onSubmit: this.handleSubmit.bind(this), onChange: this.handleChange.bind(this) }}
+            >
+
+            </Autosuggest>
+          </div>
+          <div className="col col-sm-5 float-right" style={{ height: "100%" }}>
+            {renderPersonId()}
+          </div>
+        </div>
+
+
+
+      </Fragment>
     )
   }
 
+
+
+
   renderPersonInfo() {
     const p = this.state.pick;
+    var personInfo;
+    if (p && p.newPerson) {
+      personInfo = (
+        <Fragment>
+          <div className="row">
+              <i>(This person does not exist in CBDB. A new person will be proposed.)</i>
+            </div>
+</Fragment>
+      )
+    }
     if (p && p.c_personid) {
-      return (
-        <div>
-          <div className="modal-footer mt-3">
-          </div>
-          <div className="container">
-
+      console.log("P object.");
+      console.log(p);
+      personInfo= (
+        <Fragment>
             <div className="row">
-
-              <b>{p.c_name_chn} (id =  {p.c_personid} )</b>
-
+              <b>{p.c_name_chn}</b>
+            </div>
+            <div className="row">
               <div>{p.c_name} </div>
             </div>
             <p></p>
+            <div className="row">
+              CBDB Person ID: {p.c_personid}
+            </div>
             <div className="row">
               {p.c_birth_year}
               {p.c_birth_nh}
             </div>
             <div className="row">
-              籍贯：{this.state.person && this.state.person.c_jiguan_chn}
+              Basic Affiliation(籍贯)：{this.state.person && this.state.person.c_jiguan_chn}
             </div>
             <div className="row">
-              朝代：{this.state.person && this.state.person.c_dynasty_chn}
+              Dynasty(朝代)：{this.state.person && this.state.person.c_dynasty_chn}
             </div>
             <div className="row">
               <p>{p.c_notes} </p>
             </div>
-          </div>
-
-        </div>
+          
+          </Fragment>
       )
     }
+    return (
+      <div>
+        <div className="modal-footer mt-3">
+        </div>
+        <div className="container">
+          {personInfo}
+        </div>
+      </div>
+    )
   }
 }
 export default ProposeValueModal;
