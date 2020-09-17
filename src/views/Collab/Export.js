@@ -29,11 +29,13 @@ class Export extends Component {
     }
 
     async csvClicked(e) {
+        if (this.state.myTask.data) {
+            await this.setTask(this.state.myTask.id);
+        }
         var rows = Object.values(this.state.myTask.data);
         const header = Object.keys(this.state.myTask.fields);
         rows = this._flatten(rows, this.state.myTask.fields);
         try {
-
             // console.log(this.state.myTask.fields);
             console.log(rows);
             var s = convertArrayToCSV(rows, {
@@ -50,15 +52,22 @@ class Export extends Component {
         }
     }
 
-    setTask(e) {
-
+    async setTask(id) {
+        const t = await this.props.client.service('tasks').get(id, {query: {perPage: 5000}});
+        console.log(t);
+        this.setState({myTask: t});
+        
     }
 
     async componentWillMount() {
-        const t = await this.props.client.service('tasks').get(1, { query: { edited: true } });
-        this.state.tasks.push(t);
-        // t.fields = new Map(t.fields);
-        this.setState({ myTask: t });
+        console.log("Loading tasks ...");
+        const tasks = await this.props.client.service('tasks').find({});
+        this.setState({ tasks: tasks })
+        if (tasks.length === 0) {
+            console.log("No task found!");
+            return;
+        }
+        this.setState({myTask: this.state.tasks[0]})
 
     }
 
@@ -78,21 +87,19 @@ class Export extends Component {
                         <div className="row mb-4 justify-content-center align-items-center">
                             <div className="col  d-flex justify-content-center">
                                 <Dropdown>
-                                    <Dropdown.Toggle variant="secondary" id="dropdown-basic" onClick={this.setTask.bind(this)}>
-                                        {this.state.tasks.length > 0 ? this.state.tasks[0].title : "<None>"}
+                                    <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                                    {this.state.myTask ? this.state.myTask.title : "<None>"}
                                     </Dropdown.Toggle>
                                     <Dropdown.Menu>
-                                        <Dropdown.Item >
-                                            {
-                                                this.state.tasks.map((task, index) => {
-                                                    if (index === 0)
-                                                        return;
-                                                    return (
-                                                        <a id={"task_" + index} className="dropdown-item" href="#">{index}. {task.title}</a>
-                                                    )
-                                                })
-                                            }
-                                        </Dropdown.Item>
+                                        {
+                                            this.state.tasks.map((task, index) => {
+                                                return (
+                                                    <Dropdown.Item key={"task_" + task.id} onClick={this.setTask.bind(this, task.id)}>
+                                                        {index}. {task.title}
+                                                    </Dropdown.Item>
+                                                )
+                                            })
+                                        }
                                     </Dropdown.Menu>
                                 </Dropdown>
                             </div>
@@ -102,7 +109,7 @@ class Export extends Component {
                         <div className="row mb-4 justify-content-center align-items-center">
                             <div className="col  d-flex justify-content-center">
 
-                                <button type="button" onClick={this.csvClicked.bind(this)} className="btn mr-2 col col-sm-auto btn-primary float-right mb-3 " data-dismiss="modal" >
+                                <button type="button" href="#" onClick={this.csvClicked.bind(this)} className="btn mr-2 col col-sm-auto btn-primary float-right mb-3 " data-dismiss="modal" >
                                     <svg className="bi bi-cloud-upload mr-2" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M4.887 6.2l-.964-.165A2.5 2.5 0 1 0 3.5 11H6v1H3.5a3.5 3.5 0 1 1 .59-6.95 5.002 5.002 0 1 1 9.804 1.98A2.501 2.501 0 0 1 13.5 12H10v-1h3.5a1.5 1.5 0 0 0 .237-2.981L12.7 7.854l.216-1.028a4 4 0 1 0-7.843-1.587l-.185.96z" />
                                         <path fillRule="evenodd" d="M5 8.854a.5.5 0 0 0 .707 0L8 6.56l2.293 2.293A.5.5 0 1 0 11 8.146L8.354 5.5a.5.5 0 0 0-.708 0L5 8.146a.5.5 0 0 0 0 .708z" />

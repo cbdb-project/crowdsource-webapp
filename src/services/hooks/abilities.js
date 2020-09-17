@@ -30,9 +30,6 @@ function defineAbilitiesFor(user) {
     const { can, cannot, build } = new AbilityBuilder(Ability);
 
     if (typeof rolePermissions[user.role] === 'function') {
-        console.log("Can create prop")
-        // builder.can("manage", ["proposals"]);
-        console.log("done Can create prop.")
         rolePermissions[user.role](user, {can, cannot});
         // console.log(build());
     } else {
@@ -49,16 +46,6 @@ module.exports = function authorize(name = null) {
         const service = name ? hook.app.service(name) : hook.service
         const serviceName = name || hook.path
 
-
-        console.log("================================================")
-
-        console.log("================================================")
-        console.log("Authorize(): this is hook");
-        console.log(hook.params);
-        console.log(action);
-        console.log(serviceName);
-        console.log("================================================")
-        console.log("================================================")
 
         hook.params.ability = defineAbilitiesFor(hook.params.user)
 

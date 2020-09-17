@@ -119,6 +119,8 @@ class TaskService {
             var orig = dt[0];
             var task = JSON.parse(dt[0].data);
             // const {data, pages, total} = this._paginate(task.data, page, perPage);
+
+            console.log(" -- Per page: " + perPage);
             Object.assign(task, {
                 page: page,
                 perPage: perPage,
