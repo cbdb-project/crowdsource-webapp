@@ -20,21 +20,28 @@ class ProposeValueModal extends Component {
     if (val) {
       // console.log(val);
       this.setState({ value: val, pick: null })
-      if (val.trim() !== "")
+
+      if (val.trim() != "") {
+
         this.queryAndUpdate(val);
-      else
-        this.setState({ suggestions: [] });
+        this.setState({ validInput: true })
+      }
+      else {
+
+        this.setState({ suggestions: [], validInput: false });
+      }
     } else {
-      this.setState({ value: "", suggestions: [], pick: null })
+      this.setState({ value: "", suggestions: [], validInput: false, pick: null })
     }
 
   }
 
   cleanup() {
 
-    console.log("Cleanup!");
+    // console.log("Cleanup!");
     this.setState({
       pick: null,
+      validInput: false,
       value: "", suggestions: [],
       errorMessage: null
     }, () => {
@@ -54,8 +61,8 @@ class ProposeValueModal extends Component {
   }
 
   _wrapPersonIf(p) {
-    console.log("Wrap person:")
-    console.log(p);
+    // console.log("Wrap person:")
+    // console.log(p);
     if (this.props.fieldDef.type === "person") {
       if (typeof p !== "object") {
         return {
@@ -76,7 +83,7 @@ class ProposeValueModal extends Component {
   }
 
   handleSubmit(e) {
-    console.log("who ami ... handle submit");
+    console.log(" handle submit");
     // console.log(this)
     this.setState({ errorMessage: null });
 
@@ -118,49 +125,40 @@ class ProposeValueModal extends Component {
   }
 
 
-  getPerson(id) {
-    this.setState({ isLoading: true });
-    fetch(SERVER + '/person/' + id)
-      .then(res => res.json())
-      .then((data) => {
-        this.setState({ isLoading: false })
-        console.log("Got person data!")
-        this.setState({ person: data })
-        console.log(data);
+  async getPerson(id) {
+    if (!id)
+      return;
+    try {
+      this.setState({ isLoading: true });
+      const data = await this.props.client.service('person').get(id);
+      this.setState({ isLoading: false })
+      console.log("Got person data!")
+      this.setState({ person: data })
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
 
 
-      })
-      .catch((e) => {
-        console.log(e);
-        this.setState({ person: [] });
-
-      });
   }
 
-  queryAndUpdate(q) {
+  async queryAndUpdate(q) {
+
     this.setState({ isLoading: true });
-    fetch(SERVER + '/person?q=' + q)
-      .then(res => res.json())
-      .then((data) => {
-        this.setState({ isLoading: false })
-        console.log(data);
-        if (data == null) {
-          data = [];
-        }
-        data.unshift({ c_name: "Suggest this as a new person", useUserInput: true })
-
-        this.setState({ suggestions: data })
-        // console.log("Query result size: " + data.length);
-        // if (data.length > 0)
-        //   console.log(data[0]);
-        // console.log(" -- end -- query  ");
-
-      })
-      .catch((e) => {
-        console.log(e);
-        this.setState({ suggestions: [] });
-
-      });
+    if (!q || q === "")
+      return;
+    try {
+      const data = await this.props.client.service('person').find({ query: { q: q } });
+      this.setState({ isLoading: false })
+      console.log(data);
+      if (data == null) {
+        data = [];
+      }
+      data.unshift({ c_name: "Suggest this as a new person", useUserInput: true })
+      this.setState({ suggestions: data })
+    } catch (e) {
+      console.log(e);
+    }
   }
 
 
@@ -235,7 +233,7 @@ class ProposeValueModal extends Component {
   }
   render() {
 
-    const disabled = (this.state.pick ? "" : "disabled");
+    const disabled = (this.state.validInput ? "" : "disabled");
 
     // console.log(thi)
     return (
@@ -258,7 +256,7 @@ class ProposeValueModal extends Component {
                         </svg>
                         <div className="float-right ml-2">Submit</div>
                       </button>
-                      <button type="button"  className="ml-2 col-sm-auto btn btn-warning" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
+                      <button type="button" className="ml-2 col-sm-auto btn btn-warning" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
                         {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
                         {/* <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
@@ -337,12 +335,14 @@ class ProposeValueModal extends Component {
       var value = props.suggestion;
       if (props.suggestion.useUserInput) {
         textValue = this.state.value;
-        value = {c_name_chn: textValue}
+        value = { c_name_chn: textValue }
         value.newPerson = true;
       }
       this.setState({
         value: textValue,
-        pick: value
+        pick: value,
+        validInput: true
+
       });
       console.log("Getting person id:" + props.suggestion.c_personid)
       this.getPerson(props.suggestion.c_personid);
@@ -391,7 +391,7 @@ class ProposeValueModal extends Component {
 
             <Autosuggest
               suggestions={suggestions}
-              className="personinput" 
+              className="personinput"
               onSuggestionsFetchRequested={onSuggestionsFetchRequested.bind(this)}
               onSuggestionsClearRequested={onSuggestionsClearRequested.bind(this)}
               onSuggestionSelected={onSuggestionSelected.bind(this)}
@@ -423,52 +423,54 @@ class ProposeValueModal extends Component {
       personInfo = (
         <Fragment>
           <div className="row">
-              <i>(This person does not exist in CBDB. A new person will be proposed.)</i>
-            </div>
-</Fragment>
+            <i>(This person does not exist in CBDB. A new person will be proposed.)</i>
+          </div>
+        </Fragment>
       )
     }
     if (p && p.c_personid) {
       console.log("P object.");
       console.log(p);
-      personInfo= (
+      personInfo = (
         <Fragment>
-            <div className="row">
-              <b>{p.c_name_chn}</b>
-            </div>
-            <div className="row">
-              <div>{p.c_name} </div>
-            </div>
-            <p></p>
-            <div className="row">
-              CBDB Person ID: {p.c_personid}
-            </div>
-            <div className="row">
-              {p.c_birth_year}
-              {p.c_birth_nh}
-            </div>
-            <div className="row">
-              Basic Affiliation(籍贯)：{this.state.person && this.state.person.c_jiguan_chn}
-            </div>
-            <div className="row">
-              Dynasty(朝代)：{this.state.person && this.state.person.c_dynasty_chn}
-            </div>
-            <div className="row">
-              <p>{p.c_notes} </p>
-            </div>
-          
-          </Fragment>
+          <div className="row">
+            <b>{p.c_name_chn}</b>
+          </div>
+          <div className="row">
+            <div>{p.c_name} </div>
+          </div>
+          <p></p>
+          <div className="row">
+            CBDB Person ID: {p.c_personid}
+          </div>
+          <div className="row">
+            {p.c_birth_year}
+            {p.c_birth_nh}
+          </div>
+          <div className="row">
+            Basic Affiliation(籍贯)：{this.state.person && this.state.person.c_jiguan_chn}
+          </div>
+          <div className="row">
+            Dynasty(朝代)：{this.state.person && this.state.person.c_dynasty_chn}
+          </div>
+          <div className="row">
+            <p>{p.c_notes} </p>
+          </div>
+
+        </Fragment>
       )
     }
-    return (
-      <div>
-        <div className="modal-footer mt-3">
+    if (p) {
+      return (
+        <div>
+          <div className="modal-footer mt-3">
+          </div>
+          <div className="container">
+            {personInfo}
+          </div>
         </div>
-        <div className="container">
-          {personInfo}
-        </div>
-      </div>
-    )
+      )
+    }
   }
 }
 export default ProposeValueModal;

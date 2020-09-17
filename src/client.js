@@ -7,7 +7,7 @@ const socketio = require('@feathersjs/socketio-client');
 
 const client = feathers()
 
-const socket = io('http://' + location.hostname + ':5000');
+const socket = io('http://localhost:5000');
 
 (async () => {
     client.configure(socketio(socket));
@@ -18,14 +18,14 @@ const socket = io('http://' + location.hostname + ':5000');
 
     const { accessToken } = await client.authenticate({
         strategy: 'local',
-        email: 'd@lei.je',
-        password: '123456'
+        email: 'chad',
+        password: 'admin'
     })
 
     // console.log(accessToken);
     // console.log('Authenticated!');
 
-    u = await client.service('users').get(1)
+    u = await client.service('tasks').update(1,{})
     console.log(u);
 
 })();

@@ -6,6 +6,8 @@ const fs = require('fs').promises;
 const knex = require('knex');
 
 
+var bcrypt = require('bcryptjs');
+
 // const sqlite3 = require('sqlite3').verbose();
 // connSqlite();
 const taskdb = better('./data/tasks.db');
@@ -49,23 +51,33 @@ const userDb = knex({
         filename: './data/user.db'
     }
 });
-function createUsers() {
+ async function createUsers() {
     try {
 
-        userDb.schema.dropTableIfExists('users').createTable('users', function (table) {
+        await userDb.schema.dropTableIfExists('users').createTable('users', function (table) {
             table.increments('id');
             table.string('email');
             table.string('password');
             table.string('nickname');
+            table.string('role');
             table.timestamps('created');
-        }).then(() => {
-            console.log("user table created")
-            process.exit();
         })
         
     }
     catch (err) { console.log(err); throw err }
+}
 
+async function addUsers() {
+    console.log("Adding users ...")
+    try {
+        const pwd = bcrypt.hashSync('admin', 8);
+        await userDb('users').insert({email: "admin", password: pwd, nickname: "admin",role: "admin"})
+        console.log("done!")
+    } catch (e) {
+        console.log(e);
+    }
+    
+    
 }
 
 async function constructQuery(task) {
@@ -350,7 +362,8 @@ async function main() {
     await createProposals();
     await addProposals();
     await validateProposals();
-     createUsers();
+    await createUsers();
+    await addUsers();
      
 }
 main();

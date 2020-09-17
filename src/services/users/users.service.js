@@ -2,6 +2,7 @@ const { Service } = require('feathers-knex')
 const hooks = require('./users.hooks')
 const knex = require('knex');
 
+
 module.exports = function users(app) {
 
   const userDb = knex({
@@ -10,7 +11,6 @@ module.exports = function users(app) {
       filename: './data/user.db'
     }
   });
-
 
   const options = {
     name: 'users',

@@ -106,8 +106,10 @@ class Collab extends Component {
       console.log("Loading tasks ...");
       const tasks = await this.props.client.service('tasks').find({});
       this.setState({ tasks: tasks })
-      if (tasks.length === 0)
+      if (tasks.length === 0) {
+        console.log("No task found!");
         return;
+      }
 
 
       var taskId = tasks[0].id;
@@ -426,6 +428,7 @@ class Collab extends Component {
           onClosed={this.onFieldEditorClosed.bind(this)}
           fieldDef={this.state.fieldDef}
           initialValue={this.state.fieldInitial}
+          client={this.props.client}
           currField={this.state.currField}></ProposeValueModal>
 
         <ReviewProposalModal isOpen={this.state.reviewProposal}
