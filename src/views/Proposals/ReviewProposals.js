@@ -69,10 +69,10 @@ class ReviewProposalModal extends Component {
     render() {
       // if (Object.entries(this.props.data).length >0)
       // (this.props.cols) && (console.log(Object.entries(this.props.cols)));
-      console.log(this.props.data);
+      // console.log(this.props.data);
       const data = this.props.data;
       var cols = (data && Object.keys(data).length > 0) ? Object.values(data)[0]: [];
-      console.log(cols);
+      // console.log(cols);
 
       var count = cols.length;
       var tdClass = ""

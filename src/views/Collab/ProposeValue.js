@@ -138,8 +138,6 @@ class ProposeValueModal extends Component {
     } catch (e) {
       console.log(e);
     }
-
-
   }
 
   async queryAndUpdate(q) {

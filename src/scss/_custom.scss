@@ -226,12 +226,17 @@ body.modal-open {
   // background-color: rgb(123, 123, 123) ;
 }
 
+
+.cardselected  svg {
+  fill:  rgb(123, 123, 123);
+  background-color: rgb(123, 123, 123);
+}
 .cardoption:hover svg {
   fill: rgb(97, 219, 240);
   background-color: rgb(123, 123, 123);
 }
 
-.cardoption:hover {
+.cardoption:hover,.cardselected {
   cursor: pointer;
   background-color: rgb(123, 123, 123);
   background-size: 100% 100%;
@@ -319,4 +324,15 @@ body.modal-open {
 
 .vh-25 {
   max-height: 25vh !important;
+}
+
+.hr-bottom {
+  border-bottom: 1px solid #c8ced3;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+.nav-active {
+  text-decoration: underline;
+  font-weight: bold;
+  color: black;
 }

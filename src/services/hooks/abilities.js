@@ -7,18 +7,20 @@ const { Forbidden } = require('@feathersjs/errors')
 // Ability.addAlias('manage', 'delete')
 // Ability.addAlias('manage', 'update')
 // Ability.addAlias('manage', 'create')
-// Ability.addAlias('remove', 'delete')
+
 
 const Roles = 'contributor' | 'reviewer' | 'admin';
 
 const rolePermissions = {
     contributor(user, { can ,cannot}) {
         can('create', ['proposals'])
-        can("get", ["users", "tasks"]);
+        can("get", ["users", "tasks", "abilities"]);
+        can("find", ["tasks", "proposals", "person"]);
     }
     , reviewer(user, { can,cannot }) {
         can('manage', ['tasks','proposals'])
-        can("get", ["users"]);
+        can("get", ["users", "abilities"]);
+        can("find", ["tasks", "proposals","person"]);
     }
     , admin(user,{can,cannot}) {
         can("manage", ["all"]);
@@ -26,7 +28,7 @@ const rolePermissions = {
     }
 }
 
-function defineAbilitiesFor(user) {
+const defineAbilitiesFor = function defineAbilitiesFor(user) {
     const { can, cannot, build } = new AbilityBuilder(Ability);
 
     if (typeof rolePermissions[user.role] === 'function') {
@@ -35,12 +37,12 @@ function defineAbilitiesFor(user) {
     } else {
         throw new Error(`Trying to use unknown role "${user.role}"`);
     }
-    
-
     return build();
 }
 
-module.exports = function authorize(name = null) {
+module.exports.defineAbilitiesFor = defineAbilitiesFor;
+
+module.exports.authorize = function authorize(name = null) {
     return async function (hook) {
         const action = hook.method
         const service = name ? hook.app.service(name) : hook.service

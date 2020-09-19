@@ -1,5 +1,5 @@
 const { when } = require('feathers-hooks-common');
-const authorize = require('./hooks/abilities');
+const {authorize} = require('./hooks/abilities');
 const authenticate = require('./hooks/authenticate');
 
 

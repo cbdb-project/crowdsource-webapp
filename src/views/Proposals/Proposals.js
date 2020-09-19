@@ -19,6 +19,7 @@ class Proposals extends Component {
       affectedRows: {},
       affectedCols: {},
       reviewProposal: false,
+      resetToggle: false,
       isLoading: true,
     };
 
@@ -118,10 +119,10 @@ class Proposals extends Component {
     }
     const task = this.state.myTask;
     console.log(task);
-    console.log(task.proposals)
+    // console.log(task.proposals)
     const data = Object.values(task.data);
 
-    console.log(data);
+    // console.log(data);
 
     return (
       <div className="">
@@ -140,7 +141,7 @@ class Proposals extends Component {
                     {
                       this.state.tasks.map((task, index) => {
                         return (
-                          <Dropdown.Item onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
+                          <Dropdown.Item  key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
                           </Dropdown.Item>
                         )
                       })
@@ -158,9 +159,9 @@ class Proposals extends Component {
         <div className="row align-items-center justify-content-between mt-0 mb-1">
           <div className="col col-sm-auto">
 
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" onClick={this.showCompleted.bind(this)} />
-              <label class="form-check-label" for="defaultCheck1">
+            <div className="form-check">
+              <input className="form-check-input" type="checkbox" value="" id="defaultCheck1" onClick={this.showCompleted.bind(this)} />
+              <label className="form-check-label" htmlFor="defaultCheck1">
                 Show completed tasks
                   </label>
             </div>
@@ -232,13 +233,13 @@ class Proposals extends Component {
     const task = this.state.myTask;
     // const proposals = Object.keys(task.proposals[pk]);
     const fieldName = this.state.myFields[vindex].field_name;
-    console.log(fieldName);
+    // console.log(fieldName);
 
     var pValues = [];
     if (task.proposals.hasOwnProperty(pk) && task.proposals[pk].hasOwnProperty(fieldName))
       pValues = task.proposals[pk][fieldName];
 
-    console.log(pValues);
+    // console.log(pValues);
 
     // pValues = pValues.filter(this._onlyUnique);
 
@@ -247,7 +248,9 @@ class Proposals extends Component {
         row={index} col={vindex} id={"_c_" + index + "_" + vindex}
         primaryKey={pk}
         origValue={origValue}
+        resetToggle={this.state.resetToggle}
         onFieldClicked={this.onFieldClicked.bind(this)}
+        
         values={pValues}>
       </MultiField>
     } else {
@@ -266,11 +269,9 @@ class Proposals extends Component {
 
   }
 
-
-
   discardClicked(e) {
-    this.setState({ affectedRows: {} });
-
+    this.setState({ affectedRows: {}, resetToggle: true});
+    // this.setState({resetToggle: false})
   }
 
   reviewClicked(e) {
@@ -280,6 +281,7 @@ class Proposals extends Component {
 
   // Upon a proposed value being accepted
   onProposalAccepted(value) {
+    this.setState({resetToggle: false})
     const comp = this.state.editingFieldComp;
     comp.setState({ acceptedValue: value });
 
@@ -328,8 +330,6 @@ class Proposals extends Component {
     const rows = Object.values(aRows);
 
     const updated = {};
-
-
     for (var i = 0; i < pks.length; i++) {
       const d = [];
       for (var j = 0; j < rows[i].length; j++) {
@@ -343,7 +343,7 @@ class Proposals extends Component {
 
     const t = await this.props.client.service('tasks').update(this.state.myTask.id, updated);
 
-    console.log(t);
+    // console.log(t);
 
     // Force refresh the table
     // this.setState({ myTask: { data: {} } });
@@ -361,8 +361,8 @@ class Proposals extends Component {
       // return console.log(task);
     });
     const disable = (Object.values(this.state.affectedRows).length === 0) ? true : "";
-    console.log("Enabled: " + Object.values(this.state.affectedRows).length);
-    console.log("Enabled: " + disable);
+    // console.log("Enabled: " + Object.values(this.state.affectedRows).length);
+    // console.log("Enabled: " + disable);
     return (
       <div>
         <div></div>
@@ -413,6 +413,9 @@ class Proposals extends Component {
           onClosed={this.onFieldEditorClosed.bind(this)}
           comp={this.state.editingFieldComp}
           fieldDef={this.state.fieldDef}
+          client={this.props.client}
+          acceptedValue={this.state.editingFieldComp?this.state.editingFieldComp.state.acceptedValue:null}
+          origValue={this.state.editingFieldComp?this.state.editingFieldComp.props.origValue:null}
           // proposals={this.state.currFieldProposals}
           currField={this.state.currField}></PickProposalModal>
 
