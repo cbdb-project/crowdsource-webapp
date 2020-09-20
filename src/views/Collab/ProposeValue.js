@@ -247,7 +247,7 @@ class ProposeValueModal extends Component {
       </Fragment>
     ) : "";
 
-    var dialogStyle = "confirm-dialog modal-lg width-50"
+    var dialogStyle = "confirm-dialog modal-lg width-50 scrollable"
     dialogStyle += isPersonBox ? " height-50" : "";
 
     const title = "Propose a value " + (this.props.fieldDef != null ? (": " + this.props.fieldDef.name) : "")
@@ -262,14 +262,14 @@ class ProposeValueModal extends Component {
             <span aria-hidden="true">&times;</span>
           </button></div>
         <div className="modal-body ">
-          <div className="container-fluid">
+          <div className="container-fluid ">
             <div className="row align-items-end">
               <div className="col float-left ml-0 mr-3" style={{ height: "100%" }}>
                 {this.renderField()}
               </div>
               <div className="col col-sm-auto">
                 <div className="row">
-                  <button type="button" disabled={disabled} className="ml-2 col-sm-auto btn btn-primary" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
+                  <button type="button" disabled={disabled} className="ml-2 col-sm-auto blob-btn-lite  " data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
                     <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                       <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
                       <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
@@ -277,7 +277,7 @@ class ProposeValueModal extends Component {
                     </svg>
                     <div className="float-right ml-2">Submit</div>
                   </button>
-                  <button type="button" className="ml-2 col-sm-auto btn btn-warning" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
+                  <button type="button" className="ml-2 col-sm-auto blob-btn-lite " data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
                     <div className="float-right ml-2">Cancel</div>
                   </button>
                 </div>

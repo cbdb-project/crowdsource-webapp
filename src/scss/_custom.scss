@@ -75,13 +75,13 @@
   &:hover {
     background-size: 6px 4px;
     background-position-y: bottom;
-    background-image: linear-gradient(to right, darkturquoise 75%, transparent 75%);
+    background-image: linear-gradient(to right, #a330ec 75%, transparent 75%);
     font-weight: bold;
   }
   cursor: pointer;
 }
 .editable-col-edited {
-  background-image: linear-gradient(to right, darkturquoise 75%, transparent 75%);
+  background-image: linear-gradient(to right, #a330ec 75%, transparent 75%);
   background-size: 100% 0.5em;
 }
 .editable-field {
@@ -94,32 +94,35 @@
   // max-width: 90%;
 }
 .table-fixed {
-  
-  tbody{
-    height:200px;
-    overflow-y:auto;
+  tbody {
+    height: 200px;
+    overflow-y: auto;
     width: 100%;
-    }
-  thead,tbody,tr,td,th{
-    display:block;
   }
-  tbody{
-    td{
-      float:left;
+  thead,
+  tbody,
+  tr,
+  td,
+  th {
+    display: block;
+  }
+  tbody {
+    td {
+      float: left;
     }
   }
   thead {
-    tr{
-      th{
-        float:left;
+    tr {
+      th {
+        float: left;
         position: relative;
         &::after {
-          content: '';
+          content: "";
           clear: both;
           display: block;
-      }
-       background-color: #f39c12;
-       border-color:#e67e22;
+        }
+        background-color: #f39c12;
+        border-color: #e67e22;
       }
     }
   }
@@ -181,7 +184,7 @@ a.paginate.current:not([href]) {
 .person-info {
   background-color: #f4f4f4;
   overflow: scroll;
-  border: dashed 1pt #a330ec;
+  border: dashed 2pt #a330ec;
   // border-left: dotted 1pt #a330ec;
   // border-right: dotted 1pt #a330ec;
 
@@ -306,18 +309,242 @@ body.modal-open {
 }
 
 .scrollable {
-  overflow: scroll;
+  overflow: auto;
 }
 
 .height-50 {
   height: 50%;
 }
 
+.height-80 {
+  height: 80%;
+}
+
+.buttons {
+  margin-top: 50px;
+  text-align: center;
+  border-radius: 30px;
+}
+
+$cyan: #0505a9;
+$dark: #ffffff;
+$borderW: 1px;
+
+.card {
+  border-radius: 10px;
+  border: $borderW solid darkgray;
+}
+
+.blob-btn,
+.discard-button {
+  $numOfBlobs: 4;
+  z-index: 1;
+  position: relative;
+  padding: 20px 25px;
+  margin-bottom: 30px;
+  text-align: center;
+  text-transform: uppercase;
+  color: $cyan;
+  font-size: 1.1em;
+  font-weight: bold;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  transition: color 0.2s;
+  cursor: pointer;
+  border-radius: 30px;
+
+  &:disabled {
+    border: $borderW solid rgb(85, 0, 0);
+  }
+  &:before {
+    content: "";
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border: $borderW solid $cyan;
+    border-radius: 30px;
+
+   
+  }
+
+  &:after {
+    content: "";
+    z-index: -2;
+    position: absolute;
+    left: $borderW * 1.5;
+    top: $borderW * 1.5;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s 0.2s;
+    border-radius: 30px;
+  }
+
+  &:hover {
+    color: $dark;
+    border-radius: 30px;
+    &:after {
+      transition: all 0.3s;
+      left: 0;
+      top: 0;
+      border-radius: 30px;
+    }
+  }
+
+  &__inner {
+    z-index: -1;
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    background: #ffffff;
+  }
+
+  // additional container created, because in FF blobs are breaking overflow:hidden of element with svg gooey filter
+  &__blobs {
+    position: relative;
+    display: block;
+    height: 100%;
+    filter: url("#goo");
+  }
+
+  &__blob {
+    position: absolute;
+    top: $borderW;
+    width: 120% / $numOfBlobs;
+    height: 100%;
+    background: $cyan;
+    border-radius: 100%;
+    transform: translate3d(0, 150%, 0) scale(1.7);
+    transition: transform 0.45s;
+
+    @supports (filter: url("#goo")) {
+      transform: translate3d(0, 150%, 0) scale(1.4);
+    }
+
+    @for $i from 1 through $numOfBlobs {
+      &:nth-child(#{$i}) {
+        left: ($i - 1) * (120% / $numOfBlobs);
+        transition-delay: ($i - 1) * 0.08s;
+      }
+    }
+
+    .blob-btn:hover & {
+      transform: translateZ(0) scale(1.7);
+
+      @supports (filter: url("#goo")) {
+        transform: translateZ(0) scale(1.4);
+      }
+    }
+  }
+}
+
+.blob-btn-lite {
+  z-index: 1;
+  position: relative;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  text-align: center;
+  text-transform: uppercase;
+  // color: $cyan;
+  font-size: 1em;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  transition: color 0.2s;
+  cursor: pointer;
+  border-radius: 30px;
+
+  &:before {
+    content: "";
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border: $borderW solid $cyan;
+    border-radius: 15px;
+  }
+
+  &:after {
+    content: "";
+    z-index: -2;
+    position: absolute;
+    left: $borderW * 1.5;
+    top: $borderW * 1.5;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s 0.2s;
+    border-radius: 15px;
+  }
+
+  &:hover {
+    color: $dark;
+    border-radius: 15px;
+    &:after {
+      transition: all 0.3s;
+      left: 0;
+      top: 0;
+      border-radius: 15px;
+    }
+  }
+}
+
+.discard-button {
+  text-transform: uppercase;
+  color: darkgray;
+  font-size: 1.1em;
+  font-weight: normal;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  transition: color 0.2s;
+  cursor: pointer;
+  border-radius: 30px;
+  &:before {
+    border: none;
+    content: "";
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+    border-radius: 30px;
+  }
+
+  &:hover {
+    color: rgba(97, 97, 97, 0.892);
+    border-radius: 30px;
+    &:after {
+      transition: all 0.3s;
+      left: 0;
+      top: 0;
+      border-radius: 30px;
+    }
+  }
+}
 
 .width-50 {
   width: 50%;
 }
-
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
 .confirm-dialog {
   position: absolute;
   border: 1px solid rgb(204, 204, 204);
@@ -325,8 +552,8 @@ body.modal-open {
   padding: 20px;
   outline: none;
   border-radius: 4px;
-  overflow: scroll;
-  
+  // overflow: hidden;
+
   top: 50%;
   left: 50%;
   right: auto;
@@ -343,6 +570,7 @@ body.modal-open {
 
 .modal-header {
   font-weight: bold;
+  font-size: 1.1em;
 }
 
 .task-selector {

@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 
 import {
   Card,
+  Row,
   Table,
 } from 'reactstrap';
 
@@ -96,15 +97,15 @@ class ReviewProposalModal extends Component {
   renderMessage() {
     if (this.state.message === "success")
       return (
-        <h3>Proposal submitted successfully!</h3>
+        <div>Proposal submitted successfully!</div>
       )
     else if (this.state.message === "error")
       return (
-        <h3>Error! Failed to submit proposal.</h3>
+        <h5>Error! Failed to submit proposal.</h5>
       );
     else
       return (
-        <h3>Unknown internal state.</h3>
+        <h5>Unknown internal state.</h5>
       )
   }
 
@@ -170,43 +171,50 @@ class ReviewProposalModal extends Component {
 
 
     const hasChanges = (this.props.cols != null) && Object.values(this.props.cols).length > 0;
-    const submitDisabled = hasChanges ? "disabled": "enabled";
+    const submitDisabled = hasChanges ? "disabled" : "enabled";
 
     console.log("has changes?");
-    console.log( this.props.cols);
+    console.log(this.props.cols);
     return (
-      <Modal isOpen={this.props.isOpen} className="confirm-dialog modal-lg" >
-        <div className="modal-header">
-          Review proposals
+      <Modal isOpen={this.props.isOpen} className="confirm-dialog modal-lg width-50" >
+        <div className="container align-items-end">
+
+          <div className="modal-header">
+            Review proposals
             </div>
 
-        <div className="modal-body " >
-          {/* <p>Modal body text goes here.</p> */}
-          <div className="container" style={!this.state.showMessaging ? { display: "none" } : {}}>
-            {this.renderMessage()}
-          </div>
-          {/* <div className="container " style={this.state.showMessaging ? { display: "none" } : {}}> */}
-            {/* <div className="container-fluid modal-table-wrapper mt-2 mb-2"> */}
+          <div className="modal-body " >
+            {/* <p>Modal body text goes here.</p> */}
+            <div className="container" style={!this.state.showMessaging ? { display: "none" } : {}}>
+              {this.renderMessage()}
+            </div>
+            <div className="container text-nowrap scrollable"  style={this.state.showMessaging ? { display: "none" } : {}}>
+              {/* <div className="container-fluid modal-table-wrapper mt-2 mb-2"> */}
               {(hasChanges) ? this.renderChanges() : "No changes proposed. "}
-            {/* </div> */}
-          {/* </div> */}
+              {/* </div> */}
+            </div>
 
-        </div>
-        <div className="modal-footer" >
-
-          <div className="row mt-3">
-            <button type="button" className="btn btn-default" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>Cancel</button>
-
-            <button type="button" className="ml-2 btn btn-primary" data-dismiss="modal">
-              {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
-              <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
-                <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
-              </svg>
-              <div  className="float-right ml-2">Submit</div>
-            </button>
           </div>
+          <div className="modal-footer  align-self-end" >
+            <div className="row mt-3">
+              <div style={this.state.showMessaging ? { display: "none" } : {}}>
+                <button type="button" className="btn btn-default" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>Cancel</button>
+                <button type="button" className="ml-2 btn btn-primary" data-dismiss="modal">
+                  {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
+                  <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                    <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
+                    <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
+                  </svg>
+                  <div className="float-right ml-2" onClick={this.handleSubmit.bind(this)}>Submit</div>
+                </button>
+              </div>
+              <div style={!this.state.showMessaging ? { display: "none" } : {}}>
+                <button type="button" className="btn btn-default btn-success" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>Ok</button>
+              </div>
+            </div>
+          </div>
+
         </div>
 
 
