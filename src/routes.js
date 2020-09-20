@@ -11,6 +11,7 @@ const Import = React.lazy(() => import('./views/Collab/Import.js'));
 const Login = React.lazy(() => import('./views/Pages/Login'));
 
 const Register = React.lazy(() => import('./views/Pages/Register'));
+const ManageTasks = React.lazy(() => import('./views/Manage/ManageTasks'));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -23,6 +24,7 @@ const routes = [
   { path: '/import', name: 'Import Task', component: Import },
   { path: '/login', name: 'CDBB Login', component: Login },
   { path: '/register', name: 'CDBB Register', component: Register },
+  { path: '/manageTasks', name: 'Manage Tasks', component: ManageTasks },
   
 ];
 

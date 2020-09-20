@@ -71,6 +71,10 @@ class Import extends Component {
                 {({ browseFiles, getDropZoneProps }) => {
                     return (
                         <div>
+                            <div className="mb-4">
+                            Task Name: 
+                            <input id="task-name" onChange={this.onChange.bind(this)} type="text" className="form-control" id="taskname" />
+                            </div>
                             <label>Drag and drop files.</label>
                             <div
                                 {...getDropZoneProps({
@@ -133,44 +137,23 @@ class Import extends Component {
     render() {
         // this.state.files.map((i) => {console.log(i)});
         return (
-            <div>
-                <div className="card">
-
-                    <div className="card-header">
-                        Import a Task
+            <div  className="container">
+                <div className="card mt-4">
+                <div className="modal-header">
+                        Import task data
                     </div>
                     <div className="card-body">
-                        <div className="row mb-5 justify-content-center align-items-center">
+                        <div className="row mb-4 justify-content-center align-items-center">
                             <div className="col col-3  justify-content-center">
                                 {this.renderMessage()}
                             </div>
                         </div>
-                        <div className="row mb-3 justify-content-center align-items-center">
-                            <div className="col col-3  justify-content-center">
-                                <div className="row justify-content-center align-items-center">
-                                    <div className="col col-sm-4 justify-content-center">
-                                        <b> Task name:</b>
-                                    </div>
-                                    <div className="col col-sm-8 justify-content-center">
-                                        <input id="task-name" onChange={this.onChange.bind(this)} type="text" className="form-control" id="taskname" />
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <div className="row mb-4 justify-content-center align-items-center">
-                            <div className="col col-3 d-flex justify-content-center">
-
-                            </div>
-
-
-                        </div>
 
                         <div className="row mb-4 justify-content-center align-items-center">
-                            <div className="col col-3 d-flex justify-content-center">
+                            
                                 {this.renderFileUpload()}
 
-                            </div>
+                            
                         </div>
                         <div className="row mb-4 justify-content-center align-items-center">
                             <div className="col  d-flex justify-content-center">

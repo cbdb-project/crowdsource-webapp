@@ -22,6 +22,15 @@ class TaskService {
     async create(data) {
     }
 
+    async remove(id) {
+        console.log("Task service: delete task " + id);
+        var q = "delete from tasks where id=@id";
+        var dt = taskdb.prepare(q);
+        var stmt = dt.run({id: id});
+        console.log(stmt);
+        return stmt;
+    }
+
     _paginate(data, page, perPage, target) {
         page -= 1;
         if (page < 0) {
@@ -97,7 +106,7 @@ class TaskService {
         
         dt.map((d) => {
             var task = JSON.parse(d.data);
-            var t = {id: d.id, title: task.title};
+            var t = {id: d.id, title: task.title, author: task.title};
             tasks.push(t)
             console.log(t);
         })

@@ -90,6 +90,40 @@
   }
   cursor: pointer;
 }
+.w80 {
+  // max-width: 90%;
+}
+.table-fixed {
+  
+  tbody{
+    height:200px;
+    overflow-y:auto;
+    width: 100%;
+    }
+  thead,tbody,tr,td,th{
+    display:block;
+  }
+  tbody{
+    td{
+      float:left;
+    }
+  }
+  thead {
+    tr{
+      th{
+        float:left;
+        position: relative;
+        &::after {
+          content: '';
+          clear: both;
+          display: block;
+      }
+       background-color: #f39c12;
+       border-color:#e67e22;
+      }
+    }
+  }
+}
 
 a.paginate:not([href]) {
   font-weight: bold;
@@ -105,8 +139,6 @@ a.paginate.current:not([href]) {
   color: darkblue;
   // text-decoration: underline;
   font-size: 1em;
-
-
 }
 
 .modal-table-wrapper {
@@ -137,6 +169,23 @@ a.paginate.current:not([href]) {
   transition: background-size 0.2s ease-in;
 
   cursor: pointer;
+}
+.personinput {
+  // background-color: #f4f4f4;
+  // border-top: none;
+  // border-left: none;
+  // border-right: none;
+
+  // border-bottom: solid 1pt #a330ec;
+}
+.person-info {
+  background-color: #f4f4f4;
+  overflow: scroll;
+  border: dashed 1pt #a330ec;
+  // border-left: dotted 1pt #a330ec;
+  // border-right: dotted 1pt #a330ec;
+
+  // border-bottom: dotted 1pt #a330ec;
 }
 
 .multifield.accepted {
@@ -195,8 +244,8 @@ body.modal-open {
 }
 
 .ReactModal__Body--open > #root {
-  overflow:hidden;
-  
+  overflow: hidden;
+
   -webkit-filter: blur(2px);
   -moz-filter: blur(2px);
   -o-filter: blur(v);
@@ -226,22 +275,94 @@ body.modal-open {
   // background-color: rgb(123, 123, 123) ;
 }
 
-
-.cardselected  svg {
-  fill:  rgb(123, 123, 123);
+.cardselected svg {
+  fill: rgb(123, 123, 123);
   background-color: rgb(123, 123, 123);
 }
 .cardoption:hover svg {
   fill: rgb(97, 219, 240);
   background-color: rgb(123, 123, 123);
 }
+.action-icon {
+  cursor: pointer;
+}
 
-.cardoption:hover,.cardselected {
+// position: absolute;
+// top: 50%;
+// left: 50%;
+// right: auto;
+// bottom: auto;
+// border: 1px solid rgb(204, 204, 204);
+// background: rgb(255, 255, 255);
+// overflow: auto;
+// border-radius: 4px;
+// outline: none;
+// padding: 20px;
+// margin-right: -50%;
+// transform: translate(-50%, -50%);
+
+.visible-overflow {
+  overflow: visible;
+}
+
+.scrollable {
+  overflow: scroll;
+}
+
+.height-50 {
+  height: 50%;
+}
+
+
+.width-50 {
+  width: 50%;
+}
+
+.confirm-dialog {
+  position: absolute;
+  border: 1px solid rgb(204, 204, 204);
+  background: rgb(255, 255, 255);
+  padding: 20px;
+  outline: none;
+  border-radius: 4px;
+  overflow: scroll;
+  
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+
+.highlight-changes {
+  background-color: #9a249d;
+  color: white;
+  // font-style: italic;
+}
+
+.modal-header {
+  font-weight: bold;
+}
+
+.task-selector {
+  width: 30em;
+  border-color: #9d9d9d;
+  margin-bottom: 1rem;
+}
+.cardoption:hover,
+.cardselected {
   cursor: pointer;
   background-color: rgb(123, 123, 123);
   background-size: 100% 100%;
   font-style: bold;
   color: rgba(255, 255, 255, 0.762);
+}
+
+.data-table tr th {
+  background-color: #474747;
+  color: #ffffff;
+  border-color: #ffffff;
 }
 
 .field-input {

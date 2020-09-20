@@ -96,12 +96,11 @@ class PickProposalModal extends Component {
 
   render() {
     // console.log(thi)
+    var  dialogStyle = "confirm-dialog modal-lg width-50 height-50";
+    
     return (
-      <Modal isOpen={this.props.isOpen} className="modal-lg " style={{ overlay: { position: "absolute", width: "auto", bottom: "auto", top: this._absPos(this.props.currField).top, left: this._absPos(this.props.currField).left } }} >
-        <div className="modal-dialog mt-0 mb-0 modal-lg" role="document">
-
-          <div className="modal-content">
-            <div className="modal-header"><b>Adopt a proposal </b>
+      <Modal isOpen={this.props.isOpen} className={dialogStyle} >
+            <div className="modal-header">Adopt a proposal 
               <button type="button" className="close" onClick={this.handleCancel.bind(this)} aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button></div>
@@ -114,11 +113,9 @@ class PickProposalModal extends Component {
                   <div className={"col col-sm-6"}>
                     {this.renderPersonInfo()}
                   </div>
-                </div>
               </div>
 
 
-            </div>
           </div>
         </div>
       </Modal>

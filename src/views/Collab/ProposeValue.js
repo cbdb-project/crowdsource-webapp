@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import Modal from 'react-modal';
 import Autosuggest from 'react-autosuggest';
-const SERVER = 'http://' + window.location.hostname + ':5000'
+import { Card } from 'reactstrap';
+import { ChevronDownIcon } from '@primer/octicons-react'
 
 
 class ProposeValueModal extends Component {
@@ -42,6 +43,7 @@ class ProposeValueModal extends Component {
     this.setState({
       pick: null,
       validInput: false,
+      person: null,
       value: "", suggestions: [],
       errorMessage: null
     }, () => {
@@ -129,6 +131,7 @@ class ProposeValueModal extends Component {
     if (!id)
       return;
     try {
+      this.setState({ person: null });
       this.setState({ isLoading: true });
       const data = await this.props.client.service('person').get(id);
       this.setState({ isLoading: false })
@@ -232,49 +235,63 @@ class ProposeValueModal extends Component {
   render() {
 
     const disabled = (this.state.validInput ? "" : "disabled");
+    const isPersonBox = (this.props.fieldDef && this.props.fieldDef.type == "person")
+
+    const personInfoBox = isPersonBox ? (
+      <Fragment>
+        <div className="mt-3"></div>
+        <ChevronDownIcon />
+        <div className="scrollable">
+          {this.renderPersonInfo()}
+        </div>
+      </Fragment>
+    ) : "";
+
+    var dialogStyle = "confirm-dialog modal-lg width-50"
+    dialogStyle += isPersonBox ? " height-50" : "";
+
+    const title = "Propose a value " + (this.props.fieldDef != null ? (": " + this.props.fieldDef.name) : "")
 
     // console.log(thi)
     return (
-      <Modal isOpen={this.props.isOpen} className="modal-small " style={{ overlay: { position: "absolute", right: "auto", bottom: "auto", top: this._absPos(this.props.currField).top, left: this._absPos(this.props.currField).left } }} >
-        <div className="modal-dialog  mt-0 mb-0  " role="document">
+      // style={{ overlay: { position: "absolute", right: "auto", bottom: "auto", top: this._absPos(this.props.currField).top, left: this._absPos(this.props.currField).left } }}
+      <Modal isOpen={this.props.isOpen} className={dialogStyle}>
 
-          <div className="modal-content">
-            <div className="modal-body ">
-              <div className="container ">
-                <div className="row  align-items-end">
-                  <div className="float-left pl-0 col ml-0 mr-3" style={{ height: "100%" }}>{this.renderField()}</div>
-                  <div className="col col-sm-auto">
-                    <div className="row">
-                      <button type="button" disabled={disabled} className="ml-2 col-sm-auto btn btn-primary" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
-                        {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
-                        <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                          <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                          <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
-                          <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
-                        </svg>
-                        <div className="float-right ml-2">Submit</div>
-                      </button>
-                      <button type="button" className="ml-2 col-sm-auto btn btn-warning" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
-                        {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
-                        {/* <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                        <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
-                        <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
-                      </svg> */}
-                        <div className="float-right ml-2">Cancel</div>
-                      </button>
-                    </div>
-                  </div>
+        <div className="modal-header">{title}
+          <button type="button" className="close" onClick={this.handleCancel.bind(this)} aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button></div>
+        <div className="modal-body ">
+          <div className="container-fluid">
+            <div className="row align-items-end">
+              <div className="col float-left ml-0 mr-3" style={{ height: "100%" }}>
+                {this.renderField()}
+              </div>
+              <div className="col col-sm-auto">
+                <div className="row">
+                  <button type="button" disabled={disabled} className="ml-2 col-sm-auto btn btn-primary" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
+                    <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                      <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
+                      <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
+                    </svg>
+                    <div className="float-right ml-2">Submit</div>
+                  </button>
+                  <button type="button" className="ml-2 col-sm-auto btn btn-warning" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
+                    <div className="float-right ml-2">Cancel</div>
+                  </button>
                 </div>
-                {this.renderMessage()}
-
               </div>
 
-              {this.renderPersonInfo()}
-
             </div>
+            {personInfoBox}
+            {this.renderMessage()}
+
           </div>
+
+
         </div>
+
       </Modal>
     )
   }
@@ -384,8 +401,8 @@ class ProposeValueModal extends Component {
 
     return (
       <Fragment>
-        <div className="row">
-          <div className="col col-sm-7" style={{ height: "100%" }}>
+        <div className="row visible-overflow">
+          <div className="col col-sm-7 " style={{ height: "100%" }}>
 
             <Autosuggest
               suggestions={suggestions}
@@ -415,7 +432,7 @@ class ProposeValueModal extends Component {
 
 
   renderPersonInfo() {
-    const p = this.state.pick;
+    var p = this.state.pick;
     var personInfo;
     if (p && p.newPerson) {
       personInfo = (
@@ -426,46 +443,27 @@ class ProposeValueModal extends Component {
         </Fragment>
       )
     }
+    p = this.state.person;
+
     if (p && p.c_personid) {
       console.log("P object.");
       console.log(p);
       personInfo = (
-        <Fragment>
-          <div className="row">
-            <b>{p.c_name_chn}</b>
-          </div>
-          <div className="row">
-            <div>{p.c_name} </div>
-          </div>
-          <p></p>
-          <div className="row">
-            CBDB Person ID: {p.c_personid}
-          </div>
-          <div className="row">
-            {p.c_birth_year}
-            {p.c_birth_nh}
-          </div>
-          <div className="row">
-            Basic Affiliation(籍贯)：{this.state.person && this.state.person.c_jiguan_chn}
-          </div>
-          <div className="row">
-            Dynasty(朝代)：{this.state.person && this.state.person.c_dynasty_chn}
-          </div>
-          <div className="row">
-            <p>{p.c_notes} </p>
-          </div>
-
-        </Fragment>
+        <div className="person-info ml-0 pt-3 pl-3 pr-2 mt-0">
+          <p><b>{p.c_name_chn}</b></p>
+          <p>{p.c_name}</p>
+          <p>CBDB Person ID: {p.c_personid}</p>
+          <p>Birth year: {p.c_birth_year} </p>
+          <p>Basic Affiliation(籍贯)：{this.state.person && this.state.person.c_jiguan_chn}</p>
+          <p>Dynasty(朝代)：{this.state.person && this.state.person.c_dynasty_chn}</p>
+          <p>Notes：{p.c_notes}</p>
+        </div>
       )
     }
     if (p) {
       return (
         <div>
-          <div className="modal-footer mt-3">
-          </div>
-          <div className="container">
-            {personInfo}
-          </div>
+          {personInfo}
         </div>
       )
     }

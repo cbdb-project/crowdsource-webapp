@@ -67,12 +67,14 @@ const userDb = knex({
     catch (err) { console.log(err); throw err }
 }
 
-async function addUsers() {
+function addUsers() {
     console.log("Adding users ...")
     try {
         const pwd = bcrypt.hashSync('admin', 8);
-        await userDb('users').insert({email: "admin", password: pwd, nickname: "admin",role: "admin"})
+        userDb('users').insert({email: "admin", password: pwd, nickname: "admin",role: "admin"}).then(() => {
         console.log("done!")
+	process.exit(0);
+	});
     } catch (e) {
         console.log(e);
     }
@@ -363,7 +365,7 @@ async function main() {
     await addProposals();
     await validateProposals();
     await createUsers();
-    await addUsers();
+    addUsers();
      
 }
 main();

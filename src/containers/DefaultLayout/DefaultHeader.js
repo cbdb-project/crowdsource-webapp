@@ -99,7 +99,7 @@ class DefaultHeader extends Component {
         <Nav className="d-md-down-none" navbar>
           <Can I="get" a="tasks" ability={userAbility}>
             <NavItem className={"px-3 "+ this.navStyle("collab")} onClick={this.navClicked.bind(this, "collab")}>
-              <NavLink to="/collab" className="nav-link">Work on tasks</NavLink>
+              <NavLink to="/collab" className="nav-link">Browse Tasks</NavLink>
             </NavItem>
           </Can>
           <Can I="manage" a="tasks" ability={userAbility}>
@@ -114,12 +114,12 @@ class DefaultHeader extends Component {
           </Can>
           <Can I="get" a="tasks" ability={userAbility}>
           <NavItem className={"px-3 "+ this.navStyle("export")} onClick={this.navClicked.bind(this, "export")}>
-              <Link to="/export" className="nav-link">Export task data</Link>
+              <Link to="/export" className="nav-link">Export data</Link>
             </NavItem>
           </Can>
           <Can I="manage" a="tasks" ability={userAbility}>
           <NavItem className={"px-3 "+ this.navStyle("tasks")} onClick={this.navClicked.bind(this, "tasks")}>
-              <Link to="/tasks" className="nav-link">Manage tasks</Link>
+              <Link to="/manageTasks" className="nav-link">Manage tasks</Link>
             </NavItem>
           </Can>
           <Can I="manage" a="users" ability={userAbility}>

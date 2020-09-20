@@ -40,7 +40,7 @@ class Proposals extends Component {
 
       var taskId = tasks[0].id;
       const storedId = localStorage.getItem("myTask");
-      if (storedId && this.taskIdExists(tasks,storedId)) {
+      if (storedId && this.taskIdExists(tasks, storedId)) {
         taskId = storedId;
       }
 
@@ -112,7 +112,66 @@ class Proposals extends Component {
   }
 
 
+  renderTaskDropdown() {
+    return (
+      <div className="col">
+        <select class="task-selector custom-select" id="inputGroupSelect01">
+          {
+            this.state.tasks.length == 0 ? (<option> None </option>) : ""
+          }
+          {
+            this.state.tasks.map((task, index) => {
+              return (
+                <option key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
+                </option>
+              )
+            })
+          }
+        </select>
 
+      </div>
+    )
+  }
+
+  _renderTaskProposals(data) {
+    return (
+      <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
+        <thead className="data-table">
+          <tr>
+            {
+              (this.state.myFields) && this.state.myFields.map((field, index) => {
+                // console.log(field);
+                return (
+                  <th key={"th_" + index}>{field.name}</th>
+                )
+              })
+            }
+          </tr>
+        </thead>
+        <tbody>
+
+          {
+            data.map((row, index) => {
+              const pk = this.state.myFields ? row[this.state.myTask.pkCol] : -1
+              return (
+                <tr key={"_c_" + index}>
+                  {row.map((origValue, vindex) => {
+                    return (
+                      <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex}>
+                        {this.renderMultiField(origValue, pk, index, vindex)}
+                      </td>
+                    )
+                  })}
+                </tr>
+              )
+            })
+          }
+        </tbody>
+      </Table>
+
+    )
+
+  }
   renderMyTask() {
     if (!this.state.myTask) {
       return null;
@@ -132,26 +191,16 @@ class Proposals extends Component {
           <div className="col col-sm-auto">
             <div className="row align-items-center justify-items-end mb-1">
               {/* <div className="col col-sm-auto"><h4>Current Task: </h4></div> */}
-              <div className="col col-sm-auto">
-                <Dropdown>
-                  <Dropdown.Toggle variant="success" id="task-dropdown">
-                    {this.state.tasks.length > 0 ? this.state.myTask.title : "<None>"}
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {
-                      this.state.tasks.map((task, index) => {
-                        return (
-                          <Dropdown.Item  key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
-                          </Dropdown.Item>
-                        )
-                      })
-                    }
-
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
-
+              {this.renderTaskDropdown()}
+              <p></p>
+              
             </div>
+            <div className="form-check">
+                <input className="form-check-input" type="checkbox" value="" id="defaultCheck1" onClick={this.showCompleted.bind(this)} />
+                <label className="form-check-label" htmlFor="defaultCheck1">
+                  Show reviewed proposals too
+                  </label>
+              </div>
           </div>
 
 
@@ -159,12 +208,7 @@ class Proposals extends Component {
         <div className="row align-items-center justify-content-between mt-0 mb-1">
           <div className="col col-sm-auto">
 
-            <div className="form-check">
-              <input className="form-check-input" type="checkbox" value="" id="defaultCheck1" onClick={this.showCompleted.bind(this)} />
-              <label className="form-check-label" htmlFor="defaultCheck1">
-                Show completed tasks
-                  </label>
-            </div>
+
           </div>
           <div className="col col-sm-auto">
             <i>({Object.values(this.state.affectedRows).length} rows touched)</i>
@@ -172,43 +216,13 @@ class Proposals extends Component {
         </div>
 
 
-        <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
-          <thead className="thead-light">
-            <tr>
-              {
-                (this.state.myFields) && this.state.myFields.map((field, index) => {
-                  // console.log(field);
-                  return (
-                    <th key={"th_" + index}>{field.name}</th>
-                  )
-                })
-              }
-            </tr>
-          </thead>
-          <tbody>
-
-            {
-              data.map((row, index) => {
-                const pk = this.state.myFields ? row[this.state.myTask.pkCol] : -1
-                return (
-                  <tr key={"_c_" + index}>
-                    {row.map((origValue, vindex) => {
-                      return (
-                        <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex}>
-                          {this.renderMultiField(origValue, pk, index, vindex)}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                )
-              })
-            }
-          </tbody>
-        </Table>
         {(data.length === 0) ?
-          (<div> (No tasks found -- try make proposals or show completed tasks too.)</div>)
-          : <div></div>
+          (<div> (This task has no outstanding proposals. Try collect new proposals, or check out previously reviewed proposals.)</div>)
+          : this._renderTaskProposals(data)
         }
+
+
+
 
 
       </div>
@@ -250,7 +264,7 @@ class Proposals extends Component {
         origValue={origValue}
         resetToggle={this.state.resetToggle}
         onFieldClicked={this.onFieldClicked.bind(this)}
-        
+
         values={pValues}>
       </MultiField>
     } else {
@@ -270,7 +284,7 @@ class Proposals extends Component {
   }
 
   discardClicked(e) {
-    this.setState({ affectedRows: {}, resetToggle: true});
+    this.setState({ affectedRows: {}, resetToggle: true });
     // this.setState({resetToggle: false})
   }
 
@@ -281,7 +295,7 @@ class Proposals extends Component {
 
   // Upon a proposed value being accepted
   onProposalAccepted(value) {
-    this.setState({resetToggle: false})
+    this.setState({ resetToggle: false })
     const comp = this.state.editingFieldComp;
     comp.setState({ acceptedValue: value });
 
@@ -394,8 +408,9 @@ class Proposals extends Component {
 
 
             <div>
-
               {this.renderMyTask()}
+
+
             </div>
 
           </Card.Body>
@@ -414,8 +429,8 @@ class Proposals extends Component {
           comp={this.state.editingFieldComp}
           fieldDef={this.state.fieldDef}
           client={this.props.client}
-          acceptedValue={this.state.editingFieldComp?this.state.editingFieldComp.state.acceptedValue:null}
-          origValue={this.state.editingFieldComp?this.state.editingFieldComp.props.origValue:null}
+          acceptedValue={this.state.editingFieldComp ? this.state.editingFieldComp.state.acceptedValue : null}
+          origValue={this.state.editingFieldComp ? this.state.editingFieldComp.props.origValue : null}
           // proposals={this.state.currFieldProposals}
           currField={this.state.currField}></PickProposalModal>
 
@@ -430,7 +445,15 @@ class Proposals extends Component {
         />
 
         <div>
-          {this.renderTasks()}
+          {(this.state.tasks.length == 0) ?
+            (
+              <Card className="mt-4">
+                <Card.Body>
+                  <div className="ml-2 mt-2 mb-2" > No tasks found. Try <a href="/#/import">import a new task</a>. </div>
+                </Card.Body>
+              </Card>
+            ) : this.renderTasks()
+          }
         </div>
 
       </Fragment >

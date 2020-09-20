@@ -113,10 +113,10 @@ class Collab extends Component {
 
 
       var taskId = tasks[0].id;
-      
+
       const storedId = localStorage.getItem("myTask");
       console.log("stored id:" + storedId);
-      if (storedId && storedId!="" && this.taskIdExists(tasks,storedId)) {
+      if (storedId && storedId != "" && this.taskIdExists(tasks, storedId)) {
         console.log("yes! using stored id:" + storedId)
         taskId = storedId;
       }
@@ -151,6 +151,7 @@ class Collab extends Component {
       fields.push(field[1]);
     });
     this.setState({ fields: fields, myTask: t, affectedRows: {} });
+    // console.log(this.state.fields);
     localStorage.setItem("myTask", t.id);
   }
 
@@ -219,6 +220,27 @@ class Collab extends Component {
     return count;
   }
 
+  renderTaskDropdown() {
+    return (
+      <div className="col">
+        <select className="task-selector custom-select" id="inputGroupSelect01">
+          {
+            this.state.tasks.length == 0 ? (<option> None </option>) : ""
+          }
+          {
+            this.state.tasks.map((task, index) => {
+              return (
+                <option key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
+                </option>
+              )
+            })
+          }
+        </select>
+
+      </div>
+    )
+  }
+
   renderCurrTask() {
     if (!this.state.myTask) {
       return null;
@@ -232,25 +254,7 @@ class Collab extends Component {
 
           <div className="col col-sm-auto">
             <div className="row align-items-center justify-items-end mb-1">
-              {/* <div className="col col-sm-auto"><h4>Current Task: </h4></div> */}
-              <div className="col col-sm-auto">
-                <Dropdown>
-                  <Dropdown.Toggle variant="success" id="task-dropdown">
-                    {this.state.tasks.length > 0 ? this.state.myTask.title : "<None>"}
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {
-                      this.state.tasks.map((task, index) => {
-                        return (
-                          <Dropdown.Item key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
-                          </Dropdown.Item>
-                        )
-                      })
-                    }
-
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
+              {this.renderTaskDropdown()}
             </div>
           </div>
           <div className="col col-sm-auto">
@@ -258,10 +262,10 @@ class Collab extends Component {
           </div>
 
         </div>
-
+      
         <Paginate total={this.state.myTask.pages} onPaging={this.onPaging.bind(this)} />
-        <Table hover responsive className="table-outline align-bottom mb-0 d-none d-sm-table">
-          <thead className="thead-light">
+        <Table hover responsive className="scrollable table-outline align-bottom mb-0 d-none d-sm-table">
+          <thead className="data-table">
             <tr>
               {
                 (this.state.fields) && this.state.fields.map((field, index) => {
@@ -273,7 +277,7 @@ class Collab extends Component {
               }
             </tr>
           </thead>
-          <tbody>
+          <tbody className="scrollable">
             {
               data.map((row, index) => {
                 // if (index === 0)
@@ -327,13 +331,17 @@ class Collab extends Component {
 
   // Expecting a person object
   onFieldEdited(value) {
-    var comp = this.state.editingFieldComp;
-    var affected = this.state.affectedRows
-    // this.state.editingFieldComp.setState({ edited: true, proposedValue: value });
-    if (!affected[comp.props.primaryKey])
-      affected[comp.props.primaryKey] = {};
-    affected[comp.props.primaryKey][comp.props.col] = {
-      col: comp.props.col,
+    const comp = this.state.editingFieldComp;
+
+    const pk = comp.props.primaryKey;
+    const col = comp.props.col;
+    const aRows = this.state.affectedRows
+
+    if (!aRows[pk]) {
+      aRows[pk] = {};
+    }
+    aRows[pk][col] = {
+      col: col,
       value: value,
       fieldDef: comp.props.fieldDef,
       edited: true
@@ -341,25 +349,23 @@ class Collab extends Component {
 
     // HACKY: Standard headers
     const data = Object.values(this.state.myTask.data)[comp.props.row];
-
-    // console.log(Object.values(this.state.myTask.data));
-
-    var fieldCols = this.state.affectedCols;
-    fieldCols[comp.props.col] = comp.props.fieldDef;
-    fieldCols[comp.props.col].col = comp.props.col;
-
-    for (var i = 0; i < 4; i++) {
-      fieldCols[i] = this.state.fields[i];
-      fieldCols[i].col = i;
-      affected[comp.props.primaryKey][i] = {
+    const fields = this.state.fields;
+    var aCols = this.state.affectedCols;
+    aCols[col] = comp.props.fieldDef;
+    aCols[col].col = col;
+    for (var i = 0; i < fields.length; i++) {
+      if (fields[i].input)
+        continue;
+      aCols[i] = fields[i];
+      aCols[i].col = i;
+      aRows[pk][i] = {
         col: i,
-        // row: comp.props.row,
-        fieldDef: this.state.fields[i],
+        fieldDef: fields[i],
         value: data[i],
         edited: false
       }
     }
-    console.log(affected[comp.props.primaryKey]);
+    console.log(aRows[pk]);
 
     this.onFieldEditorClosed();
   }
@@ -381,48 +387,56 @@ class Collab extends Component {
       // console.log("hi");
       // return console.log(task);
     });
-    return (
-
-      <div>
-
-        <div></div>
-        <div className="row justify-content-end no-gutters mt-3">
-          <div className="col mr-2 col-sm-auto">
-
-          </div>
-          <div className="col mr-2 col-sm-auto float-right">
-            <button type="button" onClick={this.reviewClicked.bind(this)} className="btn mr-2 col col-sm-auto btn-primary float-right mb-3 " data-dismiss="modal" >
-              <svg className="bi bi-cloud-upload mr-2" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4.887 6.2l-.964-.165A2.5 2.5 0 1 0 3.5 11H6v1H3.5a3.5 3.5 0 1 1 .59-6.95 5.002 5.002 0 1 1 9.804 1.98A2.501 2.501 0 0 1 13.5 12H10v-1h3.5a1.5 1.5 0 0 0 .237-2.981L12.7 7.854l.216-1.028a4 4 0 1 0-7.843-1.587l-.185.96z" />
-                <path fillRule="evenodd" d="M5 8.854a.5.5 0 0 0 .707 0L8 6.56l2.293 2.293A.5.5 0 1 0 11 8.146L8.354 5.5a.5.5 0 0 0-.708 0L5 8.146a.5.5 0 0 0 0 .708z" />
-                <path fillRule="evenodd" d="M8 6a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0v-8A.5.5 0 0 1 8 6z" />
-              </svg>
-          Submit Proposals</button>
-          </div>
-          <div className="col col-sm-auto float-right">
-            <button type="button" onClick={this.discardClicked.bind(this)} className="btn col col-sm-auto  btn-warning float-right mb-3 " data-dismiss="modal" >
-              <svg width="1em" height="1em" viewBox="0 0 16 16" className="mr-2 bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z" />
-              </svg>
-          Discard </button>
-          </div>
-        </div>
-        <Card>
+    if (this.state.tasks.length == 0) {
+      return (
+        <Card className="mt-4">
           <Card.Body>
-            <div>
-              {this.renderCurrTask()}
-            </div>
-
+            <div className="ml-2 mt-2 mb-2"> No tasks found. Try <a href="/#/import">import a new task</a>. </div>
           </Card.Body>
         </Card>
-      </div>
-    )
+      )
+    } else {
+      return (
+        <div>
+          <div></div>
+          <div className="row justify-content-end no-gutters mt-3">
+            <div className="col mr-2 col-sm-auto">
+
+            </div>
+            <div className="col mr-2 col-sm-auto float-right">
+              <button type="button" onClick={this.reviewClicked.bind(this)} className="btn mr-2 col col-sm-auto btn-primary float-right mb-3 " data-dismiss="modal" >
+                <svg className="bi bi-cloud-upload mr-2" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.887 6.2l-.964-.165A2.5 2.5 0 1 0 3.5 11H6v1H3.5a3.5 3.5 0 1 1 .59-6.95 5.002 5.002 0 1 1 9.804 1.98A2.501 2.501 0 0 1 13.5 12H10v-1h3.5a1.5 1.5 0 0 0 .237-2.981L12.7 7.854l.216-1.028a4 4 0 1 0-7.843-1.587l-.185.96z" />
+                  <path fillRule="evenodd" d="M5 8.854a.5.5 0 0 0 .707 0L8 6.56l2.293 2.293A.5.5 0 1 0 11 8.146L8.354 5.5a.5.5 0 0 0-.708 0L5 8.146a.5.5 0 0 0 0 .708z" />
+                  <path fillRule="evenodd" d="M8 6a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0v-8A.5.5 0 0 1 8 6z" />
+                </svg>
+          Submit Proposals</button>
+            </div>
+            <div className="col col-sm-auto float-right">
+              <button type="button" onClick={this.discardClicked.bind(this)} className="btn col col-sm-auto  btn-warning float-right mb-3 " data-dismiss="modal" >
+                <svg width="1em" height="1em" viewBox="0 0 16 16" className="mr-2 bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fillRule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z" />
+                </svg>
+          Discard </button>
+            </div>
+          </div>
+          <Card className="mt-3">
+            <Card.Body>
+
+              {this.renderCurrTask()}
+
+
+            </Card.Body>
+          </Card>
+        </div>
+
+      )
+    }
   }
   render() {
-
-
     return (
       <Fragment>
+          
         <ProposeValueModal isOpen={this.state.editingField}
           onSubmit={this.onFieldEdited.bind(this)}
           onClosed={this.onFieldEditorClosed.bind(this)}
@@ -443,6 +457,7 @@ class Collab extends Component {
           // onClosed={this.onFieldEditorClosed.bind(this)}
           // fieldDef={this.state.fieldDef}} */}
         <div>
+          
           {this.renderTasks()}
         </div>
 

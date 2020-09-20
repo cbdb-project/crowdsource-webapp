@@ -29,7 +29,7 @@ class Export extends Component {
     }
 
     async csvClicked(e) {
-        if (this.state.myTask.data) {
+        if (!this.state.myTask.data) {
             await this.setTask(this.state.myTask.id);
         }
         var rows = Object.values(this.state.myTask.data);
@@ -53,10 +53,10 @@ class Export extends Component {
     }
 
     async setTask(id) {
-        const t = await this.props.client.service('tasks').get(id, {query: {perPage: 5000}});
+        const t = await this.props.client.service('tasks').get(id, { query: { perPage: 5000 } });
         console.log(t);
-        this.setState({myTask: t});
-        
+        this.setState({ myTask: t });
+
     }
 
     async componentWillMount() {
@@ -67,16 +67,36 @@ class Export extends Component {
             console.log("No task found!");
             return;
         }
-        this.setState({myTask: this.state.tasks[0]})
+        this.setState({ myTask: this.state.tasks[0] })
 
     }
 
+    renderTaskDropdown(fn) {
+        return (
+          <div >
+            <select class="task-selector custom-select" id="inputGroupSelect01">
+              {
+                this.state.tasks.length == 0 ? (<option> None </option>) : ""
+              }
+              {
+                this.state.tasks.map((task, index) => {
+                  return (
+                    <option key={"task_" + task.id} onClick={fn.bind(this, task.id)} >({task.id}) {task.title}
+                    </option>
+                  )
+                })
+              }
+            </select>
+    
+          </div>
+        )
+      }
     render() {
         return (
-            <div>
-                <div className="card">
-                    <div className="card-header">
-                        Export Data
+            <div className="container">
+                <div className="card mt-4">
+                    <div className="modal-header">
+                        Export data
                     </div>
                     <div className="card-body">
                         <div className="row mb-3 justify-content-center align-items-center">
@@ -86,22 +106,7 @@ class Export extends Component {
                         </div>
                         <div className="row mb-4 justify-content-center align-items-center">
                             <div className="col  d-flex justify-content-center">
-                                <Dropdown>
-                                    <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-                                    {this.state.myTask ? this.state.myTask.title : "<None>"}
-                                    </Dropdown.Toggle>
-                                    <Dropdown.Menu>
-                                        {
-                                            this.state.tasks.map((task, index) => {
-                                                return (
-                                                    <Dropdown.Item key={"task_" + task.id} onClick={this.setTask.bind(this, task.id)}>
-                                                        {index}. {task.title}
-                                                    </Dropdown.Item>
-                                                )
-                                            })
-                                        }
-                                    </Dropdown.Menu>
-                                </Dropdown>
+                               {this.renderTaskDropdown(this.setTask.bind(this))}
                             </div>
 
 
