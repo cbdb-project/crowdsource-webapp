@@ -1,4 +1,6 @@
 import React, { Component, Fragment } from 'react';
+import { HubotIcon, PinIcon, LightBulbIcon} from '@primer/octicons-react'
+
 
 class MultiField extends Component {
   constructor(props) {
@@ -75,8 +77,12 @@ class MultiField extends Component {
   }
 
   render() {
+    
+    var icon = !this.state.acceptedValue ? "" : (<PinIcon></PinIcon>);
+
     return (
       <div className={!this.state.acceptedValue ? 'multifield pending' : 'multifield accepted'} id={this.props.id} onClick={this.handleEdit.bind(this)}>
+        {icon} &nbsp;
         <label ref={this._saveRef.bind(this)} className='' id={"_f_" + this.props.id}>
           {this.renderValue()}
         </label>

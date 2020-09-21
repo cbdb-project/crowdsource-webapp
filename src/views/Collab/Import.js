@@ -63,8 +63,8 @@ class Import extends Component {
         return (
             <Files
                 multiple={false} maxSize="10mb" multipleMaxSize="10mb"
-                accept={["text/plain","text/x-csv","text/csv","application/x-csv",
-                "text/comma-separated-values","text/tab-separated-values","application/csv","application/vnd.ms-excel",".csv", ".txt", ".tsv"]}
+                accept={["text/plain", "text/x-csv", "text/csv", "application/x-csv",
+                    "text/comma-separated-values", "text/tab-separated-values", "application/csv", "application/vnd.ms-excel", ".csv", ".txt", ".tsv"]}
                 onSuccess={this.handleSuccess.bind(this)}
                 onError={this.handleErrors.bind(this)}
             >
@@ -72,7 +72,7 @@ class Import extends Component {
                     return (
                         <div>
                             <div className="mb-4">
-                            Task Name: 
+                                Task Name:
                             <input id="task-name" onChange={this.onChange.bind(this)} type="text" className="form-control" id="taskname" />
                             </div>
                             <label>Drag and drop files.</label>
@@ -137,24 +137,30 @@ class Import extends Component {
     render() {
         // this.state.files.map((i) => {console.log(i)});
         return (
-            <div  className="container">
-                <div className="card mt-4">
-                <div className="modal-header">
+            <div className="  container">
+                <div className="rounded-dialog">
+                    <div className="modal-header">
                         Import task data
                     </div>
-                    <div className="card-body">
-                        <div className="row mb-4 justify-content-center align-items-center">
-                            <div className="col col-3  justify-content-center">
-                                {this.renderMessage()}
-                            </div>
-                        </div>
+                    <div className="modal-body">
+                        <div className="container">
 
-                        <div className="row mb-4 justify-content-center align-items-center">
-                            
+                            <div className="row mb-4 justify-content-center align-items-center">
+                                <div className="col col-3  justify-content-center">
+                                    {this.renderMessage()}
+                                </div>
+                            </div>
+
+                            <div className="row mb-4 justify-content-center align-items-center">
+
                                 {this.renderFileUpload()}
 
-                            
+
+                            </div>
                         </div>
+                    </div>
+                    <div className="modal-footer">
+
                         <div className="row mb-4 justify-content-center align-items-center">
                             <div className="col  d-flex justify-content-center">
 
@@ -162,6 +168,7 @@ class Import extends Component {
                             </div>
                         </div>
                     </div>
+
                 </div >
             </div >
 
@@ -175,11 +182,11 @@ class Import extends Component {
         </svg>
         if (this.state.files.length == 0 || !this.state.taskName || this.state.taskName === "") {
             return (
-                <button type="button" className="btn mr-2 col col-sm-auto btn-primary float-right mb-3 " disabled>{svg}Upload and import</button>
+                <button type="button" className="lite-button mr-2 col col-sm-auto float-right mb-3 " disabled>{svg}Upload and import</button>
             )
         } else {
             return (
-                <button type="button" onClick={this.uploadClicked.bind(this)} className="btn mr-2 col col-sm-auto btn-primary float-right mb-3 " data-dismiss="modal" >
+                <button type="button" onClick={this.uploadClicked.bind(this)} className="lite-button mr-2 col col-sm-auto float-right mb-3 " data-dismiss="modal" >
                     {svg}
                 Upload and import </button>
             )

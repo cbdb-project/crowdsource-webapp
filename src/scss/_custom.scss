@@ -1,7 +1,7 @@
 $cyan: #0505a9;
 $dark: #9a9a9a;
 $borderW: 1px;
-
+$verydark: rgb(62, 62, 62);
 
 
 // Here you can add other styles
@@ -68,27 +68,49 @@ $borderW: 1px;
   background-color: #ddd;
 }
 
+.line-input {
+  font-size: 1.1em;
+  height: 2.5em;
+  padding-left: 0.2em;
+  border-left: none;
+  border-bottom: solid 2px $verydark;
+  border-radius: 0px;
+  border-top: none;
+  border-right: none;
+  box-shadow: none;
+  &:focus {
+    border: none;
+    border-left: none;
+    border-bottom: solid 1px $cyan;
+    border-radius: 0px;
+    border-top: none;
+    border-right: none;
+    box-shadow: none;
+  }
+}
 .hidden {
   display: none;
 }
-.editable-col {
+.editable-col,
+.multifield {
   background-image: linear-gradient(to right, rgb(123, 123, 123) 75%, transparent 75%);
   background-position-y: bottom;
   background-repeat: repeat-x;
-  background-size: 5px 0.3em;
-
-  transition: background-size 0.2s ease-in;
+  background-size: 10px 0.1em;
+  transition: background-size 0.2s ease-in-out;
   &:hover {
-    background-size: 6px 4px;
+    background-size: 10px 0.2em;
     background-position-y: bottom;
-    background-image: linear-gradient(to right, $cyan 75%, transparent 75%);
-    font-weight: bold;
+    // color: blueviolet
+    background-image: linear-gradient(to right, blueviolet 75%, transparent 75%);
+    // font-weight: bold;
+    transition: background-size 0.1s ease-in-out;
   }
   cursor: pointer;
 }
 .editable-col-edited {
-  background-image: linear-gradient(to right, $cyan 75%, transparent 75%);
-  background-size: 100% 0.5em;
+  background-image: linear-gradient(to right, $cyan 100%, transparent 100%);
+  background-size: 100% 0.2em;
 }
 .editable-field {
   &:hover {
@@ -170,15 +192,6 @@ a.paginate.current:not([href]) {
   outline: 1px solid slategrey;
 }
 
-.multifield {
-  background-position-y: bottom;
-  background-repeat: repeat-x;
-  // background-size: 5px 0.3em;
-  background-size: 100% 0.5em;
-  transition: background-size 0.2s ease-in;
-
-  cursor: pointer;
-}
 .personinput {
   // background-color: #f4f4f4;
   // border-top: none;
@@ -188,59 +201,39 @@ a.paginate.current:not([href]) {
   // border-bottom: solid 1pt #a330ec;
 }
 .person-info {
-  background-color: #f4f4f4;
+  // background-color: #f4f4f4;
   overflow: scroll;
-  border: dotted 2pt $cyan;
-  // border-left: dotted 1pt #a330ec;
+  // background-color: rgb(123, 123, 123);
+  // color: lightgray;
+  // border: solid 1pt darkslategrey;
+  border-left: dotted 3pt lightgray;
+  padding-left: 1em;
   // border-right: dotted 1pt #a330ec;
 
   // border-bottom: dotted 1pt #a330ec;
 }
 
+// .multifield {
+//   background-image: linear-gradient(to right, rgb(123, 123, 123) 75%, transparent 75%);
+//   background-position-y: bottom;
+//   background-repeat: repeat-x;
+//   background-size: 10px 0.1em;
+//   transition: background-size 0.2s ease-in;
+//   cursor: pointer;
+// }
+// .multifield.pending {
+//   background-size: 10px 0.1em;
+//   &:hover {
+//     background-image: linear-gradient(to right, blueviolet 75%, transparent 75%);
+//     background-size: 10px 0.2em;
+//     font-weight: bold;
+//   }
+//   font-weight: bold;
+// }
 .multifield.accepted {
   // background-image: linear-gradient(to right, #16bffd, rgb(5, 220, 55) 75%, transparent 75%);
   background-image: linear-gradient(to right, rgb(72, 72, 72) 10%, rgb(72, 72, 72) 100%);
-  background-size: 70% 0.3em;
-  background-repeat: no-repeat;
-}
-
-.multifield.pending {
-  // background-blend-mode: lighten;
-  background-image: linear-gradient(
-    to right,
-    rgba(0, 0, 255, 0.454) 28%,
-    rgba(0, 0, 255, 0.454) 28%,
-    transparent 28%,
-    transparent 36%,
-    rgba(255, 174, 0, 0.399) 36%,
-    rgba(255, 174, 0, 0.399) 64%,
-    transparent 64%,
-    transparent 71%,
-    rgb(5, 220, 55) 71%,
-    rgb(5, 220, 55) 100%
-  );
-  &:hover {
-    // background-size: 50% 0.5em;
-    // background-repeat: repeat-x;
-    background-position-y: bottom;
-    background-image: linear-gradient(
-      to right,
-      rgba(0, 0, 255, 0.8) 28%,
-      rgba(0, 0, 255, 0.8) 28%,
-      transparent 28%,
-      transparent 36%,
-      rgba(255, 174, 0, 0.8) 36%,
-      rgba(255, 174, 0, 0.8) 64%,
-      transparent 64%,
-      transparent 71%,
-      rgb(5, 220, 55) 71%,
-      rgb(5, 220, 55) 100%
-    );
-    font-weight: bold;
-  }
-  font-weight: bold;
-
-  background-size: 70% 0.3em;
+  background-size: 100% 0.3em;
   background-repeat: no-repeat;
 }
 
@@ -273,42 +266,43 @@ body.modal-open {
 
 .cardoption {
   background-color: #efefef;
+  padding-top: 1em;
+  padding-bottom: 1em;
 }
 .cardoption svg {
   background-color: #efefef;
   fill: #efefef;
 }
 
-.cardaccepted svg {
-  fill: rgb(41, 41, 41);
-  // background-color: rgb(123, 123, 123) ;
+.cardoption:hover:not(.cardaccepted) {
+  cursor: pointer;
+  background-color: rgb(123, 123, 123);
+  background-size: 100% 100%;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  font-style: bold;
+  color: rgba(255, 255, 255, 0.762);
+
+  svg {
+    fill: rgb(97, 219, 240);
+    background-color: rgb(123, 123, 123);
+  }
 }
 
-.cardselected svg {
-  fill: rgb(123, 123, 123);
-  background-color: rgb(123, 123, 123);
+.cardaccepted {
+  background-color: rgb(62, 62, 62);
+  cursor: default;
+  color: rgba(255, 255, 255, 0.762);
+
+  svg {
+    fill: rgba(255, 255, 255, 0.762);
+    background-color: transparent;
+  }
 }
-.cardoption:hover svg {
-  fill: rgb(97, 219, 240);
-  background-color: rgb(123, 123, 123);
-}
+
 .action-icon {
   cursor: pointer;
 }
-
-// position: absolute;
-// top: 50%;
-// left: 50%;
-// right: auto;
-// bottom: auto;
-// border: 1px solid rgb(204, 204, 204);
-// background: rgb(255, 255, 255);
-// overflow: auto;
-// border-radius: 4px;
-// outline: none;
-// padding: 20px;
-// margin-right: -50%;
-// transform: translate(-50%, -50%);
 
 .visible-overflow {
   overflow: visible;
@@ -332,7 +326,6 @@ body.modal-open {
   border-radius: 30px;
 }
 
-
 .card {
   border-radius: 10px;
   border: $borderW solid darkgray;
@@ -347,7 +340,7 @@ body.modal-open {
   margin-bottom: 30px;
   text-align: center;
   text-transform: uppercase;
-  color: $cyan;
+  color: $verydark;
   font-size: 1.1em;
   font-weight: bold;
   background-color: transparent;
@@ -368,10 +361,8 @@ body.modal-open {
     top: 0;
     width: 100%;
     height: 100%;
-    border: $borderW solid $cyan;
+    // border: $borderW solid $cyan;
     border-radius: 30px;
-
-   
   }
 
   &:after {
@@ -448,7 +439,7 @@ body.modal-open {
   }
 }
 
-.blob-btn-lite {
+.lite-button {
   z-index: 1;
   position: relative;
   padding: 10px 15px;
@@ -459,10 +450,9 @@ body.modal-open {
   font-size: 1em;
   background-color: transparent;
   outline: none;
-  border: none;
+  border: solid 1px transparent;
   transition: color 0.2s;
   cursor: pointer;
-  border-radius: 10px;
 
   &:before {
     content: "";
@@ -470,21 +460,14 @@ body.modal-open {
     position: absolute;
     left: 0;
     top: 0;
+
     width: 100%;
     height: 100%;
-    border: $borderW solid $cyan;
-    border-radius: 8px;
   }
 
   &:disabled {
-    &:before {
-      border: $borderW solid darkgray;
-    }
     &:hover {
-      // color: white;
-      background-color: transparent;
-      color: darkgray;
-      border-radius: 15px;
+      border: solid 1px transparent;
     }
   }
 
@@ -492,6 +475,7 @@ body.modal-open {
     content: "";
     z-index: -2;
     position: absolute;
+    border-radius: 5px;
     left: $borderW * 1.5;
     top: $borderW * 1.5;
     width: 100%;
@@ -501,10 +485,9 @@ body.modal-open {
   }
 
   &:hover {
-    color: white;
-    border-radius: 30px;
-    background-color: $cyan;
-    border-radius: 15px;
+    // color: darkgray;
+    border: solid 1px rgb(123, 123, 123);
+    border-radius: 5px;
     &:after {
       transition: all 0.3s;
       left: 0;
@@ -562,6 +545,8 @@ body.modal-open {
   background-color: rgba(0, 0, 0, 0.5);
   -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
+
+.rounded-dialog,
 .confirm-dialog {
   position: absolute;
   border: 1px solid rgb(204, 204, 204);
@@ -579,8 +564,16 @@ body.modal-open {
   transform: translate(-50%, -50%);
 }
 
+.rounded-dialog {
+  border-radius: 10px;
+}
+
+.highlight-card {
+  background-color: rgb(123, 123, 123);
+}
+
 .highlight-changes {
-  background-color: #9a249d;
+  background-color: blueviolet;
   color: white;
   // font-style: italic;
 }
@@ -595,19 +588,24 @@ body.modal-open {
   border-color: #9d9d9d;
   margin-bottom: 1rem;
 }
-.cardoption:hover,
-.cardselected {
-  cursor: pointer;
-  background-color: rgb(123, 123, 123);
-  background-size: 100% 100%;
-  font-style: bold;
-  color: rgba(255, 255, 255, 0.762);
+
+.data-table {
+  tr td {
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+  thead tr th {
+    background-color:$verydark;
+    color: #ffffff;
+
+    border-color: #ffffff;
+  }
 }
 
-.data-table tr th {
-  background-color: #474747;
-  color: #ffffff;
-  border-color: #ffffff;
+.hover-cell:hover {
+  cursor: pointer;
+  background-color: #efefef;
+  color: black;
 }
 
 .field-input {
@@ -697,8 +695,28 @@ body.modal-open {
   padding-bottom: 1em;
   margin-bottom: 1em;
 }
-.nav-active {
-  text-decoration: underline;
+.app-header {
+  height: 65px;
+}
+.app-header .nav-item {
+  margin: 1em;
+}
+.app-header .nav-active {
+  text-decoration: none;
   font-weight: bold;
-  color: black;
+
+  border-bottom: solid 1px black;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  padding-top: 0.4em;
+  padding-bottom: 0.4em;
+  // padding-left: 0px;
+  // border-top: solid 2px darkgray;
+  border-radius: 2px;
+  .nav-link {
+    // color:$cyan;
+  }
+}
+.navbar-nav .nav-link {
+  color: inherit;
 }

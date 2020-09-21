@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import Modal from 'react-modal';
+import {ArrowUpRightIcon, XIcon } from '@primer/octicons-react'
 
 import {
   Card,
@@ -117,8 +118,8 @@ class ReviewProposalModal extends Component {
     var editedTdClass = tdClass + " highlight-changes"
 
     return (
-      <table className="table table-hover mb-2">
-        <thead className="data-table ">
+      <table className="table table-hover mb-2 data-table ">
+        <thead className="">
           <tr className=" ">
             <th className=" "><input defaultChecked type="checkbox" id={"rsel_all"}></input></th>
             {
@@ -198,19 +199,17 @@ class ReviewProposalModal extends Component {
           <div className="modal-footer  align-self-end" >
             <div className="row mt-3">
               <div style={this.state.showMessaging ? { display: "none" } : {}}>
-                <button type="button" className="btn btn-default" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>Cancel</button>
-                <button type="button" className="ml-2 btn btn-primary" data-dismiss="modal">
+                <button type="button" className="lite-button" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
+                <XIcon/>&nbsp;
+                  Cancel</button>
+                <button type="button" className="ml-2 lite-button" onClick={this.handleSubmit.bind(this)} data-dismiss="modal">
                   {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
-                  <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                    <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
-                    <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
-                  </svg>
-                  <div className="float-right ml-2" onClick={this.handleSubmit.bind(this)}>Submit</div>
+                  <ArrowUpRightIcon/>&nbsp;
+                  Submit
                 </button>
               </div>
               <div style={!this.state.showMessaging ? { display: "none" } : {}}>
-                <button type="button" className="btn btn-default btn-success" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>Ok</button>
+                <button type="button" className="btn lite-button" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>Ok</button>
               </div>
             </div>
           </div>

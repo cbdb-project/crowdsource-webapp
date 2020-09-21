@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import MultiField from "./MultiField.js";
 import { Card, Dropdown } from 'react-bootstrap';
-import { CheckCircleIcon } from '@primer/octicons-react'
+import { CheckCircleIcon, } from '@primer/octicons-react'
 
 import {
   Table,
@@ -135,8 +135,8 @@ class Proposals extends Component {
 
   _renderTaskProposals(data) {
     return (
-      <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
-        <thead className="data-table">
+      <Table  responsive className="data-table table-outline mb-0 d-none d-sm-table">
+        <thead className="">
           <tr>
             {
               (this.state.myFields) && this.state.myFields.map((field, index) => {
@@ -156,8 +156,9 @@ class Proposals extends Component {
               return (
                 <tr key={"_c_" + index}>
                   {row.map((origValue, vindex) => {
+                    const style = this._hasProposals(pk, vindex) ? " hover-cell" : ""
                     return (
-                      <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex}>
+                      <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex} >
                         {this.renderMultiField(origValue, pk, index, vindex)}
                       </td>
                     )
@@ -237,6 +238,18 @@ class Proposals extends Component {
     return self.indexOf(value) === index;
   }
 
+
+  _hasProposals(pk, vindex) {
+    const task = this.state.myTask;
+    if (!this.state.myTask || ! this.state.myFields)
+      return false;
+    const fieldName = this.state.myFields[vindex].field_name;
+    
+    if (task.proposals.hasOwnProperty(pk) && task.proposals[pk].hasOwnProperty(fieldName))
+      return true;
+    else
+      return false;
+  }
 
   renderMultiField(origValue, pk, index, vindex) {
     var displayValue;

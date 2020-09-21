@@ -84,8 +84,8 @@ class ManageTasks extends Component {
             )
         } else {
             return (
-                <Table hover responsive className="table-outline align-bottom mb-0 d-none d-sm-table">
-                    <thead className="data-table">
+                <Table hover responsive className="table-outline align-bottom mb-0 d-none d-sm-table data-table">
+                    <thead className="">
                         <tr>
                             <th>Task ID</th>
                             <th>Task Name</th>
@@ -145,8 +145,8 @@ class ManageTasks extends Component {
                     Are you sure you want to delete the task? All proposals associated with this task will also be deleted.
             </div>
                 <div className="modal-footer">
-                    <button type="button" className="btn btn-default" data-dismiss="modal" onClick={this.toggleDelete.bind(this, 1, true)}>Cancel</button>
-                    <button className="btn btn-danger btn-ok" onClick={this.handleDelete.bind(this)}>Delete</button>
+                    <button type="button" className="lite-button" data-dismiss="modal" onClick={this.toggleDelete.bind(this, 1, true)}>Cancel</button>
+                    <button className=" btn-danger lite-button" onClick={this.handleDelete.bind(this)}>Delete</button>
                 </div>
 
             </Modal>

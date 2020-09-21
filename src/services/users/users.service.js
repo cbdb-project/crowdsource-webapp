@@ -26,23 +26,23 @@ module.exports = function users(app) {
   console.log("/users created");
   const userSvc = new Service(options)
   app.use('/users', userSvc)
-  
 
   app.service('users').hooks(hooks)
 
   app.use('/abilities', new AbilityService(userSvc))
 }
 
+
 class AbilityService {
   constructor(userService) {
     this.userService = userService;
   }
 
+
   async get(id) {
     const user = await this.userService.get(id)
     console.log(user);
     var abilities = await defineAbilitiesFor(user);
-    
     console.log(" Can task? " + abilities.can("get", "tasks"))
     const packedRules = packRules(abilities.rules)
     console.log(packedRules);

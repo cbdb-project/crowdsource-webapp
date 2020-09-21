@@ -269,8 +269,8 @@ class Collab extends Component {
         </div>
 
         <Paginate total={this.state.myTask.pages} onPaging={this.onPaging.bind(this)} />
-        <Table hover responsive className="scrollable table-outline align-bottom mb-0 d-none d-sm-table">
-          <thead className="data-table">
+        <Table hover responsive className="scrollable data-table table-outline align-bottom mb-0 d-none d-sm-table">
+          <thead className="">
             <tr>
               {
                 (this.state.fields) && this.state.fields.map((field, index) => {

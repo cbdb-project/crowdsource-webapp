@@ -78,15 +78,6 @@ class DefaultHeader extends Component {
       })
 
     }
-    // } else {
-    //   console.log("User not exists. No navigation");
-
-    //   return (
-    //     <React.Fragment></React.Fragment>
-    //   )
-    //   // userInfo = <div> <a href="/login"></a></div>
-    // }
-
     return (
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
@@ -98,33 +89,33 @@ class DefaultHeader extends Component {
 
         <Nav className="d-md-down-none" navbar>
           <Can I="get" a="tasks" ability={userAbility}>
-            <NavItem className={"px-3 "+ this.navStyle("collab")} onClick={this.navClicked.bind(this, "collab")}>
+            <NavItem className={" "+ this.navStyle("collab")} onClick={this.navClicked.bind(this, "collab")}>
               <NavLink to="/collab" className="nav-link">Browse Tasks</NavLink>
             </NavItem>
           </Can>
           <Can I="manage" a="tasks" ability={userAbility}>
-          <NavItem className={"px-3 "+ this.navStyle("proposals")} onClick={this.navClicked.bind(this, "proposals")}>
+          <NavItem className={" "+ this.navStyle("proposals")} onClick={this.navClicked.bind(this, "proposals")}>
               <Link to="/proposals" className="nav-link">Review proposals</Link>
             </NavItem>
           </Can>
           <Can I="manage" a="tasks" ability={userAbility}>
-          <NavItem className={"px-3 "+ this.navStyle("import")} onClick={this.navClicked.bind(this, "import")}>
+          <NavItem className={" "+ this.navStyle("import")} onClick={this.navClicked.bind(this, "import")}>
               <Link to="/import" className="nav-link">Import a task</Link>
             </NavItem>
           </Can>
           <Can I="get" a="tasks" ability={userAbility}>
-          <NavItem className={"px-3 "+ this.navStyle("export")} onClick={this.navClicked.bind(this, "export")}>
+          <NavItem className={" "+ this.navStyle("export")} onClick={this.navClicked.bind(this, "export")}>
               <Link to="/export" className="nav-link">Export data</Link>
             </NavItem>
           </Can>
           <Can I="manage" a="tasks" ability={userAbility}>
-          <NavItem className={"px-3 "+ this.navStyle("tasks")} onClick={this.navClicked.bind(this, "tasks")}>
+          <NavItem className={" "+ this.navStyle("tasks")} onClick={this.navClicked.bind(this, "tasks")}>
               <Link to="/manageTasks" className="nav-link">Manage tasks</Link>
             </NavItem>
           </Can>
           <Can I="manage" a="users" ability={userAbility}>
-          <NavItem className={"px-3 "+ this.navStyle("users")} onClick={this.navClicked.bind(this, "users")}>
-              <Link to="/users" className="nav-link">Manage users</Link>
+          <NavItem className={" "+ this.navStyle("users")} onClick={this.navClicked.bind(this, "users")}>
+              <Link to="/manageUsers" className="nav-link">Manage users</Link>
             </NavItem>
           </Can>
         </Nav>

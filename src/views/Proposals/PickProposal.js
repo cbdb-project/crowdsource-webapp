@@ -3,6 +3,8 @@ import Modal from 'react-modal';
 import Autosuggest from 'react-autosuggest';
 import { Card } from 'reactstrap';
 import _ from 'lodash';
+import { PinIcon, } from '@primer/octicons-react'
+
 
 
 
@@ -96,24 +98,24 @@ class PickProposalModal extends Component {
 
   render() {
     // console.log(thi)
-    var  dialogStyle = "confirm-dialog modal-lg width-50 height-50";
-    
+    var dialogStyle = "confirm-dialog modal-lg width-50 height-50";
+
     return (
       <Modal isOpen={this.props.isOpen} className={dialogStyle} >
-            <div className="modal-header">Adopt a proposal 
+        <div className="modal-header">Adopt a proposal
               <button type="button" className="close" onClick={this.handleCancel.bind(this)} aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button></div>
-            <div className="modal-body pt-2 ">
-              <div className="container">
-                <div className="row">
-                  <div className={"col col-sm-6"}>
-                    {this.renderProposals()}
-                  </div>
-                  <div className={"col col-sm-6"}>
-                    {this.renderPersonInfo()}
-                  </div>
+            <span aria-hidden="true">&times;</span>
+          </button></div>
+        <div className="modal-body pt-2 ">
+          <div className="container">
+            <div className="row">
+              <div className={"col col-sm-4 mr-4"}>
+                {this.renderProposals()}
               </div>
+              <div className={"col col-sm-4 pt-2"}>
+                {this.renderPersonInfo()}
+              </div>
+            </div>
 
 
           </div>
@@ -141,18 +143,16 @@ class PickProposalModal extends Component {
           console.log("Current value & accepted value");
           console.log(v);
           console.log(this.props.origValue);
-          if (v === this.props.acceptedValue || (!this.props.acceptedValue && _.isEqual(v,this.props.origValue)))
-            styles += " cardaccepted cardselected"
+          if (v === this.props.acceptedValue || (!this.props.acceptedValue && _.isEqual(v, this.props.origValue)))
+            styles += " cardaccepted "
 
           return (
             <div className="row" key={"pick_" + index}>
               <div className={"col mb-2 mt-2 ml-1 mr-1 col-sm-12 " + styles}>
                 <div className="row">
                   <div className="col col-9 text-nowrap" onMouseEnter={this.handleHover.bind(this, v)} onClick={this.handleSubmit.bind(this, v)}>{this.renderValue(v)}</div>
-                  <div className="col col-2"><svg width="0.8em" height="0.9em" viewBox="0 0 16 16" className="bi bi-check2-circle" fill="white" xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" d="M15.354 2.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L8 9.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                    <path fillRule="evenodd" d="M8 2.5A5.5 5.5 0 1 0 13.5 8a.5.5 0 0 1 1 0 6.5 6.5 0 1 1-3.25-5.63.5.5 0 1 1-.5.865A5.472 5.472 0 0 0 8 2.5z" />
-                  </svg>
+                  <div className="col col-2">
+                    <PinIcon></PinIcon>
                   </div>
                 </div>
               </div>

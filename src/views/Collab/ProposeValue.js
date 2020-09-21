@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import Modal from 'react-modal';
 import Autosuggest from 'react-autosuggest';
 import { Card } from 'reactstrap';
-import { ChevronDownIcon } from '@primer/octicons-react'
+import { ChevronDownIcon, DotFillIcon, ArrowUpRightIcon, XIcon, InsightsIcon } from '@primer/octicons-react'
 
 
 class ProposeValueModal extends Component {
@@ -240,10 +240,10 @@ class ProposeValueModal extends Component {
     const personInfoBox = isPersonBox ? (
       <Fragment>
         <div className="mt-3"></div>
-        <ChevronDownIcon />
-        <div className="scrollable">
-          {this.renderPersonInfo()}
-        </div>
+
+        {/* <div className="scrollable"> */}
+        {this.renderPersonInfo()}
+        {/* </div> */}
       </Fragment>
     ) : "";
 
@@ -260,31 +260,30 @@ class ProposeValueModal extends Component {
         <div className="modal-header">{title}
           <button type="button" className="close" onClick={this.handleCancel.bind(this)} aria-label="Close">
             <span aria-hidden="true">&times;</span>
-          </button></div>
+          </button>
+        </div>
         <div className="modal-body ">
           <div className="container-fluid ">
-            <div className="row align-items-end">
-              <div className="col float-left ml-0 mr-3" style={{ height: "100%" }}>
+            <div className="row">
+              <div className="col float-left ml-0 mr-3">
                 {this.renderField()}
+                {personInfoBox}
               </div>
               <div className="col col-sm-auto">
                 <div className="row">
-                  <button type="button" disabled={disabled} className="ml-2 col-sm-auto blob-btn-lite  " data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
-                    <svg className="bi bi-arrow-right-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                      <path fillRule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
-                      <path fillRule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
-                    </svg>
+                  <button type="button" disabled={disabled} className="ml-2 col-sm-auto lite-button " data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
+                    <ArrowUpRightIcon></ArrowUpRightIcon>&nbsp;
                     <div className="float-right ml-2">Submit</div>
                   </button>
-                  <button type="button" className="ml-2 col-sm-auto blob-btn-lite " data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
+                  <button type="button" className="ml-2 col-sm-auto lite-button" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
+                    <XIcon></XIcon>
                     <div className="float-right ml-2">Cancel</div>
                   </button>
                 </div>
               </div>
 
             </div>
-            {personInfoBox}
+
             {this.renderMessage()}
 
           </div>
@@ -317,8 +316,8 @@ class ProposeValueModal extends Component {
     // console.log("renderRegularField()")
     return (
 
-      <div className="input-group">
-        <input type="text" className="form-control"
+      <div className="">
+        <input type="text" className="line-input  w-100 form-control"
           onSubmit={this.handleSubmit.bind(this)} onChange={this.handleChange.bind(this)}
           placeholder="Input a number or string" aria-label="Recipient's username with two button addons" aria-describedby="button-addon4"
           value={this.state.value}>
@@ -401,27 +400,26 @@ class ProposeValueModal extends Component {
 
     return (
       <Fragment>
-        <div className="row visible-overflow">
-          <div className="col col-sm-7 " style={{ height: "100%" }}>
+        <div>
 
-            <Autosuggest
-              suggestions={suggestions}
-              className="personinput"
-              onSuggestionsFetchRequested={onSuggestionsFetchRequested.bind(this)}
-              onSuggestionsClearRequested={onSuggestionsClearRequested.bind(this)}
-              onSuggestionSelected={onSuggestionSelected.bind(this)}
-              getSuggestionValue={getSuggestionValue.bind(this)}
-              renderSuggestion={renderSuggestion.bind(this)}
-              inputProps={{ placeholder: "Search a person", value: this.state.value, onSubmit: this.handleSubmit.bind(this), onChange: this.handleChange.bind(this) }}
-            >
+          <Autosuggest
+            suggestions={suggestions}
+            className="line-input"
+            onSuggestionsFetchRequested={onSuggestionsFetchRequested.bind(this)}
+            onSuggestionsClearRequested={onSuggestionsClearRequested.bind(this)}
+            onSuggestionSelected={onSuggestionSelected.bind(this)}
+            getSuggestionValue={getSuggestionValue.bind(this)}
+            renderSuggestion={renderSuggestion.bind(this)}
+            inputProps={{ className: "line-input w-100", placeholder: "Search a person", value: this.state.value, onSubmit: this.handleSubmit.bind(this), onChange: this.handleChange.bind(this) }}
+          >
 
-            </Autosuggest>
-          </div>
-          <div className="col col-sm-5 float-right" style={{ height: "100%" }}>
-            {renderPersonId()}
-          </div>
+
+          </Autosuggest>
+
+
+          {renderPersonId()}
+
         </div>
-
 
 
       </Fragment>
@@ -449,8 +447,8 @@ class ProposeValueModal extends Component {
       console.log("P object.");
       console.log(p);
       personInfo = (
-        <div className="person-info ml-0 pt-3 pl-3 pr-2 mt-0">
-          <p><b>{p.c_name_chn}</b></p>
+        <div className="person-info scrollable ml-0 mt-5 pr-2 mt-4">
+          <p><InsightsIcon></InsightsIcon> &nbsp; <b>{p.c_name_chn}</b></p>
           <p>{p.c_name}</p>
           <p>CBDB Person ID: {p.c_personid}</p>
           <p>Birth year: {p.c_birth_year} </p>
