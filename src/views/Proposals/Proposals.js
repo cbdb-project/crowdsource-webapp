@@ -29,8 +29,8 @@ class Proposals extends Component {
 
   async componentWillMount() {
     if (!this.props.user) {
-      await this.props.auth();
-      return;
+      var r = await this.props.auth();
+      if (!r) return;
     }
     try {
       const tasks = await this.props.client.service('tasks').find({});
@@ -115,7 +115,7 @@ class Proposals extends Component {
   renderTaskDropdown() {
     return (
       <div className="col">
-        <select class="task-selector custom-select" id="inputGroupSelect01">
+        <select className="task-selector custom-select" id="inputGroupSelect01">
           {
             this.state.tasks.length == 0 ? (<option> None </option>) : ""
           }
@@ -388,12 +388,12 @@ class Proposals extends Component {
               <button type="button" onClick={this.reviewClicked.bind(this)} className=" blob-btn  " data-dismiss="modal" >
                 <CheckCircleIcon></CheckCircleIcon> &nbsp;
                 Adopt Changes
-                <span class="blob-btn__inner">
-                  <span class="blob-btn__blobs">
-                    <span class="blob-btn__blob"></span>
-                    <span class="blob-btn__blob"></span>
-                    <span class="blob-btn__blob"></span>
-                    <span class="blob-btn__blob"></span>
+                <span className="blob-btn__inner">
+                  <span className="blob-btn__blobs">
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
                   </span>
                 </span>
               </button>

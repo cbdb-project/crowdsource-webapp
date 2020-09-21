@@ -1,3 +1,9 @@
+$cyan: #0505a9;
+$dark: #9a9a9a;
+$borderW: 1px;
+
+
+
 // Here you can add other styles
 .search-result em {
   font-weight: bolder;
@@ -75,13 +81,13 @@
   &:hover {
     background-size: 6px 4px;
     background-position-y: bottom;
-    background-image: linear-gradient(to right, #a330ec 75%, transparent 75%);
+    background-image: linear-gradient(to right, $cyan 75%, transparent 75%);
     font-weight: bold;
   }
   cursor: pointer;
 }
 .editable-col-edited {
-  background-image: linear-gradient(to right, #a330ec 75%, transparent 75%);
+  background-image: linear-gradient(to right, $cyan 75%, transparent 75%);
   background-size: 100% 0.5em;
 }
 .editable-field {
@@ -184,7 +190,7 @@ a.paginate.current:not([href]) {
 .person-info {
   background-color: #f4f4f4;
   overflow: scroll;
-  border: dashed 2pt #a330ec;
+  border: dotted 2pt $cyan;
   // border-left: dotted 1pt #a330ec;
   // border-right: dotted 1pt #a330ec;
 
@@ -326,9 +332,6 @@ body.modal-open {
   border-radius: 30px;
 }
 
-$cyan: #0505a9;
-$dark: #9a9a9a;
-$borderW: 1px;
 
 .card {
   border-radius: 10px;

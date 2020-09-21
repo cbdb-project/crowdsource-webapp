@@ -17,16 +17,61 @@ class Export extends Component {
         return arr.map((r, i) => {
             // console.log("Current index: " + i);
             var row = r.map((c, j) => {
-                if (fs[j].type === "person") {
-                    // console.log(c);
-                    return c.c_name_chn
-                } else return c
+                var t = "";
+                if (c.hasOwnProperty("c_name_chn")) {
+                    t += c.c_name_chn;
+                    if (c.hasOwnProperty("c_personid"))
+                        t += " (" + c.c_personid + ")";
+                    return t;
+                } else {
+                    return c;
+                }
+                
             })
             return row;
 
         })
 
     }
+
+    preprocessData(data) {
+
+    }
+
+    _download(strData, strFileName, strMimeType) {
+        var D = document,
+            a = D.createElement("a");
+            strMimeType= strMimeType || "application/octet-stream";
+    
+    
+        if (navigator.msSaveBlob) { // IE10
+            return navigator.msSaveBlob(new Blob([strData], {type: strMimeType}), strFileName);
+        } /* end if(navigator.msSaveBlob) */
+    
+    
+        if ('download' in a) { //html5 A[download]
+            a.href = "data:" + strMimeType + "," + encodeURIComponent(strData);
+            a.setAttribute("download", strFileName);
+            a.innerHTML = "downloading...";
+            D.body.appendChild(a);
+            setTimeout(function() {
+                a.click();
+                D.body.removeChild(a);
+            }, 66);
+            return true;
+        } /* end if('download' in a) */
+    
+    
+        //do iframe dataURL download (old ch+FF):
+        var f = D.createElement("iframe");
+        D.body.appendChild(f);
+        f.src = "data:" +  strMimeType   + "," + encodeURIComponent(strData);
+    
+        setTimeout(function() {
+            D.body.removeChild(f);
+        }, 333);
+        return true;
+    } /* end download() */
 
     async csvClicked(e) {
         if (!this.state.myTask.data) {
@@ -43,10 +88,9 @@ class Export extends Component {
                 separator: ','
             });
             console.log(s);
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += s;
-            var encodedUri = encodeURI(csvContent);
-            window.open(encodedUri);
+            // var encodedUri = encodeURI(csvContent);
+            // window.open(encodedUri, "cbdb-export.csv");
+            this._download(s, "cbdb-export.csv","text/csv");
         } catch (e) {
             console.log(e);
         }

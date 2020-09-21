@@ -97,12 +97,7 @@ class Collab extends Component {
 
   }
 
-  async componentWillMount() {
-    console.log("Collab: component will mount.")
-    if (!this.props.user) {
-      await this.props.auth();
-      return;
-    }
+  async loadTasks() {
     try {
       console.log("Loading tasks ...");
       const tasks = await this.props.client.service('tasks').find({});
@@ -132,6 +127,15 @@ class Collab extends Component {
       }
       console.log(e);
     }
+  }
+
+  async componentWillMount() {
+    console.log("Collab: component will mount.")
+    if (!this.props.user) {
+      var r = await this.props.auth();
+      if (!r) return;
+    }
+    this.loadTasks();
   }
 
 

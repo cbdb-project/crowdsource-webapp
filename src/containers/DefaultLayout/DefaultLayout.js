@@ -71,16 +71,11 @@ class DefaultLayout extends Component {
       console.log(error);
       console.log(await client.authentication.removeAccessToken());
       this.redirectLogin();
-      return;
-      // if (!this.props.history)
-      //   this.props.history = [];
-      // console.log(this.props.history);
-      // this.props.history.push('/login')
-      // return;
+      return false;
     }
     if (!user) {
       this.redirectLogin();
-      return;
+      return false;
     }
     // if (!user && this.props.location.pathname!=="/login" && this.props.location.pathname!=="/register" ) {
     //   console.log("Need login first");
@@ -90,7 +85,7 @@ class DefaultLayout extends Component {
     //   )
     // }
     this.setState({ user: user });
-    
+    return true;
   }
 
   redirectLogin() {
