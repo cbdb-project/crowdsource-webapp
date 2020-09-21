@@ -24,12 +24,41 @@ module.exports = function users(app) {
   }
 
   console.log("/users created");
-  const userSvc = new Service(options)
+  const userSvc = new UserService(options)
   app.use('/users', userSvc)
 
   app.service('users').hooks(hooks)
 
   app.use('/abilities', new AbilityService(userSvc))
+}
+
+class UserService extends Service {
+  constructor(options) {
+    console.log("UserService constructor");
+    // console.log(options);
+    super(options);
+  }
+  async create(user) {
+    console.log("userservice: create() ");
+    console.log(user);
+    var e = await super.find({
+      query: {email: user.email}});
+    console.log(e);
+    if (e.length > 0) {
+      console.log("Already exists email! " + user.email);
+      
+      throw new Error("User already exists!");
+    }
+    const c = await super.create(
+      {
+      email: user.email,
+      password: user.password,
+      role: "contributor"
+      }
+        )  
+    return c;
+  }
+
 }
 
 

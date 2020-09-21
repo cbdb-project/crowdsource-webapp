@@ -68,7 +68,7 @@ $verydark: rgb(62, 62, 62);
   background-color: #ddd;
 }
 
-.line-input {
+.line-input,.line-input-lt {
   font-size: 1.1em;
   height: 2.5em;
   padding-left: 0.2em;
@@ -88,6 +88,14 @@ $verydark: rgb(62, 62, 62);
     box-shadow: none;
   }
 }
+.line-input-lt {
+  border-bottom: solid 1px $verydark;
+}
+
+.w-80 {
+  width: 80%;
+}
+
 .hidden {
   display: none;
 }
@@ -439,7 +447,8 @@ body.modal-open {
   }
 }
 
-.lite-button {
+
+.lite-button, .lite-button-bordered,.lite-button-inverse {
   z-index: 1;
   position: relative;
   padding: 10px 15px;
@@ -494,6 +503,20 @@ body.modal-open {
       top: 0;
       border-radius: 15px;
     }
+  }
+}
+
+.lite-button-bordered {
+  border: solid 1px lightgray;
+}
+
+.lite-button-inverse {
+  border: solid 1px lightgray;
+  color: lightgray;
+  &:hover {
+    background-color: black;
+    color:white;
+
   }
 }
 

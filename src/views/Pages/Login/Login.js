@@ -27,14 +27,20 @@ class LoginMessage extends Component {
       return (
         <div className="alert alert-success">{LoginMessage.Registered}</div>
       )
-    else if (this.props.status === "invalid")
-      return <div className="alert alert-warning">{LoginMessage.InvalidLogin}</div>
-    else
-      return <div></div>
+    
+    //   return <div className="alert alert-warning">{LoginMessage.InvalidLogin}</div>
+    // else if (this.props.status === "error") 
+    if (this.props.msg  ) 
+      return <div className="alert alert-warning">{this.props.msg}</div>
+    
+    return <div></div>
   }
 }
 class Login extends Component {
 
+  componentWillMount() {
+    this.setState({});
+  }
   
 
   async handleSubmit() {
@@ -65,6 +71,7 @@ class Login extends Component {
     } catch (e) {
       console.log("Login Error!")
       console.log(e);
+      this.setState({errorMsg: e.toString()});
       return;
     }
 
@@ -89,7 +96,7 @@ class Login extends Component {
         <Container>
           <Row className="justify-content-center">
             <Col md="8">
-              <LoginMessage status={status} ></LoginMessage>
+              <LoginMessage status={status} msg={this.state.errorMsg}></LoginMessage>
             </Col>
           </Row>
           <Row className="justify-content-center">
@@ -118,7 +125,7 @@ class Login extends Component {
                       </InputGroup>
                       <Row>
                         <Col xs="6">
-                          <Button onClick={this.handleSubmit.bind(this)} color="primary" className="px-4">Login</Button>
+                          <button className="lite-button-bordered px-4" onClick={this.handleSubmit.bind(this)} color="primary" >Login</button>
                         </Col>
                         <Col xs="6" className="text-right">
                           {/* <Button color="link" className="px-0">Forgot password?</Button> */}
@@ -133,7 +140,7 @@ class Login extends Component {
                       <h2>Sign up</h2>
                       <p>Create a CBDB Collab account.</p>
                       <Link to="/register">
-                        <Button color="primary" className="mt-3" active tabIndex={-1}>Register Now!</Button>
+                        <button className="lite-button-inverse mt-3"   active tabIndex={-1}>Register Now!</button>
                       </Link>
                     </div>
                   </CardBody>

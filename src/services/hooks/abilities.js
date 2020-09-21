@@ -12,9 +12,14 @@ const { Forbidden } = require('@feathersjs/errors')
 const Roles = 'contributor' | 'reviewer' | 'admin';
 
 const rolePermissions = {
+    everyone(user, {can, cannot}) {
+        can('create', ['users']);
+        can("get", ["tasks", "abilities"]);
+    },
     contributor(user, { can ,cannot}) {
         can('create', ['proposals'])
         can("get", ["users", "tasks", "abilities"]);
+
         can("find", ["tasks", "proposals", "person"]);
     }
     , reviewer(user, { can,cannot }) {
@@ -31,6 +36,9 @@ const rolePermissions = {
 const defineAbilitiesFor = function defineAbilitiesFor(user) {
     const { can, cannot, build } = new AbilityBuilder(Ability);
 
+    if (!user || !user.role) {
+        user = {role: "everyone"};
+    }
     if (typeof rolePermissions[user.role] === 'function') {
         rolePermissions[user.role](user, {can, cannot});
         // console.log(build());
@@ -48,7 +56,8 @@ module.exports.authorize = function authorize(name = null) {
         const service = name ? hook.app.service(name) : hook.service
         const serviceName = name || hook.path
 
-
+        console.log(action);
+        console.log(serviceName);
         hook.params.ability = defineAbilitiesFor(hook.params.user)
 
         const params = Object.assign({}, hook.params, { provider: null })
