@@ -14,17 +14,17 @@ const Roles = 'contributor' | 'reviewer' | 'admin';
 const rolePermissions = {
     everyone(user, {can, cannot}) {
         can('create', ['users']);
-        can("get", ["tasks", "abilities"]);
+        can("get", ["tasks", "abilities", "person"]);
     },
     contributor(user, { can ,cannot}) {
         can('create', ['proposals'])
-        can("get", ["users", "tasks", "abilities"]);
+        can("get", ["users", "tasks", "abilities", "person"]);
 
         can("find", ["tasks", "proposals", "person"]);
     }
     , reviewer(user, { can,cannot }) {
         can('manage', ['tasks','proposals'])
-        can("get", ["users", "abilities"]);
+        can("get", ["users", "abilities", "person"]);
         can("find", ["tasks", "proposals","person"]);
     }
     , admin(user,{can,cannot}) {
