@@ -269,63 +269,67 @@ class Collab extends Component {
         </div>
 
         <Paginate total={this.state.myTask.pages} onPaging={this.onPaging.bind(this)} />
-        <Table hover responsive className="scrollable data-table table-outline align-bottom mb-0 d-none d-sm-table">
-          <thead className="">
-            <tr>
+        <div className="fixed-table vh-80">
+          <table className="table table-responsive scrollable data-table vh-80 table-outline align-bottom mb-0 d-none d-sm-table">
+            <thead >
+              <tr>
+                {
+                  (this.state.fields) && this.state.fields.map((field, index) => {
+                    // console.log(field);
+                    return (
+                      <th key={"th_" + index}>{field.name}</th>
+                    )
+                  })
+                }
+              </tr>
+            </thead>
+            {/* <div className="vh-80"> */}
+            <tbody className="scrollable vh-80">
+
               {
-                (this.state.fields) && this.state.fields.map((field, index) => {
-                  // console.log(field);
+                data.map((row, index) => {
+                  // if (index === 0)
+                  //   return (null)
+                  if (this.state.fields) {
+                    // var fs = Object.entries(this.state.myTask.fields);
+                    // console.log(fs[5][1].input)
+                  }
+                  // console.log(row);
+                  const pk = this.state.fields ? row[this.state.myTask.pkCol] : -1;
+                  if (!this.state.affectedRows[pk]) {
+                    this.state.affectedRows[pk] = {};
+                  }
                   return (
-                    <th key={"th_" + index}>{field.name}</th>
+
+                    <tr key={"_c_" + index}>
+                      {row.map((field, vindex) => {
+                        if (this.state.fields) {
+                          // console.log("This fields ...");
+                          // console.log(this.state.fields);
+                          // console.log(this.state.fields[vindex]);
+                        }
+
+                        return (
+                          <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex} className="td-bottom">
+                            <EditableField fieldDef={this.state.fields ? Object.values(this.state.fields)[vindex] : null}
+                              row={index} col={vindex} id={"_c_" + index + "_" + vindex}
+                              primaryKey={pk}
+                              onFieldClicked={this.onFieldClicked.bind(this)}
+                              editable={(!this.state.fields) ? false : Object.entries(this.state.myTask.fields)[vindex][1].input}
+                              proposed={this.state.affectedRows[pk][vindex]}
+                              value={field}>
+                            </EditableField>
+                          </td>
+                        )
+                      })}
+                    </tr>
                   )
                 })
               }
-            </tr>
-          </thead>
-          <tbody className="scrollable">
-            {
-              data.map((row, index) => {
-                // if (index === 0)
-                //   return (null)
-                if (this.state.fields) {
-                  // var fs = Object.entries(this.state.myTask.fields);
-                  // console.log(fs[5][1].input)
-                }
-                // console.log(row);
-                const pk = this.state.fields ? row[this.state.myTask.pkCol] : -1;
-                if (!this.state.affectedRows[pk]) {
-                  this.state.affectedRows[pk] = {};
-                }
-                return (
-
-                  <tr key={"_c_" + index}>
-                    {row.map((field, vindex) => {
-                      if (this.state.fields) {
-                        // console.log("This fields ...");
-                        // console.log(this.state.fields);
-                        // console.log(this.state.fields[vindex]);
-                      }
-
-                      return (
-                        <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex} className="td-bottom">
-                          <EditableField fieldDef={this.state.fields ? Object.values(this.state.fields)[vindex] : null}
-                            row={index} col={vindex} id={"_c_" + index + "_" + vindex}
-                            primaryKey={pk}
-                            onFieldClicked={this.onFieldClicked.bind(this)}
-                            editable={(!this.state.fields) ? false : Object.entries(this.state.myTask.fields)[vindex][1].input}
-                            proposed={this.state.affectedRows[pk][vindex]}
-                            value={field}>
-                          </EditableField>
-                        </td>
-                      )
-                    })}
-                  </tr>
-                )
-              })
-            }
-          </tbody>
-        </Table>
-
+            </tbody>
+            {/* </div> */}
+          </table>
+        </div>
       </div>
     )
   }
@@ -409,7 +413,7 @@ class Collab extends Component {
 
             </div>
             <div className="col mr-2 col-sm-auto float-right ">
-             
+
               <button type="button" onClick={this.reviewClicked.bind(this)} className=" blob-btn   " data-dismiss="modal" >
                 <HeartFillIcon></HeartFillIcon> &nbsp;
                 Submit Proposals
@@ -430,7 +434,7 @@ class Collab extends Component {
 
 
           </div>
-          <Card className="mt-3">
+          <Card className="app-card mt-3">
             <Card.Body>
 
               {this.renderCurrTask()}

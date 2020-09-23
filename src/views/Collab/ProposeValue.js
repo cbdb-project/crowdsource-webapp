@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import Modal from 'react-modal';
 import Autosuggest from 'react-autosuggest';
 import { Card } from 'reactstrap';
-import { ChevronDownIcon, DotFillIcon, ArrowUpRightIcon, XIcon, InsightsIcon } from '@primer/octicons-react'
+import { ChevronDownIcon, DotFillIcon, ArrowUpRightIcon, XIcon, InsightsIcon, TabIcon } from '@primer/octicons-react'
 
 
 class ProposeValueModal extends Component {
@@ -386,7 +386,7 @@ class ProposeValueModal extends Component {
       if (p && p.newPerson) {
         text = <div>(NEW)</div>
       } else if (p && p.c_personid) {
-        text = <div>(id {p.c_personid})</div>
+        text = <div className="ml-1"><i>(id {p.c_personid})</i></div>
       } else {
         text = <div></div>
       }
@@ -448,10 +448,11 @@ class ProposeValueModal extends Component {
       console.log(p);
       personInfo = (
         <div className="person-info scrollable ml-0 mt-5 pr-2 mt-4">
-          <p><InsightsIcon></InsightsIcon> &nbsp; <b>{p.c_name_chn}</b></p>
-          <p>{p.c_name}</p>
-          <p>CBDB Person ID: {p.c_personid}</p>
-          <p>Birth year: {p.c_birth_year} </p>
+          <p><InsightsIcon></InsightsIcon> &nbsp; <b>{p.c_name_chn}</b>&nbsp; <br></br>
+          (<a target="_new" href={window.cbdbLink(p.c_personid)}>View details <TabIcon/></a>)</p>
+          <p>{p.c_name}</p> 
+          <p>CBDB Person ID: {p.c_personid} </p>
+          <p>Birth year (生年): {p.c_birthyear} </p>
           <p>Basic Affiliation(籍贯)：{this.state.person && this.state.person.c_jiguan_chn}</p>
           <p>Dynasty(朝代)：{this.state.person && this.state.person.c_dynasty_chn}</p>
           <p>Notes：{p.c_notes}</p>

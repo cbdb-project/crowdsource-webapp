@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import Autosuggest from 'react-autosuggest';
 import { Card } from 'reactstrap';
 import _ from 'lodash';
-import { PinIcon, } from '@primer/octicons-react'
+import { PinIcon, ThumbsdownIcon, XCircleIcon } from '@primer/octicons-react'
 
 
 
@@ -128,16 +128,47 @@ class PickProposalModal extends Component {
     this.setState({ pick: v });
     if (v.c_personid)
       this.getPerson(v.c_personid)
+      
   }
 
+  async handleReject() {
+    const c = this.props.comp;
+    try {
+      console.log("handle reject");
+      await this.props.client.service('tasks').update(c.props.taskId, {}, {query: {method: "finalize", pk: c.props.primaryKey}});
+
+    } catch (e) {
+      console.log(e);
+    }
+    this.handleCancel();
+
+
+
+  }
   renderProposals() {
     // Expecting an array
     const proposals = (this.props.comp) ? this.props.comp.props.values : [];
     // console.log(this.props.comp);
     // console.log(proposals);
+
+
+    var proposal = (v, styles, index) => {
+      return (
+        <div className="row" key={"pick_" + index}>
+          <div className={"col mb-2 mt-2 ml-1 mr-1 col-sm-12 " + styles}>
+            <div className="row">
+              <div className="col col-3">
+                <PinIcon></PinIcon>
+              </div>
+              <div className="col col-8 text-nowrap" onMouseEnter={this.handleHover.bind(this, v)} onClick={this.handleSubmit.bind(this, v)}>{this.renderValue(v)}</div>
+
+            </div>
+          </div>
+        </div>
+      )
+    }
     return (
       <div>
-
         {(proposals) && proposals.map((v, index) => {
           var styles = "cardoption";
           console.log("Current value & accepted value");
@@ -146,21 +177,20 @@ class PickProposalModal extends Component {
           if (v === this.props.acceptedValue || (!this.props.acceptedValue && _.isEqual(v, this.props.origValue)))
             styles += " cardaccepted "
 
-          return (
-            <div className="row" key={"pick_" + index}>
-              <div className={"col mb-2 mt-2 ml-1 mr-1 col-sm-12 " + styles}>
-                <div className="row">
-                  <div className="col col-9 text-nowrap" onMouseEnter={this.handleHover.bind(this, v)} onClick={this.handleSubmit.bind(this, v)}>{this.renderValue(v)}</div>
-                  <div className="col col-2">
-                    <PinIcon></PinIcon>
-                  </div>
-                </div>
+          return proposal(v, styles, index);
+        })}
+        <div className="row justify-content-end">
+          <div className={"col mb-2 mt-2 ml-1 mr-1 col-sm-12 cardoption-high"}>
+            <div className="row">
+
+              <div className="col col-3 ml-2">
+                <XCircleIcon />
               </div>
+              <div className="col col-8 text-nowrap " onClick={this.handleReject.bind(this)}> <i>Reject all proposals </i></div>
 
             </div>
-
-          )
-        })}
+          </div>
+        </div>
       </div>
     )
   }

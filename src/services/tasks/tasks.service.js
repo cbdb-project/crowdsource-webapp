@@ -115,11 +115,16 @@ class TaskService {
 
     async get(id, params) {
         try {
+            console.log("+++++++++++++++++++++++++++++++++++");
             console.log("Task service: get");
+            // console.log(params);
+            if (params && params.query) 
+                console.log(params.query);
             var q = "select id,author,data from tasks where id=" + id;
             var dt = taskdb.prepare(q).all();
             if (dt.length == 0) {
-                return [];
+                console.log("!! No task found for id=" + id);
+                return {};
             }
             const { page, perPage } = this._pageOptions(params);
 
@@ -148,7 +153,7 @@ class TaskService {
                     pkCol = i;
                 }
             }
-            console.log("pk name = " + pkField);
+            // console.log("pk name = " + pkField);
             task.pkField = pkField;
             task.pkCol = pkCol;
 
@@ -163,19 +168,21 @@ class TaskService {
             const pFinalized = pq.hasOwnProperty("finalized") ? pq.finalized.toString() : null;
 
             if (pEdited || pFinalized) {
+                // console.log("======================");
                 console.log("Edited + finalized filter: " + pEdited + "/" + pFinalized);
                 const filtered = {};
                 var pks = Object.keys(task.data);
-                console.log(pEdited);
                 console.log(task.edited);
                 console.log(task.finalized);
 
                 pks = pks.filter((key) => {
                     // console.log(task.edited[key] + "/" + pEdited + (task.edited[key] == pEdited.toString() ));
+                    if (pFinalized) {
+                    }
                     return ((pEdited ? (task.edited[key] === pEdited || (pEdited === "false" && !task.edited[key])) : true)
-                        && (pFinalized ? (task.finalized[key] === pFinalized[key] || (pFinalized[key] === "false" && !task.finalized[key])) : true))
+                        && (pFinalized ? (task.finalized[key] == pFinalized || (pFinalized === "false" && !task.finalized[key])) : true))
                 });
-                console.log(pks);
+                // console.log(pks);
                 pks.forEach((pk) => { filtered[pk] = task.data[pk] })
                 // console.log(filtered);
                 task.data = filtered;
@@ -184,14 +191,14 @@ class TaskService {
             if (pq.hasOwnProperty("proposals")) {
 
                 var ps = pq.proposals === "all" ? "all" : pq.proposals.split(",");
-                console.log(task.fields);
+                // console.log(task.fields);
                 task = await this.mergeProposal(task, ps, pkField);
                 // console.log(task.data);
             }
 
             // Filter to items only with proposals
             if (pq.hasOwnProperty("proposedOnly")) {
-                console.log("full proposal  ...");
+                // console.log("full proposal  ...");
                 // console.log(task.proposals);
                 const filtered = {};
                 const props = Object.keys(task.proposals);
@@ -204,7 +211,6 @@ class TaskService {
                 task.data = filtered;
 
             }
-            console.log("Filtered proposal ...");
 
 
             // console.log(task);
@@ -216,6 +222,14 @@ class TaskService {
         }
     }
 
+    async markFinalized(id, pk) {
+        console.log("mark finalized:: " + id + ", pk=" + pk);
+        const data = await this.getRaw(id);
+        data.finalized[pk] = "true";
+        const q = "update tasks set data=json(@data) where id=@id";
+        const stmt = taskdb.prepare(q);
+        const t = stmt.run({ data: JSON.stringify(data), id: id })
+    }
 
     async markPending(id, pk) {
         const data = await this.getRaw(id);
@@ -257,7 +271,7 @@ class TaskService {
                         props[pkVal][key] = [];
                     }
                     if (!values[pkVal][key]) values[pkVal][key] = [];
-                    console.log(key);
+                    // console.log(key);
                     return (new ProposalService()._isUnique(props[pkVal][key], propItems[k][key], task.fields[key]))
                 })
                 keys.forEach((key) => {
@@ -268,9 +282,9 @@ class TaskService {
                 })
             }
         }
-        console.log(" === Get === with proposals merged ===");
-        console.log(JSON.stringify(task.proposals, null, 4));
-        console.log(" === end === ");
+        // console.log(" === Get === with proposals merged ===");
+        // // console.log(JSON.stringify(task.proposals, null, 4));
+        // console.log(" === end === ");
         return task;
 
 
@@ -290,6 +304,12 @@ class TaskService {
         }
     */
     async update(id, nData, params) {
+        console.log("task update ... ");
+        console.log(params.query);
+
+        if (params.query.method == "finalize") {
+            return await this.markFinalized(id, params.query.pk);
+        }
 
         // console.log(task);
         const info = await this.getRaw(id);
@@ -315,8 +335,8 @@ class TaskService {
             info.edited[pks[i]] = "true";
             info.finalized[pks[i]] = "true";
         }
-        console.log("new data to be upated ... ");
-        console.log(info);
+        // console.log("new data to be upated ... ");
+        console.log("Total rows to be updated: " +  pks.length); 
         const t = stmt.run({ data: JSON.stringify(info), id: id })
         console.log(t);
         console.log("Task::update done");

@@ -27,6 +27,8 @@ class PersonService {
                 return {};
             }
             const person = dt[0];
+            console.log(JSON.stringify(person));
+
 
             q = "select b.*,a.c_addr_id,d.*, a_codes.c_name as c_jiguan,a_codes.c_name_chn as c_jiguan_chn from biog_main b,dynasties d,biog_addr_data a,addr_codes a_codes where b.c_personid=" + id + " and b.c_dy=d.c_dy and b.c_personid=a.c_personid and a_codes.c_addr_id=a.c_addr_id and a.c_addr_type=1"
             var dt = cbdb.prepare(q).all();
@@ -36,6 +38,7 @@ class PersonService {
             Object.assign(person, dt[0])
             console.log(JSON.stringify(person));
             return person;
+            
 
 
         } catch (e) {

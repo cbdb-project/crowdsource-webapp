@@ -102,9 +102,9 @@ class Import extends Component {
                                     ))}
                                 </ol>
                             </div>
-                            <div>
+                            <div className="mt-3">
                                 (Alternatively, click {" "}
-                                <button onClick={browseFiles}>here</button> to select files.
+                                <a className="lite-button-bordered" onClick={browseFiles}>here</a> to select files.
 </div>
 
 
@@ -138,7 +138,7 @@ class Import extends Component {
         // this.state.files.map((i) => {console.log(i)});
         return (
             <div className="  container">
-                <div className="rounded-dialog">
+                <div className="rounded-dialog  app-card">
                     <div className="modal-header">
                         Import task data
                     </div>

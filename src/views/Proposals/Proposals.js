@@ -44,10 +44,8 @@ class Proposals extends Component {
         taskId = storedId;
       }
 
-      const t = await this.props.client.service('tasks').get(taskId,
-        { query: { proposals: "all", proposedOnly: "true", finalized: "false" } });
-      // this.state.tasks.push(t);
-      this.switchTask(t);
+      this.loadTask(taskId);
+
     } catch (e) {
       if (e.name === "NotAuthenticated") {
         this.props.auth();
@@ -61,7 +59,6 @@ class Proposals extends Component {
   taskIdExists(tasks, id) {
     var exists = false;
     tasks.forEach((t) => {
-      console.log(t.id == id);
       if (t.id == id) {
         exists = true;
       }
@@ -78,10 +75,31 @@ class Proposals extends Component {
     this.setState({ myFields: fields });
   }
 
-  async taskChanged(id) {
-    console.log("taskChanged!");
-    console.log(id);
-    const t = await this.props.client.service('tasks').get(id, { query: { proposals: "all", proposedOnly: "true", finalized: "false" } })
+  // async taskChanged(id) {
+  //   console.log("taskChanged!");
+  //   console.log(id);
+  //   const t = await this.props.client.service('tasks').get(id, { query: { proposals: "all", proposedOnly: "true", finalized: "false" } })
+  //   console.log(t);
+  //   this.switchTask(t);
+  // }
+
+  async loadTask(id, show) {
+    const filters = { proposals: "all", proposedOnly: "true" };
+    const toShow = show != null ? show: this.state.showCompleted;
+
+    console.log("Load finalized task too? " + show);
+    if (!toShow) {
+      filters.finalized = "false";
+    } else {
+      filters.finalized = "true";
+    }
+
+    var myId = id != null ? id : this.state.myTask.id;
+    console.log("loadTask() id=" + myId)
+    console.log(myId);
+    const t = await this.props.client.service('tasks').get(myId, { query: filters })
+
+    console.log("New task loaded ...")
     console.log(t);
     this.switchTask(t);
   }
@@ -102,14 +120,16 @@ class Proposals extends Component {
 
 
   async showCompleted(e) {
+    // const filters = { finalized: this.state.showCompleted};
+
     const show = e.target.checked;
-    var filters = { proposals: "all", proposedOnly: "true" }
-    if (!show) {
-      filters.finalized = "false";
-    }
-    const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: filters });
-    this.setState({ myTask: t, showCompleted: show });
+    console.log("Show? " + e.target.checked)
+    this.setState({ showCompleted: show });
+
+    this.loadTask(null, show);
   }
+
+
 
 
   renderTaskDropdown() {
@@ -122,7 +142,7 @@ class Proposals extends Component {
           {
             this.state.tasks.map((task, index) => {
               return (
-                <option key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
+                <option key={"task_" + task.id} onClick={this.loadTask.bind(this, task.id)} >({task.id}) {task.title}
                 </option>
               )
             })
@@ -135,46 +155,48 @@ class Proposals extends Component {
 
   _renderTaskProposals(data) {
     return (
-      <Table  responsive className="data-table table-outline mb-0 d-none d-sm-table">
-        <thead className="">
-          <tr>
+      <div className="fixed-table">
+        <table responsive className="table table-responsive  data-table table-outline mb-0 d-none d-sm-table">
+          <thead className="">
+            <tr>
+              {
+                (this.state.myFields) && this.state.myFields.map((field, index) => {
+                  // console.log(field);
+                  return (
+                    <th key={"th_" + index}>{field.name}</th>
+                  )
+                })
+              }
+            </tr>
+          </thead>
+          <tbody>
+
             {
-              (this.state.myFields) && this.state.myFields.map((field, index) => {
-                // console.log(field);
+              data.map((row, index) => {
+                const pk = this.state.myFields ? row[this.state.myTask.pkCol] : -1
                 return (
-                  <th key={"th_" + index}>{field.name}</th>
+                  <tr key={"_c_" + index}>
+                    {row.map((origValue, vindex) => {
+                      const style = this._hasProposals(pk, vindex) ? " hover-cell" : ""
+                      return (
+                        <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex} >
+                          {this.renderMultiField(origValue, pk, index, vindex)}
+                        </td>
+                      )
+                    })}
+                  </tr>
                 )
               })
             }
-          </tr>
-        </thead>
-        <tbody>
-
-          {
-            data.map((row, index) => {
-              const pk = this.state.myFields ? row[this.state.myTask.pkCol] : -1
-              return (
-                <tr key={"_c_" + index}>
-                  {row.map((origValue, vindex) => {
-                    const style = this._hasProposals(pk, vindex) ? " hover-cell" : ""
-                    return (
-                      <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex} >
-                        {this.renderMultiField(origValue, pk, index, vindex)}
-                      </td>
-                    )
-                  })}
-                </tr>
-              )
-            })
-          }
-        </tbody>
-      </Table>
+          </tbody>
+        </table>
+      </div>
 
     )
 
   }
   renderMyTask() {
-    if (!this.state.myTask) {
+    if (!this.state.myTask || !this.state.myTask.data) {
       return null;
     }
     const task = this.state.myTask;
@@ -194,14 +216,14 @@ class Proposals extends Component {
               {/* <div className="col col-sm-auto"><h4>Current Task: </h4></div> */}
               {this.renderTaskDropdown()}
               <p></p>
-              
+
             </div>
             <div className="form-check">
-                <input className="form-check-input" type="checkbox" value="" id="defaultCheck1" onClick={this.showCompleted.bind(this)} />
-                <label className="form-check-label" htmlFor="defaultCheck1">
-                  Show reviewed proposals too
+              <input className="form-check-input" type="checkbox" value="" id="defaultCheck1" onClick={this.showCompleted.bind(this)} />
+              <label className="form-check-label" htmlFor="defaultCheck1">
+                Show reviewed proposals too
                   </label>
-              </div>
+            </div>
           </div>
 
 
@@ -241,10 +263,10 @@ class Proposals extends Component {
 
   _hasProposals(pk, vindex) {
     const task = this.state.myTask;
-    if (!this.state.myTask || ! this.state.myFields)
+    if (!this.state.myTask || !this.state.myFields)
       return false;
     const fieldName = this.state.myFields[vindex].field_name;
-    
+
     if (task.proposals.hasOwnProperty(pk) && task.proposals[pk].hasOwnProperty(fieldName))
       return true;
     else
@@ -273,6 +295,7 @@ class Proposals extends Component {
     if (pValues.length > 0) {
       displayValue = <MultiField fieldDef={this.state.myFields ? this.state.myFields[vindex] : null}
         row={index} col={vindex} id={"_c_" + index + "_" + vindex}
+        taskId={task.id}
         primaryKey={pk}
         origValue={origValue}
         resetToggle={this.state.resetToggle}
@@ -348,6 +371,7 @@ class Proposals extends Component {
     this.setState({ editingField: false });
     document.body.setAttribute('style', '');
     window.scrollTo(0, this.windowOffset);
+    this.loadTask();
   }
 
   async onSubmit() {
@@ -367,14 +391,10 @@ class Proposals extends Component {
       updated[pks[i]]["_edited"] = true;
     }
     console.log(updated);
-
     const t = await this.props.client.service('tasks').update(this.state.myTask.id, updated);
 
-    // console.log(t);
-
     // Force refresh the table
-    // this.setState({ myTask: { data: {} } });
-    this.showCompleted({ target: { checked: this.state.showCompleted } })
+    this.loadTask();
   }
   onReviewClosed() {
     this.setState({ reviewProposal: false });
@@ -398,25 +418,25 @@ class Proposals extends Component {
           </div>
 
           <div className="col mr-2 col-sm-auto float-right ">
-              <button type="button" onClick={this.reviewClicked.bind(this)} className=" blob-btn  " data-dismiss="modal" >
-                <CheckCircleIcon></CheckCircleIcon> &nbsp;
+            <button type="button" onClick={this.reviewClicked.bind(this)} className=" blob-btn  " data-dismiss="modal" >
+              <CheckCircleIcon></CheckCircleIcon> &nbsp;
                 Adopt Changes
                 <span className="blob-btn__inner">
-                  <span className="blob-btn__blobs">
-                    <span className="blob-btn__blob"></span>
-                    <span className="blob-btn__blob"></span>
-                    <span className="blob-btn__blob"></span>
-                    <span className="blob-btn__blob"></span>
-                  </span>
+                <span className="blob-btn__blobs">
+                  <span className="blob-btn__blob"></span>
+                  <span className="blob-btn__blob"></span>
+                  <span className="blob-btn__blob"></span>
+                  <span className="blob-btn__blob"></span>
                 </span>
-              </button>
-              <button type="button" onClick={this.discardClicked.bind(this)} className="ml-2 blob-btn" data-dismiss="modal" >
-                Discard </button>
-            </div>
+              </span>
+            </button>
+            <button type="button" onClick={this.discardClicked.bind(this)} className="ml-2 blob-btn" data-dismiss="modal" >
+              Discard </button>
+          </div>
 
-          
+
         </div>
-        <Card>
+        <Card className="app-card">
 
           <Card.Body>
 
@@ -445,7 +465,6 @@ class Proposals extends Component {
           client={this.props.client}
           acceptedValue={this.state.editingFieldComp ? this.state.editingFieldComp.state.acceptedValue : null}
           origValue={this.state.editingFieldComp ? this.state.editingFieldComp.props.origValue : null}
-          // proposals={this.state.currFieldProposals}
           currField={this.state.currField}></PickProposalModal>
 
         <ReviewProposalModal isOpen={this.state.reviewProposal}
@@ -461,7 +480,7 @@ class Proposals extends Component {
         <div>
           {(this.state.tasks.length == 0) ?
             (
-              <Card className="mt-4">
+              <Card className="mt-4 app-card">
                 <Card.Body>
                   <div className="ml-2 mt-2 mb-2" > No tasks found. Try <a href="/#/import">import a new task</a>. </div>
                 </Card.Body>

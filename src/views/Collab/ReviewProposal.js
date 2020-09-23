@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import Modal from 'react-modal';
-import {ArrowUpRightIcon, XIcon } from '@primer/octicons-react'
+import {ArrowUpRightIcon, XIcon,  } from '@primer/octicons-react'
 
 import {
   Card,
@@ -115,13 +115,15 @@ class ReviewProposalModal extends Component {
     var count = cols.length;
     var tdClass = ""
     // col-" + Math.floor(11 / count)"
-    var editedTdClass = tdClass + " highlight-changes"
+    
 
     return (
       <table className="table table-hover mb-2 data-table ">
         <thead className="">
           <tr className=" ">
-            <th className=" "><input defaultChecked type="checkbox" id={"rsel_all"}></input></th>
+            {/* <th className=" ">
+              <input defaultChecked type="checkbox" id={"rsel_all"}></input>
+            </th> */}
             {
               (cols) && cols.map((field, index) => {
                 return (
@@ -139,13 +141,14 @@ class ReviewProposalModal extends Component {
               return;
             return (
               <tr className=" " key={"rtr_" + i}>
-                <td className=""><input defaultChecked type="checkbox" id={"rsel_" + i}></input></td>
+                {/* <td className=""><input defaultChecked type="checkbox" id={"rsel_" + i}></input></td> */}
                 {
                   cols.map((c, j) => {
                     if (values[c.col]) {
                       return (
-                        <td className={values[c.col].edited ? editedTdClass : tdClass} key={"rtd_" + i + "_" + j}>
-                          {this.renderValue(values[c.col].value, values[c.col].fieldDef)}
+                        <td key={"rtd_" + i + "_" + j}>
+                          <div className={values[c.col].edited ? "highlight-changes": tdClass}>{this.renderValue(values[c.col].value, values[c.col].fieldDef)}
+                          </div>
                         </td>
                       )
                     } else {

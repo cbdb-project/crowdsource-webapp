@@ -98,7 +98,10 @@ class ReviewProposalModal extends Component {
           <div style={!this.state.showMessaging ? { display: "none" } : {}}>
             {this.renderMessage()}
           </div>
-
+          {
+                  (noChanges) ?
+                    ("No proposals adopted yet.") : ""
+                }
           <div className="scrollable text-nowrap modal-table-wrapper" style={this.state.showMessaging ? { display: "none" } : {}} >
             <Table responsive className=" mb-4 overflow-auto">
               <thead className="data-table">
@@ -114,10 +117,6 @@ class ReviewProposalModal extends Component {
               </thead>
               <tbody>
 
-                {
-                  (noChanges) ?
-                    ("No proposals adopted yet.") : ""
-                }
                 {(data) && Object.values(data).map((row, i) => {
                   // var values = r[1]);
                   console.log(row);
@@ -146,11 +145,11 @@ class ReviewProposalModal extends Component {
         </div>
         <div className="modal-footer">
           <button style={(this.state.showMessaging || noChanges) ? { display: "none" } : {}} type="button" className="ml-2 lite-button" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
-            <XCircleFillIcon />
+            <XCircleFillIcon /> &nbsp;
             Cancel
           </button>
-          <button style={(this.state.showMessaging || noChanges) ? { display: "none" } : {}} type="button" className="ml-2 lite-button" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
-            <ArrowUpRightIcon />
+          <button style={(this.state.showMessaging || noChanges) ? { display: "none" } : {}} type="button" className="ml-2 lite-button-bordered" data-dismiss="modal" onClick={this.handleSubmit.bind(this)}>
+            <ArrowUpRightIcon /> &nbsp;
             Submit
           </button>
 

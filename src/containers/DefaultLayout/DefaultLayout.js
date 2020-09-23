@@ -43,14 +43,19 @@ class DefaultLayout extends Component {
 
   constructor(props) {
     super(props);
-    
+
     this.state = { client: client };
+
 
   }
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
   async componentWillMount() {
+    window.cbdbLink = (id) => {
+      return "http://162.105.134.121/basicinformation/" + id + "/edit";
+    }
     await this.auth();
+
   }
 
   async componentWillUpdate() {
@@ -65,7 +70,7 @@ class DefaultLayout extends Component {
       user = (await client.reAuthenticate()).user;
       console.log("Reauth success!")
       console.log(user);
-      
+
     } catch (error) {
       console.log("Reauth failed. Error below.");
       console.log(error);
@@ -119,10 +124,10 @@ class DefaultLayout extends Component {
   }
 
   render() {
-    
+
     return (
       <div className="app">
-        
+
         <AppHeader fixed>
           <Suspense fallback={this.loading()}>
             <DefaultHeader handleLogout={this.handleLogout.bind(this)} user={this.state.user} client={this.state.client} />

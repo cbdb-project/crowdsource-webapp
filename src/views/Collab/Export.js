@@ -44,15 +44,16 @@ class Export extends Component {
         var D = document,
             a = D.createElement("a");
         strMimeType = strMimeType || "application/octet-stream";
+        const universalBOM = "\uFEFF";
 
 
         if (navigator.msSaveBlob) { // IE10
             return navigator.msSaveBlob(new Blob([strData], { type: strMimeType }), strFileName);
         } /* end if(navigator.msSaveBlob) */
 
-
+        
         if ('download' in a) { //html5 A[download]
-            a.href = "data:" + strMimeType + "," + encodeURIComponent(strData);
+            a.href = "data:" + strMimeType + "," + encodeURIComponent(universalBOM + strData);
             a.setAttribute("download", strFileName);
             a.innerHTML = "downloading...";
             D.body.appendChild(a);
@@ -140,7 +141,7 @@ class Export extends Component {
     render() {
         return (
             <div className="container">
-                <div className="rounded-dialog">
+                <div className="rounded-dialog app-card">
                     <div className="modal-header">
                         Export data
                     </div>
@@ -161,7 +162,7 @@ class Export extends Component {
                             <div className="col  d-flex justify-content-center">
 
                                 <button type="button" href="#" onClick={this.csvClicked.bind(this)} className="lite-button mr-2 col col-sm-auto float-right mb-3 " data-dismiss="modal" >
-                                <DesktopDownloadIcon/>
+                                <DesktopDownloadIcon/>&nbsp; 
           Download CSV</button>
                             </div>
 
