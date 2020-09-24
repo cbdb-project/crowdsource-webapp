@@ -1,6 +1,6 @@
 {
-  "name": "Collab",
+  "name": "Tasks",
   "version": "0.0.1",
   "private": true,
-  "main": "./Collab.js"
+  "main": "./Tasks.js"
 }

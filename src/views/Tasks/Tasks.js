@@ -65,7 +65,7 @@ class Paginate extends Component {
     )
   }
 }
-class Collab extends Component {
+class Tasks extends Component {
 
   constructor(props) {
     super(props);
@@ -130,7 +130,7 @@ class Collab extends Component {
   }
 
   async componentWillMount() {
-    console.log("Collab: component will mount.")
+    console.log("Tasks: component will mount.")
     if (!this.props.user) {
       var r = await this.props.auth();
       if (!r) return;
@@ -481,4 +481,4 @@ class Collab extends Component {
   }
 }
 
-export default Collab;
+export default Tasks;

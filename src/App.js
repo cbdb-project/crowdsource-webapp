@@ -6,7 +6,7 @@ import './App.scss';
 const loading = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>;
 
 // Containers
-const DefaultLayout = React.lazy(() => import('./containers/DefaultLayout'));
+const DefaultLayout = React.lazy(() => import('./views/Layout'));
 
 // Pages
 const Page404 = React.lazy(() => import('./views/Pages/Page404'));

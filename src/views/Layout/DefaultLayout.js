@@ -170,7 +170,7 @@ class DefaultLayout extends Component {
                         } />
                     ) : (null);
                   })}
-        (<Redirect from="/" to="/collab" user={this.state.user} client={this.state.client} />)
+        (<Redirect from="/" to="/tasks" user={this.state.user} client={this.state.client} />)
 
                 </Switch>
               </Suspense>
