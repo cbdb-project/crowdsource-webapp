@@ -52,7 +52,7 @@ class DefaultLayout extends Component {
 
   async componentWillMount() {
     window.cbdbLink = (id) => {
-      return "http://162.105.134.121/basicinformation/" + id + "/edit";
+      return "http://47.114.119.106:8000/basicinformation/" + id + "/edit";
     }
     await this.auth();
 
