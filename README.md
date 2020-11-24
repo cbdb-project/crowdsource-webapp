@@ -28,8 +28,8 @@ Instead of running your own local setup, you could simply pull & run a docker co
 
 ### Example 1
 
-      docker pull tomding/cbdbapp
-      docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -p 3000:3000 -p 5000:5000  -it tomding/cbdbapp
+      docker pull oopus/csa
+      docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -p 3000:3000 -p 5000:5000  -it oopus/csa
 
 The first command pulls the image from docker repo (run once). 
 The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
@@ -43,7 +43,8 @@ If you'd like to serve it on port 80 instead, you could use nginx reverse proxy.
 
      docker pull jwilder/nginx-proxy        # pull nginx proxy docker
      docker run -d -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy. # run nginx server
-     docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -e VIRTUAL_HOST=47.111.230.182 -e VIRTUAL_PORT=3000  -p 3000:3000 -p 5000:5000  -it tomding/cbdbapp:latest 
+     docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -e VIRTUAL_HOST=47.111.230.182 -e VIRTUAL_PORT=3000  -p 3000:3000 -p 5000:5000  -it oopus/csa
+     :latest 
 
 Note: The "VIRTUAL_HOST" parameter should pointed to your actual hostname or IP address. 
 
