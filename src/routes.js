@@ -10,6 +10,7 @@ const Login = React.lazy(() => import('./views/Pages/Login'));
 const Register = React.lazy(() => import('./views/Pages/Register'));
 const ManageTasks = React.lazy(() => import('./views/Manage/ManageTasks'));
 const ManageUsers = React.lazy(() => import('./views/Manage/ManageUsers'));
+const Authors = React.lazy(() => import('./views/Authors/Authors.js'));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -23,6 +24,7 @@ const routes = [
   { path: '/register', name: 'CDBB Register', component: Register },
   { path: '/manageTasks', name: 'Manage Tasks', component: ManageTasks },
   { path: '/manageUsers', name: 'Manage Users', component: ManageUsers },
+  { path: '/authors', name: 'Browse authors', component: Authors },
   
 ];
 

@@ -118,6 +118,11 @@ class DefaultHeader extends Component {
               <Link to="/manageUsers" className="nav-link">Manage users</Link>
             </NavItem>
           </Can>
+          <Can I="get" a="authors" ability={userAbility}>
+            <NavItem className={" "+ this.navStyle("authors")} onClick={this.navClicked.bind(this, "authors")}>
+              <NavLink to="/authors" className="nav-link">Browse writers</NavLink>
+            </NavItem>
+          </Can>          
         </Nav>
         <Nav className="ml-auto mr-3" navbar>
 
