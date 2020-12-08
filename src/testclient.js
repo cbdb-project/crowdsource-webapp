@@ -1,5 +1,5 @@
 const SERVER = 'http://localhost:5001';
-const io = require('socket.io-client')(SERVER, { origins: ['*:*']});
+const io = require('socket.io-client')(SERVER, { origins: ['csa.cbdb.fas.harvard.edu:81']});
 const feathers = require('@feathersjs/feathers');
 const socketio = require('@feathersjs/socketio-client');
 
