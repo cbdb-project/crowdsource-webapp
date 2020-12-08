@@ -8,12 +8,12 @@ import auth from '@feathersjs/authentication-client'
 import socketio from '@feathersjs/socketio-client'
 // import io from 'socket.io-client'
 const SERVER = 'https://' + window.location.hostname + ':5000'
-const io = require('socket.io-client')(SERVER, { origins: '*:*', transport : ['websocket']});
-// const socket = io(SERVER);
+const io = require('socket.io-client');
+const socket = io(SERVER, {withCredentials: true});
 const feathers = createFeathersClient()
 // const client = feathers();
 
-feathers.configure(socketio(io))
+feathers.configure(socketio(socket))
 feathers.configure(
   auth({
     storage: window.localStorage,
