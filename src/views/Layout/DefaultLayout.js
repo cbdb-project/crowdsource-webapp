@@ -17,7 +17,7 @@ import {
 import routes from '../../routes';
 import auth from '@feathersjs/authentication-client'
 
-const io = require('socket.io-client');
+const io = require('socket.io-client')(server, { origins: '*:*'});
 const feathers = require('@feathersjs/feathers');
 const socketio = require('@feathersjs/socketio-client');
 
