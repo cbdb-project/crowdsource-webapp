@@ -8,6 +8,7 @@ import auth from '@feathersjs/authentication-client'
 import socketio from '@feathersjs/socketio-client'
 import io from 'socket.io-client'
 const SERVER = 'http://' + window.location.hostname + ':5000'
+io.origins('*:*')
 const socket = io(SERVER);
 const feathers = createFeathersClient()
 // const client = feathers();

@@ -1,10 +1,11 @@
-const io = require('socket.io-client')(server, { origins: '*:*'});
+const io = require('socket.io-client');
 const feathers = require('@feathersjs/feathers');
 const socketio = require('@feathersjs/socketio-client');
 
 const socket = io('http://localhost:5000');
 const client = feathers();
 
+io.origins('*:*')
 client.configure(socketio(socket));
 
 const tasks = client.service('tasks');

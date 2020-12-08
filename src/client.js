@@ -1,4 +1,5 @@
-const io = require('socket.io-client')(server, { origins: '*:*'});
+const io = require('socket.io-client');
+io.origins('*:*')
 
 const feathers = require('@feathersjs/feathers')
 const auth = require('@feathersjs/authentication-client');
