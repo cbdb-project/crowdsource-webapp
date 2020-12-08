@@ -1,5 +1,5 @@
 const SERVER = 'http://localhost:5001';
-const io = require('socket.io-client')(SERVER, { origins: '*:*'});
+const io = require('socket.io-client')(SERVER, { origins: '*:*', transport : ['websocket']});
 
 const feathers = require('@feathersjs/feathers')
 const auth = require('@feathersjs/authentication-client');
