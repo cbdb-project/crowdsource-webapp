@@ -1,4 +1,4 @@
-const SERVER = 'http://localhost:5000';
+const SERVER = 'http://localhost:5001';
 const io = require('socket.io-client')(SERVER, {cors: {origin: '*',}});
 const feathers = require('@feathersjs/feathers');
 const socketio = require('@feathersjs/socketio-client');
