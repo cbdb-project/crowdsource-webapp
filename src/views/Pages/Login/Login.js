@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom'
 
 import { parse } from 'query-string';
 const io = require('socket.io-client');
-io.origins('*:*')
+io.set('origins', '*:*');
 
 const feathers = require('@feathersjs/feathers')
 const auth = require('@feathersjs/authentication-client');

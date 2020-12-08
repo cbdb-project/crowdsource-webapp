@@ -5,7 +5,7 @@ const socketio = require('@feathersjs/socketio-client');
 const socket = io('http://localhost:5000');
 const client = feathers();
 
-io.origins('*:*')
+io.set('origins', '*:*');
 client.configure(socketio(socket));
 
 const tasks = client.service('tasks');
