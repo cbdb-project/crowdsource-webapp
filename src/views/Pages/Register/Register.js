@@ -6,14 +6,14 @@ import { HubotIcon, MailIcon } from '@primer/octicons-react'
 import createFeathersClient from '@feathersjs/feathers'
 import auth from '@feathersjs/authentication-client'
 import socketio from '@feathersjs/socketio-client'
-import io from 'socket.io-client'
+// import io from 'socket.io-client'
 const SERVER = 'http://' + window.location.hostname + ':5000'
-io.set('origins', '*:*');
-const socket = io(SERVER);
+const io = require('socket.io-client')(SERVER, { origins: '*:*'});
+// const socket = io(SERVER);
 const feathers = createFeathersClient()
 // const client = feathers();
 
-feathers.configure(socketio(socket))
+feathers.configure(socketio(io))
 feathers.configure(
   auth({
     storage: window.localStorage,

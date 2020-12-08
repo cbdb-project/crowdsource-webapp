@@ -1,5 +1,5 @@
-const io = require('socket.io-client');
-io.set('origins', '*:*');
+const SERVER = 'http://localhost:5000';
+const io = require('socket.io-client')(SERVER, { origins: '*:*'});
 
 const feathers = require('@feathersjs/feathers')
 const auth = require('@feathersjs/authentication-client');
@@ -8,12 +8,12 @@ const socketio = require('@feathersjs/socketio-client');
 
 const client = feathers()
 
-const socket = io('http://localhost:5000');
+// const socket = io('http://localhost:5000');
 const {Ability} =require('@casl/ability');
 const {unpackRules} =require('@casl/ability/extra');
 
 (async () => {
-    client.configure(socketio(socket));
+    client.configure(socketio(io));
 
     client.configure(auth({
         storageKey: 'auth'

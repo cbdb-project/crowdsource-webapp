@@ -17,17 +17,16 @@ import {
 import routes from '../../routes';
 import auth from '@feathersjs/authentication-client'
 
-const io = require('socket.io-client');
-io.set('origins', '*:*');
+const SERVER = 'http://' + window.location.hostname + ':5000'
+
+const io = require('socket.io-client')(SERVER, { origins: '*:*'});
 const feathers = require('@feathersjs/feathers');
 const socketio = require('@feathersjs/socketio-client');
 
-const SERVER = 'http://' + window.location.hostname + ':5000'
-
-const socket = io(SERVER);
+// const socket = io(SERVER);
 const client = feathers();
 
-client.configure(socketio(socket));
+client.configure(socketio(io));
 client.configure(
   auth({
     storage: window.localStorage,
