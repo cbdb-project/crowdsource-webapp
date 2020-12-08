@@ -11,7 +11,7 @@ const auth = require('@feathersjs/authentication-client');
 const socketio = require('@feathersjs/socketio-client');
 const SERVER = 'https://' + window.location.hostname + ':5000';
 
-const io = require('socket.io-client')(SERVER, {cors: {origin: '*',}});
+const io = require('socket.io-client')(SERVER, { origins: '*:*'});
 
 // const socket = io(SERVER);
 
