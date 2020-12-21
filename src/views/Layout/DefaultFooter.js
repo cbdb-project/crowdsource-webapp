@@ -15,7 +15,7 @@ class DefaultFooter extends Component {
 
     return (
       <React.Fragment>
-        <span><a href="https://coreui.io">CBDB Crowdsourcing App</a> &copy; 2020 CBDB Project</span>
+        <span><a href="https://coreui.io">CBDB Crowdsourcing App</a> &copy; 2020 CBDB Project <a href="https://github.com/cbdb-project/crowdsource-webapp" target="_blank">GitHub</a></span>
         <span className="ml-auto">Based on <a href="https://projects.iq.harvard.edu/cbdb">CBDB Project</a></span>
       </React.Fragment>
     );
