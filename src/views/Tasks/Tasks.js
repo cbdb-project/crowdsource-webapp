@@ -155,6 +155,10 @@ class Tasks extends Component {
     Object.entries(t.fields).forEach((field, index) => {
       fields.push(field[1]);
     });
+    console.log('before_task', this.state.myTask)
+    console.log('after_task', t)
+    console.log('before_fields', this.state.fields)
+    console.log('after_fields', fields)
     this.setState({ fields: fields, myTask: t, affectedRows: {} });
     // console.log(this.state.fields);
     localStorage.setItem("myTask", t.id);
@@ -188,7 +192,6 @@ class Tasks extends Component {
   }
 
   async taskChanged(id) {
-    console.log("taskChanged!");
     try {
       const t = await this.props.client.service('tasks').get(id);
       this.switchTask(t)
@@ -228,14 +231,15 @@ class Tasks extends Component {
   renderTaskDropdown() {
     return (
       <div className="col">
-        <select className="task-selector custom-select" id="inputGroupSelect01">
+        <select className="task-selector custom-select" id="inputGroupSelect01"
+         onChange={e => this.taskChanged(e.target.value)}>
           {
             this.state.tasks.length == 0 ? (<option> None </option>) : ""
           }
           {
             this.state.tasks.map((task, index) => {
               return (
-                <option key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
+                <option key={"task_" + task.id} value={task.id}>({task.id}) {task.title}
                 </option>
               )
             })
@@ -417,12 +421,12 @@ class Tasks extends Component {
               <button type="button" onClick={this.reviewClicked.bind(this)} className=" blob-btn   " data-dismiss="modal" >
                 <HeartFillIcon></HeartFillIcon> &nbsp;
                 Submit Proposals
-                <span class="blob-btn__inner">
-                  <span class="blob-btn__blobs">
-                    <span class="blob-btn__blob"></span>
-                    <span class="blob-btn__blob"></span>
-                    <span class="blob-btn__blob"></span>
-                    <span class="blob-btn__blob"></span>
+                <span className="blob-btn__inner">
+                  <span className="blob-btn__blobs">
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
+                    <span className="blob-btn__blob"></span>
                   </span>
                 </span>
               </button>
