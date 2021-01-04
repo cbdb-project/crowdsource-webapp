@@ -1,4 +1,6 @@
-const SERVER = 'http://localhost:5001';
+import {http_protocol, port_number} from '../../config.js';
+
+const SERVER = http_protocol + '://localhost:' + port_number;
 const io = require('socket.io-client')(SERVER, { origins: ['csa.cbdb.fas.harvard.edu:81']});
 
 const feathers = require('@feathersjs/feathers')

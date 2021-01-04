@@ -3,6 +3,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { Container } from 'reactstrap';
 import { useLocation } from 'react-router-dom'
+import {http_protocol, port_number} from '../../config.js';
 
 import {
   AppAside,
@@ -17,7 +18,7 @@ import {
 import routes from '../../routes';
 import auth from '@feathersjs/authentication-client'
 
-const SERVER = 'https://' + window.location.hostname + ':5000'
+const SERVER = http_protocol + '://' + window.location.hostname + ':' + port_number
 
 const io = require('socket.io-client');
 const feathers = require('@feathersjs/feathers');

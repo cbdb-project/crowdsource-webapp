@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Card, Dropdown } from 'react-bootstrap';
 import Files from "react-butterfiles";
 import axios from 'axios';
+import {http_protocol, port_number} from '../../config.js';
 
 const { convertArrayToCSV } = require('convert-array-to-csv');
 
@@ -29,7 +30,7 @@ class Import extends Component {
 
         data.append('file', this.state.files[0].src.file)
         try {
-            await axios.post("https://" + window.location.hostname + ":5000/import", data, config)
+            await axios.post(http_protocol + "://" + window.location.hostname + ":" + port_number + "/import", data, config)
             const success = "Task successfully importd!"
             this.setState({ message: success, messageType: "success" })
         } catch (e) {

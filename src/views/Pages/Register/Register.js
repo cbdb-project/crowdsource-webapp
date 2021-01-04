@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import { Button, Card, CardBody, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 import { HubotIcon, MailIcon } from '@primer/octicons-react'
 
-
 import createFeathersClient from '@feathersjs/feathers'
 import auth from '@feathersjs/authentication-client'
 import socketio from '@feathersjs/socketio-client'
+
+import {http_protocol, port_number} from '../../../config.js';
+
+
 // import io from 'socket.io-client'
-const SERVER = 'https://' + window.location.hostname + ':5000'
+const SERVER = http_protocol + '://' + window.location.hostname + ':' + port_number;
 const io = require('socket.io-client');
 const socket = io(SERVER, {withCredentials: true});
 const feathers = createFeathersClient()

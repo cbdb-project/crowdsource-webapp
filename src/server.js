@@ -15,7 +15,17 @@ const { NotFound, GeneralError, BadRequest } = require('@feathersjs/errors');
 
 const path = require('path');
 
-const port = process.env.PORT || 5001;
+const fs = require('fs');
+let port_number = ""
+try {
+  const config_data = fs.readFileSync('src/config.js', 'utf8').toString();
+  const port_number_reg = /const port_number = "(\d+)"/g;
+  port_number = port_number_reg.exec(config_data);
+      
+} catch(e) {
+  console.log('Error:', e.stack);
+}
+const port = process.env.PORT || parseInt(port_number[1]);
 process.env['NODE_CONFIG_DIR'] = path.join(__dirname, '../config/')
 const configuration = require('@feathersjs/configuration')
 const fe = feathers()

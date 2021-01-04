@@ -5,11 +5,13 @@ import { Redirect } from 'react-router-dom'
 
 import { parse } from 'query-string';
 
+import {http_protocol, port_number} from '../../../config.js';
+
 const feathers = require('@feathersjs/feathers')
 const auth = require('@feathersjs/authentication-client');
 
 const socketio = require('@feathersjs/socketio-client');
-const SERVER = 'https://' + window.location.hostname + ':5000';
+const SERVER = http_protocol + '://' + window.location.hostname + ':' + port_number;
 
 const io = require('socket.io-client');
 
