@@ -1,6 +1,8 @@
 # CBDB Crowdsource
 A simple webapp to crowd source information on any fields that supplements or revises current CBDB data.
 
+ **URL:** [https://csa.cbdb.fas.harvard.edu:81](https://csa.cbdb.fas.harvard.edu:81)
+
 Supports: 
  - Suggest new value or revise any current field value for CBDB
  - Workflow to review / adopt crowd suggestoins
@@ -20,11 +22,13 @@ replace the content in ./src/**config**.js by ./src/**config_local**.js
      node src/server.js &
      npm start
 
-## File / Directory structure(Please contact hongsuwang#fas.harvard.edu to get the files in ./data)
+## File / Directory structure
  - **src**: source JS / CSS files.
  - **data**: make sure cbdb.db, user.db, task.db etc. are accessible here in order for the app to function.
  - **Dockerfile**: you can use it to build your own docker container.
  - **public**: public html files.
+ 
+ Please contact hongsuwang#fas.harvard.edu to get the files in ./data.
 
 ## Pre-packaged Docker Container
 Instead of running your own local setup, you could simply pull & run a docker container.
@@ -38,8 +42,7 @@ Instead of running your own local setup, you could simply pull & run a docker co
 
 The first command pulls the image from docker repo (run once). 
 The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
-Make sure the "data" docker volume contains the required data files (cbdb.db, etc.) - you can create it with "docker volume create data".
-The last step, please redirect your 5001(HTTP) to 5000(TLS/SSL).
+Make sure the "data" docker volume contains the required data files (cbdb.db, etc.) - you can create it with "docker volume create data". The last step, please redirect your 5001(HTTP) to 5000(TLS/SSL).
 
 Now it should be available at http://localhost:3000.
 
