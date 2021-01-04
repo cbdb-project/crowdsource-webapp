@@ -10,6 +10,9 @@ Supports:
 
 ## Running the app
 
+### setup local environment
+replace the content in ./src/**config**.js by ./src/**config_local**.js
+
 ### Pulling dependencies
      npm install
 
@@ -17,7 +20,7 @@ Supports:
      node src/server.js &
      npm start
 
-## File / Directory structure
+## File / Directory structure(Please contact hongsuwang#fas.harvard.edu to get the files in ./data)
  - **src**: source JS / CSS files.
  - **data**: make sure cbdb.db, user.db, task.db etc. are accessible here in order for the app to function.
  - **Dockerfile**: you can use it to build your own docker container.
@@ -26,28 +29,19 @@ Supports:
 ## Pre-packaged Docker Container
 Instead of running your own local setup, you could simply pull & run a docker container.
 
-### Example 1
+**NOTICE:** we redirect 5001(HTTP) to 5000(Secure HTTP) as the secure http backend API server by using nginx for our container. Like this, Frontend(port=3000) >>> Nginx(tls, port=5000) >>> Backend(port=5001). If you would like to deploy this container in your local environment, you'd better also do this. Otherwise, this container can't work.
+
+### Example
 
       docker pull oopus/csa
-      docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -p 3000:3000 -p 5000:5000  -it oopus/csa
+      docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it oopus/csa --restart=always
 
 The first command pulls the image from docker repo (run once). 
 The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
 Make sure the "data" docker volume contains the required data files (cbdb.db, etc.) - you can create it with "docker volume create data".
+The last step, please redirect your 5001(HTTP) to 5000(TLS/SSL).
 
 Now it should be available at http://localhost:3000.
-
-
-### Exmaple 2
-If you'd like to serve it on port 80 instead, you could use nginx reverse proxy. Here's an exmaple where we'll be using nginx served by another docker container.
-
-     docker pull jwilder/nginx-proxy        # pull nginx proxy docker
-     docker run -d -p 80:80 -v /var/run/docker.sock:/tmp/docker.sock:ro jwilder/nginx-proxy. # run nginx server
-     docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -e VIRTUAL_HOST=47.111.230.182 -e VIRTUAL_PORT=3000  -p 3000:3000 -p 5000:5000  -it oopus/csa
-     :latest 
-
-Note: The "VIRTUAL_HOST" parameter should pointed to your actual hostname or IP address. 
-
 
 ## Task CSV Format
 ### First line: column specification (mandatory)
@@ -85,5 +79,5 @@ Those are the column names presented to end user.
 
 
 
-(C) 2020 Lei
+(C) 2020 CBDB Open-Source Community, Lei
 
