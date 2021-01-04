@@ -10,7 +10,7 @@ import {http_protocol, port_number} from '../../../config.js';
 
 
 // import io from 'socket.io-client'
-const SERVER = http_protocol + '://' + window.location.hostname + ':' + port_number;
+const SERVER = http_protocol + '://' + window.location.hostname + ':5000';
 const io = require('socket.io-client');
 const socket = io(SERVER, {withCredentials: true});
 const feathers = createFeathersClient()

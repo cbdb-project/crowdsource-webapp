@@ -18,7 +18,7 @@ import {
 import routes from '../../routes';
 import auth from '@feathersjs/authentication-client'
 
-const SERVER = http_protocol + '://' + window.location.hostname + ':' + port_number
+const SERVER = http_protocol + '://' + window.location.hostname + ':5000';
 
 const io = require('socket.io-client');
 const feathers = require('@feathersjs/feathers');
