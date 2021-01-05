@@ -1,7 +1,7 @@
 # CBDB Crowdsource
 A simple webapp to crowd source information on any fields that supplements or revises current CBDB data.
 
- **URL:** [https://csa.cbdb.fas.harvard.edu:81](https://csa.cbdb.fas.harvard.edu:81)
+ URL: [https://csa.cbdb.fas.harvard.edu:81](https://csa.cbdb.fas.harvard.edu:81)
 
 Supports: 
  - Suggest new value or revise any current field value for CBDB
@@ -12,7 +12,7 @@ Supports:
 
 ## Running the app
 
-### setup local environment
+### Setup local environment
 replace the content in ./src/**config**.js by ./src/**config_local**.js
 
 ### Pulling dependencies
