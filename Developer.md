@@ -22,7 +22,11 @@ Everything is in standard node / JS, built with:
            </NavItem>
         </Can>
      
-     Note: First line defines permission required for this item. 
+     Note:
+     
+     1. First line defines permission required for this item. 
+
+     2. After adding a new page, you should also add it in ./src/services/hooks/abilities.js (rolePermissions)
 
 ## Backend 
 All services are structured as standard REST services (by default port 5000), through FeatherJS (which uses ExpressJS underneath).
