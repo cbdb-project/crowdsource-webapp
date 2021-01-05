@@ -13,7 +13,7 @@ Supports:
 ## Running the app
 
 ### Setup local environment
-replace the content in ./src/**config**.js by ./src/**config_local**.js
+Replace the content in ./src/**config**.js by ./src/**config_local**.js
 
 ### Pulling dependencies
      npm install
