@@ -20,6 +20,7 @@ class TaskService {
     }
 
     async create(data) {
+        return this.search(data.id, data.dt);
     }
 
     async remove(id) {
@@ -115,7 +116,7 @@ class TaskService {
 
     async get(id, params) {
         try {
-            console.log("+++++++++++++++++++++++++++++++++++");
+            console.log("+++++++++++++++++++++++++++++++++++-----");
             console.log("Task service: get");
             // console.log(params);
             if (params && params.query) 
@@ -217,6 +218,57 @@ class TaskService {
 
             return this._paginate(task.data, page, perPage, task);
 
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async search(id,params){
+        try {
+            console.log("+++++++++++++++++++++++++++++++++++");
+            console.log("Task service: search");
+            console.log(params);
+            if (params && params.query) 
+                console.log(params.query);
+            var q = "select id,author,data from tasks where id=" + id;
+            var dt = taskdb.prepare(q).all();
+            if (dt.length == 0) {
+                console.log("!! No task found for id=" + id);
+                return {};
+            }
+            var orig = dt[0];
+            var task = JSON.parse(dt[0].data);
+            console.log(Object.keys(task['data']).length)
+            //filtering
+            if(params.length==0){
+                console.log('here')
+                const [page, perPage] = [1, Object.keys(task['data']).length]
+                Object.assign(task, {
+                    page: page,
+                    perPage: perPage,
+                    id: orig.id,
+                    author: orig.author,
+                    edited: task.edited ? task.edited : {},
+                    finalized: task.finalized ? task.finalized : {},
+
+                })
+
+                const fields = Object.entries(task.fields);
+                // Find the primary key
+                var pkField, pkCol;
+                for (var i = 0; i < fields.length; i++) {
+                    // console.log(" ++ " + fields[i][1].type);
+                    if (fields[i][1].type === "key") {
+                        pkField = fields[i][0];
+                        pkCol = i;
+                    }
+                }
+                // console.log("pk name = " + pkField);
+                task.pkField = pkField;
+                task.pkCol = pkCol;
+
+                return this._paginate(task.data, page, perPage, task);
+            }
         } catch (e) {
             console.log(e);
         }

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import ProposeValueModal from "./ProposeValue.js";
 import ReviewProposalModal from "./ReviewProposal.js";
+import AdvancedSearchModal from './AdvancedSearchModal.js'
 import EditableField from "./EditableField.js";
 import { Card, Dropdown } from 'react-bootstrap';
 import { HeartFillIcon, XCircleFillIcon } from '@primer/octicons-react'
@@ -27,6 +28,19 @@ class Paginate extends Component {
     const page = Number.parseInt(e.target.text);
     await this.props.onPaging(page)
     this.setState({ current: page })
+  }
+
+  inputPageChange(e){
+    if(e.keyCode==13){
+      var page = document.getElementById("inputPageChange").value;
+      if(page <= 0 || page>this.props.total){
+        alert("Plaese input correct page number.")
+      }else{
+        this.props.onPaging(page);
+        this.setState({ current: page });
+        document.getElementById("inputPageChange").value="";
+      }
+    }
   }
 
   render() {
@@ -61,6 +75,8 @@ class Paginate extends Component {
     return (
       <div className="mt-2 mb-2">
         Page: [ {pages} ]
+        &nbsp;&nbsp;→&nbsp;Page&nbsp;&nbsp;
+        <input id="inputPageChange" type="text" class="form-control" style={{display:"inline",width:"70px"}} onKeyDown={this.inputPageChange.bind(this)}></input>
       </div>
     )
   }
@@ -79,6 +95,8 @@ class Tasks extends Component {
     };
 
   }
+
+  search_text =  "羅倫";
 
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
@@ -155,10 +173,6 @@ class Tasks extends Component {
     Object.entries(t.fields).forEach((field, index) => {
       fields.push(field[1]);
     });
-    console.log('before_task', this.state.myTask)
-    console.log('after_task', t)
-    console.log('before_fields', this.state.fields)
-    console.log('after_fields', fields)
     this.setState({ fields: fields, myTask: t, affectedRows: {} });
     // console.log(this.state.fields);
     localStorage.setItem("myTask", t.id);
@@ -192,6 +206,7 @@ class Tasks extends Component {
   }
 
   async taskChanged(id) {
+    console.log("taskChanged!");
     try {
       const t = await this.props.client.service('tasks').get(id);
       this.switchTask(t)
@@ -231,15 +246,14 @@ class Tasks extends Component {
   renderTaskDropdown() {
     return (
       <div className="col">
-        <select className="task-selector custom-select" id="inputGroupSelect01"
-         onChange={e => this.taskChanged(e.target.value)}>
+        <select className="task-selector custom-select" id="inputGroupSelect01">
           {
             this.state.tasks.length == 0 ? (<option> None </option>) : ""
           }
           {
             this.state.tasks.map((task, index) => {
               return (
-                <option key={"task_" + task.id} value={task.id}>({task.id}) {task.title}
+                <option key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
                 </option>
               )
             })
@@ -394,6 +408,71 @@ class Tasks extends Component {
     document.body.setAttribute('style', '');
     window.scrollTo(0, this.windowOffset);
   }
+  
+  searchInputChange(e){
+    console.log(e.target.value);
+    this.search_text = e.target.value;
+  }
+
+  async simpleSearch(){
+    console.log("Simple Searching...");
+
+    try {
+      const t = await this.props.client.service('tasks').create({id:this.state.myTask.id, dt:[]});
+      console.log(t);
+
+      var data = {}
+      for(var key in t.data){
+        var item = t.data[key];
+
+        for(var val in item){
+          if(typeof(item[val])=="object"){
+            if(item[val]["c_name_chn"].includes(this.search_text)){
+              data[key]=item;
+              break;
+            }
+          }else{
+            if(item[val].includes(this.search_text)){
+              data[key]=item;
+              break;
+            }
+          }
+        }
+
+      }
+      t.data = data;
+      t.pages =1;
+      t.perPage = Object.keys(data).length;
+      this.setState({ myTask: t });
+      //Why not work???
+      // const t = await this.props.client.service('tasks').search(this.state.myTask.id);
+    } catch (e) {
+      if (e.name === "NotAuthenticated") {
+        await this.props.auth();
+      }
+      console.log(e)
+    }    
+  }
+
+  onAdSearchClicked(){
+    this.setState({
+      advancedSearch: true
+    });
+
+    this.windowOffset = window.scrollY;
+    document.body.setAttribute('style', `position: fixed; top: -${this.windowOffset}px;left: 0;right:0`);
+  }
+
+  onAdSearchClosed(){
+    this.setState({ advancedSearch: false });
+    document.body.setAttribute('style', '');
+    window.scrollTo(0, this.windowOffset);
+  }
+
+  updateAdSearch(val){
+    this.setState({myTask: val});
+  }
+
   renderTasks() {
     // console.log(this.state.tasks);
     this.state.tasks.forEach((task, index) => {
@@ -412,21 +491,23 @@ class Tasks extends Component {
       return (
         <div>
           <div></div>
-          <div className="row justify-content-end no-gutters mt-3">
-            <div className="col mr-2 col-sm-auto">
-
+          <div className="row justify-content-between no-gutters mt-3">
+            <div className="col form-inline ml-2 col-sm-auto float-left">
+              <input type="text" class="form-control" style={{padding:"20px 25px", "margin-bottom":"30px"}} placeholder="羅倫" onChange={(e)=>this.searchInputChange(e)}></input>
+              <button type="button" className="ml-2 blob-btn" onClick={this.simpleSearch.bind(this)}>SEARCH</button>
+              <button type="button" className="ml-2 blob-btn" onClick={this.onAdSearchClicked.bind(this)}>ADVANCED SEARCH</button>
             </div>
             <div className="col mr-2 col-sm-auto float-right ">
 
               <button type="button" onClick={this.reviewClicked.bind(this)} className=" blob-btn   " data-dismiss="modal" >
                 <HeartFillIcon></HeartFillIcon> &nbsp;
                 Submit Proposals
-                <span className="blob-btn__inner">
-                  <span className="blob-btn__blobs">
-                    <span className="blob-btn__blob"></span>
-                    <span className="blob-btn__blob"></span>
-                    <span className="blob-btn__blob"></span>
-                    <span className="blob-btn__blob"></span>
+                <span class="blob-btn__inner">
+                  <span class="blob-btn__blobs">
+                    <span class="blob-btn__blob"></span>
+                    <span class="blob-btn__blob"></span>
+                    <span class="blob-btn__blob"></span>
+                    <span class="blob-btn__blob"></span>
                   </span>
                 </span>
               </button>
@@ -434,15 +515,11 @@ class Tasks extends Component {
                 &nbsp; Discard</button>
 
             </div>
-
-
-
           </div>
           <Card className="app-card mt-3">
             <Card.Body>
 
               {this.renderCurrTask()}
-
 
             </Card.Body>
           </Card>
@@ -471,6 +548,14 @@ class Tasks extends Component {
           task={this.state.myTask}
           data={this.state.affectedRows}
         />
+
+        <AdvancedSearchModal isOpen={this.state.advancedSearch}
+          onClosed={this.onAdSearchClosed.bind(this)}
+          client={this.props.client}
+          task={this.state.myTask}
+          update={this.updateAdSearch.bind(this)}
+        />
+
         {/* // onSubmit={this.onFieldEdited.bind(this)}
           // onClosed={this.onFieldEditorClosed.bind(this)}
           // fieldDef={this.state.fieldDef}} */}
