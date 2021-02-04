@@ -1,5 +1,5 @@
-# CBDB Crowdsource
-A simple webapp to crowd source information on any fields that supplements or revises current CBDB data.
+# CSA
+Crowdsourcing System for Association Data
 
  URL: [https://csa.cbdb.fas.harvard.edu:81](https://csa.cbdb.fas.harvard.edu:81)
 
