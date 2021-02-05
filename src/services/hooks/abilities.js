@@ -15,17 +15,18 @@ const rolePermissions = {
     everyone(user, {can, cannot}) {
         can('create', ['users']);
         can("get", ["tasks", "abilities", "person", "authors"]);
+        can('search',["tasks"]);
     },
     contributor(user, { can ,cannot}) {
-        can('create', ['proposals'])
+        can('create', ['proposals','tasks'])
         can("get", ["users", "tasks", "abilities", "person", "authors"]);
-
         can("find", ["tasks", "proposals", "person"]);
     }
     , reviewer(user, { can,cannot }) {
         can('manage', ['tasks','proposals'])
         can("get", ["users", "abilities", "person", "authors"]);
         can("find", ["tasks", "proposals","person"]);
+        can("create",["tasks"]);
     }
     , admin(user,{can,cannot}) {
         can("manage", ["all"]);
