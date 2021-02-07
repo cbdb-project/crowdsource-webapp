@@ -37,72 +37,78 @@ class AdvancedSearchModal extends Component {
     // console.log(conditions);
     console.log("Advanced Searching...");
 
-    try {
-        const t = await this.props.client.service('tasks').create({id:this.props.task.id, dt:[]});
-        console.log(t);
-
-        var idx=[];
-        for(var i=0;i<=this.state.num;i++){
-            for(item in t.fields){
-                if(conditions.field[i]==t.fields[item]["name"]){
-                    idx.push(t.fields[item]["col"]);
+    if(this.state.num==0 && conditions.cons[0]==""){
+        this.props.blankSearch(this.props.task.id);
+        this.handleCancel();
+    }else{
+        try {
+            const t = await this.props.client.service('tasks').create({id:this.props.task.id, dt:[]});
+            console.log(t);
+    
+            var idx=[];
+            for(var i=0;i<=this.state.num;i++){
+                for(item in t.fields){
+                    if(conditions.field[i]==t.fields[item]["name"]){
+                        idx.push(t.fields[item]["col"]);
+                    }
                 }
             }
-        }
-        // console.log(idx)
-  
-        var data = {};
-        for(var key in t.data){
-            var item = t.data[key];
-            if(item[idx[0]].includes(conditions.cons[0])){
-                data[key]=item;
+            // console.log(idx)
+      
+            var data = {};
+            for(var key in t.data){
+                var item = t.data[key];
+                if(item[idx[0]].includes(conditions.cons[0])){
+                    data[key]=item;
+                }
+            }        
+            // console.log(data)
+    
+            for(var i=1;i<=this.state.num;i++){
+                switch(conditions.relation[i]){
+                    case "1":
+                        //and
+                        for(var key in data){
+                            var item = data[key];
+                            if(!item[idx[i]].includes(conditions.cons[i])){
+                                data[key]=item;
+                            }
+                        }
+                        break;
+                    case "2":
+                        //or
+                        for(var key in t.data){
+                            var item = t.data[key];
+                            if(item[idx[i]].includes(conditions.cons[i])){
+                                data[key]=item;
+                            }
+                        }
+                        break;
+                    case "3":
+                        //not
+                        for(var key in data){
+                            var item = data[key];
+                            if(item[idx[i]].includes(conditions.cons[i])){
+                                delete data[key];
+                            }
+                        }
+                        break;
+                }
             }
-        }        
-        // console.log(data)
-
-        for(var i=1;i<=this.state.num;i++){
-            switch(conditions.relation[i]){
-                case "1":
-                    //and
-                    for(var key in data){
-                        var item = data[key];
-                        if(!item[idx[i]].includes(conditions.cons[i])){
-                            data[key]=item;
-                        }
-                    }
-                    break;
-                case "2":
-                    //or
-                    for(var key in t.data){
-                        var item = t.data[key];
-                        if(item[idx[i]].includes(conditions.cons[i])){
-                            data[key]=item;
-                        }
-                    }
-                    break;
-                case "3":
-                    //not
-                    for(var key in data){
-                        var item = data[key];
-                        if(item[idx[i]].includes(conditions.cons[i])){
-                            delete data[key];
-                        }
-                    }
-                    break;
-            }
-        }
-
-        t.data = data;
-        t.pages =1;
-        t.perPage = Object.keys(data).length;
-        this.props.update(t);
-        this.handleCancel();
-      } catch (e) {
+    
+            t.data = data;
+            t.pages =1;
+            t.perPage = Object.keys(data).length;
+            this.props.update(t);
+            this.handleCancel();
+        } catch (e) {
         if (e.name === "NotAuthenticated") {
-          await this.props.auth();
+            await this.props.auth();
         }
         console.log(e)
-      }
+        }
+    }
+    
   }
 
   cleanup() {

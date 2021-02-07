@@ -96,7 +96,7 @@ class Tasks extends Component {
 
   }
 
-  search_text =  "羅倫";
+  search_text =  "";
 
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
 
@@ -417,41 +417,46 @@ class Tasks extends Component {
   async simpleSearch(){
     console.log("Simple Searching...");
 
-    try {
-      const t = await this.props.client.service('tasks').create({id:this.state.myTask.id, dt:[]});
-      console.log(t);
-
-      var data = {}
-      for(var key in t.data){
-        var item = t.data[key];
-
-        for(var val in item){
-          if(typeof(item[val])=="object"){
-            if(item[val]["c_name_chn"].includes(this.search_text)){
-              data[key]=item;
-              break;
-            }
-          }else{
-            if(item[val].includes(this.search_text)){
-              data[key]=item;
-              break;
+    if(this.search_text!=""){
+      try {
+        const t = await this.props.client.service('tasks').create({id:this.state.myTask.id, dt:[]});
+        console.log(t);
+  
+        var data = {}
+        for(var key in t.data){
+          var item = t.data[key];
+  
+          for(var val in item){
+            if(typeof(item[val])=="object"){
+              if(item[val]["c_name_chn"].includes(this.search_text)){
+                data[key]=item;
+                break;
+              }
+            }else{
+              if(item[val].includes(this.search_text)){
+                data[key]=item;
+                break;
+              }
             }
           }
+  
         }
-
-      }
-      t.data = data;
-      t.pages =1;
-      t.perPage = Object.keys(data).length;
-      this.setState({ myTask: t });
-      //Why not work???
-      // const t = await this.props.client.service('tasks').search(this.state.myTask.id);
-    } catch (e) {
-      if (e.name === "NotAuthenticated") {
-        await this.props.auth();
-      }
-      console.log(e)
-    }    
+        t.data = data;
+        t.pages =1;
+        t.perPage = Object.keys(data).length;
+        this.setState({ myTask: t });
+        //Why not work???
+        // const t = await this.props.client.service('tasks').search(this.state.myTask.id);
+      } catch (e) {
+        if (e.name === "NotAuthenticated") {
+          await this.props.auth();
+        }
+        console.log(e)
+      } 
+    }else{
+      this.taskChanged(this.state.myTask.id);
+    }
+       
   }
 
   onAdSearchClicked(){
@@ -493,7 +498,7 @@ class Tasks extends Component {
           <div></div>
           <div className="row justify-content-between no-gutters mt-3">
             <div className="col form-inline ml-2 col-sm-auto float-left">
-              <input type="text" class="form-control" style={{padding:"20px 25px", "margin-bottom":"30px"}} placeholder="羅倫" onChange={(e)=>this.searchInputChange(e)}></input>
+              <input type="text" class="form-control" style={{padding:"20px 25px", "margin-bottom":"30px"}} onChange={(e)=>this.searchInputChange(e)}></input>
               <button type="button" className="ml-2 blob-btn" onClick={this.simpleSearch.bind(this)}>SEARCH</button>
               <button type="button" className="ml-2 blob-btn" onClick={this.onAdSearchClicked.bind(this)}>ADVANCED SEARCH</button>
             </div>
@@ -554,6 +559,7 @@ class Tasks extends Component {
           client={this.props.client}
           task={this.state.myTask}
           update={this.updateAdSearch.bind(this)}
+          blankSearch={this.taskChanged.bind(this)}
         />
 
         {/* // onSubmit={this.onFieldEdited.bind(this)}
