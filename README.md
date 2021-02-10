@@ -82,7 +82,9 @@ Those are the column names presented to end user.
 
 [Ding LEI](https://github.com/toysrtommy), [Hongsu WANG](https://github.com/sudoghut), [Zihan ZHOU](https://github.com/Zhou-Zihan), [Jimmy Wei](https://github.com/icewing1996)
 
+### Academic Advisor
 
+[Peter Bol](https://scholar.harvard.edu/pkbol/home)
 
 (C) 2020 CBDB Open-Source Community, Lei
 
