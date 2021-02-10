@@ -84,7 +84,7 @@ Those are the column names presented to end user.
 
 ### Academic Advisors
 
-[Peter Bol](https://scholar.harvard.edu/pkbol/home), [Kowk-leong Tang](https://fairbank.fas.harvard.edu/profiles/kwok-leong-tang)
+[Peter Bol](https://scholar.harvard.edu/pkbol/home), [Kowk-leong TANG](https://fairbank.fas.harvard.edu/profiles/kwok-leong-tang)
 
 (C) 2021 CBDB Open-Source Community, Lei
 
