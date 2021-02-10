@@ -78,7 +78,7 @@ Those are the column names presented to end user.
 
 
 
-### Contributors
+### Technical Contributors
 
 [Ding LEI](https://github.com/toysrtommy), [Hongsu WANG](https://github.com/sudoghut), [Zihan ZHOU](https://github.com/Zhou-Zihan), [Jimmy Wei](https://github.com/icewing1996)
 
