@@ -65,7 +65,7 @@ And an invalid one:
 ### Second line: user friendly column name (mandatory)
 Those are the column names presented to end user. 
 
-### Examples:
+### Examples
 
       line=key,writer,sequence,person_id,title,assoc_type=string,assoc_name_chn=string,assoc_personid=person,assoc_count=int,assoc_year=int,nianhao=string,year=int,range=string,collection,c_source,volume
       行号,作者,序列,人物id,标题,关联类型,关联类型描述,关联人物,关联次数,关联年份,年号,公元年,范围,文集,出处,卷
@@ -78,7 +78,7 @@ Those are the column names presented to end user.
 
 
 
-### Contributors:
+### Contributors
 
 [Ding LEI](https://github.com/toysrtommy), [Hongsu WANG](https://github.com/sudoghut), [Zihan ZHOU](https://github.com/Zhou-Zihan), [Jimmy Wei](https://github.com/icewing1996)
 
