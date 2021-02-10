@@ -82,7 +82,7 @@ Those are the column names presented to end user.
 
 [Ding LEI](https://github.com/toysrtommy), [Hongsu WANG](https://github.com/sudoghut), [Zihan ZHOU](https://github.com/Zhou-Zihan), [Jimmy WEI](https://github.com/icewing1996)
 
-### Academic Advisor
+### Academic Advisors
 
 [Peter Bol](https://scholar.harvard.edu/pkbol/home), [Kowk-leong Tang](https://fairbank.fas.harvard.edu/profiles/kwok-leong-tang)
 
