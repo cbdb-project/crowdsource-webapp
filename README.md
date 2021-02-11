@@ -80,7 +80,7 @@ Those are the column names presented to end user.
 
 ### Technical Contributors
 
-[Ding LEI](https://github.com/toysrtommy), [Hongsu WANG](https://github.com/sudoghut), [Zihan ZHOU](https://github.com/Zhou-Zihan), [Jimmy WEI](https://github.com/icewing1996)
+[Lei DING](https://github.com/toysrtommy), [Hongsu WANG](https://github.com/sudoghut), [Zihan ZHOU](https://github.com/Zhou-Zihan), [Jimmy WEI](https://github.com/icewing1996)
 
 ### Academic Advisors
 
