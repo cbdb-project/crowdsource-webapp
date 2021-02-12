@@ -32,8 +32,8 @@ class AdvancedSearchModal extends Component {
         var fie = document.getElementById(i+"_field");
         conditions.field.push(fie.value);
         var inp = document.getElementById(i+"_input");
-        conditions.cons.push(inp.value);
-    }
+        conditions.cons.push(inp.value.replaceAll(/\s*/g,""));
+      }
     // console.log(conditions);
     console.log("Advanced Searching...");
 
@@ -58,8 +58,14 @@ class AdvancedSearchModal extends Component {
             var data = {};
             for(var key in t.data){
                 var item = t.data[key];
-                if(item[idx[0]].includes(conditions.cons[0])){
-                    data[key]=item;
+                if(typeof(item[idx[0]])=="object"){
+                    if(item[idx[0]]["c_name_chn"].includes(conditions.cons[0])){
+                        data[key]=item;
+                    }
+                }else{
+                    if(item[idx[0]].includes(conditions.cons[0])){
+                        data[key]=item;
+                    }
                 }
             }        
             // console.log(data)
@@ -68,29 +74,49 @@ class AdvancedSearchModal extends Component {
                 switch(conditions.relation[i]){
                     case "1":
                         //and
+                        var temp_data = {};
                         for(var key in data){
                             var item = data[key];
-                            if(!item[idx[i]].includes(conditions.cons[i])){
-                                data[key]=item;
-                            }
+                            if(typeof(item[idx[i]])=="object"){
+                                if(item[idx[i]]["c_name_chn"].includes(conditions.cons[i])){
+                                    temp_data[key]=item;
+                                }
+                            }else{
+                                if(item[idx[i]].includes(conditions.cons[i])){
+                                    temp_data[key]=item;
+                                }
+                            }                            
                         }
+                        data = temp_data;
                         break;
                     case "2":
                         //or
                         for(var key in t.data){
                             var item = t.data[key];
-                            if(item[idx[i]].includes(conditions.cons[i])){
-                                data[key]=item;
-                            }
+                            if(typeof(item[idx[i]])=="object"){
+                                if(item[idx[i]]["c_name_chn"].includes(conditions.cons[i])){
+                                    data[key]=item;
+                                }
+                            }else{
+                                if(item[idx[i]].includes(conditions.cons[i])){
+                                    data[key]=item;
+                                }
+                            }                            
                         }
                         break;
                     case "3":
                         //not
                         for(var key in data){
                             var item = data[key];
-                            if(item[idx[i]].includes(conditions.cons[i])){
-                                delete data[key];
-                            }
+                            if(typeof(item[idx[i]])=="object"){
+                                if(item[idx[i]]["c_name_chn"].includes(conditions.cons[i])){
+                                    delete data[key];
+                                }
+                            }else{
+                                if(item[idx[i]].includes(conditions.cons[i])){
+                                    delete data[key];
+                                }
+                            }                            
                         }
                         break;
                 }
@@ -139,6 +165,7 @@ class AdvancedSearchModal extends Component {
                             <option value={"作者"}>作者</option>
                             <option value={"作品標題"}>作品標題</option>
                             <option value={"通訊關係"}>通訊關係</option>
+                            <option value={"通訊人"}>通訊人</option>
                             <option value={"文集"}>文集</option>
                         </select>
                     </div>
@@ -191,7 +218,8 @@ class AdvancedSearchModal extends Component {
                                 <option key={1}  >作者</option>
                                 <option key={2}  >作品標題</option>
                                 <option key={3}  >通訊關係</option>
-                                <option key={4}  >文集</option>
+                                <option key={4}  >通訊人</option>
+                                <option key={5}  >文集</option>
                             </select>
                         </div>
                         <input type="text" class="form-control" id="0_input"></input>

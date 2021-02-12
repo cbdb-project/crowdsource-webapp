@@ -220,6 +220,7 @@ class Tasks extends Component {
 
   discardClicked(e) {
     this.setState({ affectedRows: {} });
+    this.taskChanged(this.state.myTask.id);
   }
 
   reviewClicked(e) {
@@ -421,6 +422,8 @@ class Tasks extends Component {
       try {
         const t = await this.props.client.service('tasks').create({id:this.state.myTask.id, dt:[]});
         console.log(t);
+        const search_content = this.search_text.replaceAll(/\s*/g,"");
+        console.log(search_content);
   
         var data = {}
         for(var key in t.data){
@@ -428,12 +431,12 @@ class Tasks extends Component {
   
           for(var val in item){
             if(typeof(item[val])=="object"){
-              if(item[val]["c_name_chn"].includes(this.search_text)){
+              if(item[val]["c_name_chn"].includes(search_content)){
                 data[key]=item;
                 break;
               }
             }else{
-              if(item[val].includes(this.search_text)){
+              if(item[val].includes(search_content)){
                 data[key]=item;
                 break;
               }
@@ -498,7 +501,7 @@ class Tasks extends Component {
           <div></div>
           <div className="row justify-content-between no-gutters mt-3">
             <div className="col form-inline ml-2 col-sm-auto float-left">
-              <input type="text" class="form-control" style={{padding:"20px 25px", "margin-bottom":"30px"}} onChange={(e)=>this.searchInputChange(e)}></input>
+              <input type="text" class="form-control" style={{padding:"20px 25px", "margin-bottom":"30px"}} placeholder="Search persons or works" onChange={(e)=>this.searchInputChange(e)}></input>
               <button type="button" className="ml-2 blob-btn" onClick={this.simpleSearch.bind(this)}>SEARCH</button>
               <button type="button" className="ml-2 blob-btn" onClick={this.onAdSearchClicked.bind(this)}>ADVANCED SEARCH</button>
             </div>
