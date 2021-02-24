@@ -88,3 +88,7 @@ Those are the column names presented to end user.
 
 (C) 2021 CBDB Open-Source Community, Lei
 
+### License
+[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+
