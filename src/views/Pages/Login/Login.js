@@ -141,7 +141,7 @@ class Login extends Component {
                   <CardBody className="text-center">
                     <div>
                       <h2>Sign up</h2>
-                      <p>Create a Crowdsourcing System for Associations(CSA) account.</p>
+                      <p>Create a Crowdsourcing System for Association Data(CSA) account.</p>
                       <Link to="/register">
                         <button className="lite-button-inverse mt-3"   active tabIndex={-1}>Register Now!</button>
                       </Link>
