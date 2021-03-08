@@ -15,7 +15,7 @@ class DefaultFooter extends Component {
 
     return (
       <React.Fragment>
-        <span>&copy; 2021 <a href="https://cbdb.fas.harvard.edu/" target="_blank">CBDB Project</a> | <a href="https://github.com/cbdb-project/crowdsource-webapp" target="_blank">GitHub</a> | Collabrating with <a href="https://ccs.ncl.edu.tw/expertDB5.aspx" target="_blank">National Central Library</a></span>
+        <span>Crowdsourcing System for Association Data &copy; 2021 <a href="https://cbdb.fas.harvard.edu/" target="_blank">CBDB Project</a> | <a href="https://github.com/cbdb-project/crowdsource-webapp" target="_blank">GitHub</a> | in Collabration with <a href="https://ccs.ncl.edu.tw/expertDB5.aspx" target="_blank">the National Central Library</a></span>
         <span className="ml-auto">Content on this site is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0 </a>International License</span>
       </React.Fragment>
     );
