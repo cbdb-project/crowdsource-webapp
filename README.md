@@ -36,7 +36,7 @@ Instead of running your own local setup, you could simply pull & run a docker co
 ### Example
 
       docker pull oopus/csa-local
-      docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -p 3000:3000 -p 5000:5000  -it oopus/csa
+      docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -p 3000:3000 -p 5000:5000  -it oopus/csa-local
 
 The first command pulls the image from docker repo (run once). 
 The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
