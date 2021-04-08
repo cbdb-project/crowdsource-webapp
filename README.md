@@ -43,6 +43,14 @@ The second one starts the container, and mounts a Docker volume named "data" ont
 
 Now it should be available at http://localhost:3000.
 
+If you are a MacOS users, please jump into the ./data directory and run 
+
+      `docker run --mount src="$(pwd)",target=/usr/src/cbdbapp/data,type=bind --expose 3000 --expose 5000 -p 3000:3000 -p 5000:5000  -it oopus/csa-local`
+
+instead of
+
+      `docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5000 -p 3000:3000 -p 5000:5000  -it oopus/csa-local`
+
 ## Task CSV Format
 ### First line: column specification (mandatory)
 The first line of the CSV should be (column_name) or (column_name=column_type), where:
