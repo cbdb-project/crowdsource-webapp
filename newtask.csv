@@ -1,5 +1,5 @@
-line=key,writer,sequence,w_dob,w_dod,person_id,title,assoc_type=string,assoc_person=person,a_iy,a_dob,a_dod,assoc_count,assoc_year=int,nianhao=string,year=int,range=string,collection,c_source,volume,nlc_seq,nlc_id,notes=string
-行號,作者,序號,作者生年,作者卒年,人物id,作品標題,通訊關係,通訊人,通訊人指數年,通訊人生年,通訊人卒年,通訊次數,通訊年份,年號,年,時限,文集,出處,卷,NLC序號,NLC編號,備註
+line=key,writer,sequence,w_dob,w_dod,person_id,title,assoc_type=string,assoc_person=person,a_iy,a_dob,a_dod,assoc_count,assoc_year=int,nianhao=string,year=int,range=string,collection,c_source,volume,css_seq,css_id,notes=string
+行號,作者,序號,作者生年,作者卒年,人物id,作品標題,通訊關係,通訊人,通訊人指數年,通訊人生年,通訊人卒年,通訊次數,通訊年份,年號,年,時限,文集,出處,卷,CSS序號,CSS編號,備註
 51,羅倫,1,,,34531,在告與三閤老,致書Y,,,,,,,,,,一峰先生文集,7204,8,,,
 52,羅倫,2,,,34531,在告與崔冡宰,致書Y,,,,,,,,,,一峰先生文集,7204,8,,,
 53,羅倫,3,,,34531,與李賔之,致書Y,李東陽=28691,,,,,,,,,一峰先生文集,7204,8,,,
