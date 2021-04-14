@@ -31,20 +31,23 @@ Replace the content in ./src/**config**.js by ./src/**config_local**.js
  Please contact hongsuwang#fas.harvard.edu to get the files in ./data.
 
 ## Pre-packaged Docker Container
-Instead of running your own local setup, you could simply pull & run a docker container.
 
-**NOTICE:** we redirect 5001(HTTP) to 5000(Secure HTTP) as the secure http backend API server by using nginx for our container. Like this, Frontend(port=3000) >>> Nginx(tls, port=5000) >>> Backend(port=5001). If you would like to deploy this container in your local environment, you'd better also do this. Otherwise, this container can't work.
+https://github.com/cbdb-project/crowdsource-webapp/tree/docker-local
 
-### Example
+~~Instead of running your own local setup, you could simply pull & run a docker container.~~
+
+~~**NOTICE:** we redirect 5001(HTTP) to 5000(Secure HTTP) as the secure http backend API server by using nginx for our container. Like this, Frontend(port=3000) >>> Nginx(tls, port=5000) >>> Backend(port=5001). If you would like to deploy this container in your local environment, you'd better also do this. Otherwise, this container can't work.~~
+
+~~### Example~~
 
       docker pull oopus/csa
       docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it oopus/csa --restart=always
 
-The first command pulls the image from docker repo (run once). 
+~~The first command pulls the image from docker repo (run once). 
 The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
-Make sure the "data" docker volume contains the required data files (cbdb.db, etc.) - you can create it with "docker volume create data". The last step, please redirect your 5001(HTTP) to 5000(TLS/SSL).
+Make sure the "data" docker volume contains the required data files (cbdb.db, etc.) - you can create it with "docker volume create data". The last step, please redirect your 5001(HTTP) to 5000(TLS/SSL).~~
 
-Now it should be available at http://localhost:3000.
+~~Now it should be available at http://localhost:3000.~~
 
 ## Task CSV Format
 ### First line: column specification (mandatory)
