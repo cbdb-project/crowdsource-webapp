@@ -100,7 +100,7 @@ class Export extends Component {
     }
 
     async setTask(id) {
-        const t = await this.props.client.service('tasks').get(id, { query: { perPage: 5000 } });
+        const t = await this.props.client.service('tasks').get(id, { query: { perPage: 100000 } });
         console.log(t);
         this.setState({ myTask: t });
 
