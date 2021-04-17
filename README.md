@@ -83,15 +83,11 @@ Those are the column names presented to end user.
 
 ### Technical Contributors
 
-[Lei DING](https://github.com/toysrtommy), [Hongsu WANG](https://github.com/sudoghut), [Zihan ZHOU](https://github.com/Zhou-Zihan), [Jimmy WEI](https://github.com/icewing1996)
+[Lei DING](https://github.com/toysrtommy), [Hongsu WANG](https://github.com/sudoghut), [Zihan ZHOU](https://github.com/Zhou-Zihan), [Jimmy WEI](https://github.com/icewing1996), [Xuan ZHANG](https://github.com/MerakDipper)
 
 ### Academic Advisors/Contributors
 
-[Peter BOL](https://scholar.harvard.edu/pkbol/home), [Song CHEN](https://www.bucknell.edu/fac-staff/song-chen), [Kowk-leong TANG](https://fairbank.fas.harvard.edu/profiles/kwok-leong-tang)
+[Peter BOL](https://scholar.harvard.edu/pkbol/home), [Song CHEN](https://www.bucknell.edu/fac-staff/song-chen), [Kwok-leong TANG](https://fairbank.fas.harvard.edu/profiles/kwok-leong-tang)
 
 ### License
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International license](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-
-(C) 2021 CBDB Open-Source Community, Lei
-
-
