@@ -16,11 +16,11 @@ Supports:
 Replace the content in ./src/**config**.js by ./src/**config_local**.js
 
 ### Pulling dependencies
-     npm install
+    npm install
 
 ### Launching the app
-     node src/server.js &
-     npm start
+    node src/server.js &
+    npm start
 
 ## File / Directory structure
  - **src**: source JS / CSS files.
@@ -40,9 +40,12 @@ https://github.com/cbdb-project/crowdsource-webapp/tree/docker-local
 
 ~~### Example~~
 
-      docker pull oopus/csa
-      docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it oopus/csa --restart=always
+    docker pull oopus/csa
+    docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it oopus/csa --restart=always
+OR
 
+    docker pull oopus/csa
+    sudo docker run --mount src="$(pwd)"/data,target=/usr/src/cbdbapp/data,type=bind --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it oopus/csa
 ~~The first command pulls the image from docker repo (run once). 
 The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
 Make sure the "data" docker volume contains the required data files (cbdb.db, etc.) - you can create it with "docker volume create data". The last step, please redirect your 5001(HTTP) to 5000(TLS/SSL).~~
