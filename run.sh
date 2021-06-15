@@ -1,2 +1,3 @@
-nohup node src/server.js &
-npm start
+npm start &
+nohup node src/server.js
+
