@@ -1,3 +1,3 @@
-nohup npm start &
+nohup npm start &&
 node src/server.js
 
