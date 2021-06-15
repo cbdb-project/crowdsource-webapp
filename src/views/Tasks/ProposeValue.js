@@ -149,7 +149,7 @@ class ProposeValueModal extends Component {
     if (!q || q === "")
       return;
     try {
-      const data = await this.props.client.service('person').find({ query: { q: q } });
+      var data = await this.props.client.service('person').find({ query: { q: q } });
       this.setState({ isLoading: false })
       console.log(data);
       if (Object.keys(data).length==0){
