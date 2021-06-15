@@ -45,7 +45,8 @@ https://github.com/cbdb-project/crowdsource-webapp/tree/docker-local
 OR
 
     docker pull oopus/csa
-    sudo docker run --mount src="$(pwd)"/data,target=/usr/src/cbdbapp/data,type=bind --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it oopus/csa
+    sudo docker run --mount src="$(pwd)"/data,target=/usr/src/cbdbapp/data,type=bind --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it oopus/csa --restart=always
+
 ~~The first command pulls the image from docker repo (run once). 
 The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
 Make sure the "data" docker volume contains the required data files (cbdb.db, etc.) - you can create it with "docker volume create data". The last step, please redirect your 5001(HTTP) to 5000(TLS/SSL).~~
