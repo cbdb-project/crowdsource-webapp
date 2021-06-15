@@ -11,7 +11,7 @@ Everything is in standard node / JS, built with:
  - Change CBDB page link: In src/views/Layout/DefaultLayout.js
 
        window.cbdbLink = (id) => {
-         return "http://47.114.119.106:8000/basicinformation/" + id + "/edit";
+         return "https://input.cbdb.fas.harvard.edu/basicinformation/" + id + "/edit";
        }
 
  - Add / remove header navigation items: In views/Layout/DefaultHeader.js, add / remove items like this: 

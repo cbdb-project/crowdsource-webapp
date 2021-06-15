@@ -152,7 +152,7 @@ class ProposeValueModal extends Component {
       const data = await this.props.client.service('person').find({ query: { q: q } });
       this.setState({ isLoading: false })
       console.log(data);
-      if (data == null) {
+      if (Object.keys(data).length==0){
         data = [];
       }
       data.unshift({ c_name: "Suggest this as a new person", useUserInput: true })
