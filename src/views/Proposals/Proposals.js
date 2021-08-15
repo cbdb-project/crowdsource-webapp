@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import MultiField from "./MultiField.js";
+import AdvancedSearchModal from '../Tasks/AdvancedSearchModal.js'
 import { Card, Dropdown } from 'react-bootstrap';
 import { CheckCircleIcon, } from '@primer/octicons-react'
 
@@ -8,6 +9,75 @@ import {
 } from 'reactstrap';
 import PickProposalModal from './PickProposal.js';
 import ReviewProposalModal from './ReviewProposals.js';
+
+class Paginate extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      current: 1
+    }
+  }
+  MAX = 10;
+
+  async gotoPage(e) {
+    // console.log(e);
+    // console.log("Page value:" + e.target.value);
+    const page = Number.parseInt(e.target.text);
+    await this.props.onPaging(page)
+    this.setState({ current: page })
+  }
+
+  inputPageChange(e){
+    if(e.keyCode==13){
+      var page = document.getElementById("inputPageChange").value;
+      if(page <= 0 || page>this.props.total){
+        alert("Plaese input correct page number.")
+      }else{
+        this.props.onPaging(page);
+        this.setState({ current: page });
+        document.getElementById("inputPageChange").value="";
+      }
+    }
+  }
+
+  render() {
+    const total = this.props.total;
+    const current = this.state.current;
+
+    const pages = [];
+
+
+    var start = Math.floor((current - this.MAX / 2))
+    if (start < 1)
+      start = 1;
+
+    console.log("current page: " + current)
+    if (start >= 2) {
+      pages.push(<a key={"pg_1"} value={1} className={"paginate ml-1 mr-1 "} onClick={this.gotoPage.bind(this)}>{"1 "}</a>);
+      if (start != 2)
+        pages.push(<Fragment key="pg_etc1">... </Fragment>);
+
+    }
+    for (var i = start; i <= total; i++) {
+      const isCurrent = (i == current) ? "current" : "";
+      // console.log("current decor applied: " + var + " / " + i);
+      pages.push(<a key={"pg_" + i} value={i} className={"paginate ml-1 mr-1 " + isCurrent} onClick={this.gotoPage.bind(this)}>{i}</a>);
+      if ((i - start + 1) >= this.MAX) {
+        pages.push(<Fragment key="pg_etc2">... </Fragment>);
+        pages.push(<a key={"pg_" + total} className="paginate ml-1 mr-1" onClick={this.gotoPage.bind(this)}>{total}</a>);
+        break;
+      }
+    }
+
+    return (
+      <div className="mt-2 mb-2">
+        Page: [ {pages} ]
+        &nbsp;&nbsp;→&nbsp;Page&nbsp;&nbsp;
+        <input id="inputPageChange" type="text" class="form-control" style={{display:"inline",width:"70px"}} onKeyDown={this.inputPageChange.bind(this)}></input>
+      </div>
+    )
+  }
+}
 
 class Proposals extends Component {
 
@@ -25,7 +95,22 @@ class Proposals extends Component {
 
   }
 
+  search_text =  "";
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
+
+  async onPaging(page) {
+    console.log("Query for page " + page);
+    try {
+      const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { page: page, proposals: 'all', proposedOnly: 'true', finalized: this.state.showCompleted }, task: this.state.myTask});
+      console.log("new data");
+      console.log(t);
+      this.setState({ myTask: t });
+    } catch (e) {
+      if (e.name === "NotAuthenticated") {
+        await this.props.auth();
+      }
+    }
+  }
 
   async componentWillMount() {
     if (!this.props.user) {
@@ -78,7 +163,7 @@ class Proposals extends Component {
   // async taskChanged(id) {
   //   console.log("taskChanged!");
   //   console.log(id);
-  //   const t = await this.props.client.service('tasks').get(id, { query: { proposals: "all", proposedOnly: "true", finalized: "false" } })
+  //   const t = await this.props.client.service('tasks').get(id, { query: { proposals: "all", proposedOnly: "true", finalized: "false", page:1 } })
   //   console.log(t);
   //   this.switchTask(t);
   // }
@@ -89,10 +174,11 @@ class Proposals extends Component {
 
     console.log("Load finalized task too? " + show);
     if (!toShow) {
-      filters.finalized = "false";
+      filters.finalized = false;
     } else {
-      filters.finalized = "true";
+      filters.finalized = true;
     }
+    filters.page=1;
 
     var myId = id != null ? id : this.state.myTask.id;
     console.log("loadTask() id=" + myId)
@@ -210,13 +296,11 @@ class Proposals extends Component {
       <div className="">
 
         <div className="row align-items-center justify-content-between mt-0 mb-2">
-
           <div className="col col-sm-auto">
             <div className="row align-items-center justify-items-end mb-1">
               {/* <div className="col col-sm-auto"><h4>Current Task: </h4></div> */}
               {this.renderTaskDropdown()}
               <p></p>
-
             </div>
             <div className="form-check">
               <input className="form-check-input" type="checkbox" value="" id="defaultCheck1" onClick={this.showCompleted.bind(this)} />
@@ -224,17 +308,15 @@ class Proposals extends Component {
                 Show reviewed proposals too
                   </label>
             </div>
-          </div>
-
-
-        </div>
-        <div className="row align-items-center justify-content-between mt-0 mb-1">
-          <div className="col col-sm-auto">
-
-
-          </div>
+          </div>   
           <div className="col col-sm-auto">
             <i>({Object.values(this.state.affectedRows).length} rows touched)</i>
+          </div>     
+        </div>
+
+        <div className="row align-items-center justify-content-between mt-0 mb-1">
+          <div className="col col-sm-auto">
+            <Paginate total={this.state.myTask.pages} onPaging={this.onPaging.bind(this)} />
           </div>
         </div>
 
@@ -300,7 +382,7 @@ class Proposals extends Component {
         origValue={origValue}
         resetToggle={this.state.resetToggle}
         onFieldClicked={this.onFieldClicked.bind(this)}
-
+        page={task.page}
         values={pValues}>
       </MultiField>
     } else {
@@ -334,6 +416,7 @@ class Proposals extends Component {
     this.setState({ resetToggle: false })
     const comp = this.state.editingFieldComp;
     comp.setState({ acceptedValue: value });
+    console.log(this.state)
 
     // Add affected row to the list
     const aRows = this.state.affectedRows;
@@ -371,7 +454,8 @@ class Proposals extends Component {
     this.setState({ editingField: false });
     document.body.setAttribute('style', '');
     window.scrollTo(0, this.windowOffset);
-    this.loadTask();
+    // this.loadTask();
+    this.onPaging(this.state.myTask.page);
   }
 
   async onSubmit() {
@@ -401,6 +485,77 @@ class Proposals extends Component {
     document.body.setAttribute('style', '');
     window.scrollTo(0, this.windowOffset);
   }
+
+  searchInputChange(e){
+    console.log(e.target.value);
+    this.search_text = e.target.value;
+  }
+
+  async simpleSearch(){
+    console.log("Simple Searching...");
+
+    if(this.search_text!=""){
+      try {
+        const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { proposals: "all", proposedOnly: "true", finalized: this.state.showCompleted, page: 1, perPage: this.state.myTask.total } })
+        //create({id:this.state.myTask.id, dt:[], search_proposals: true});
+        console.log(t);
+        const search_content = this.search_text.replaceAll(/\s*/g,"");
+        console.log(search_content);
+  
+        var data = {}
+        for(var key in t.data){
+          var item = t.data[key];
+  
+          for(var val in item){
+            if(typeof(item[val])=="object"){
+              if(item[val]["c_name_chn"].includes(search_content)){
+                data[key]=item;
+                break;
+              }
+            }else{
+              if(item[val].includes(search_content)){
+                data[key]=item;
+                break;
+              }
+            }
+          }
+  
+        }
+        t.data = data;
+        t.pages =1;
+        t.perPage = Object.keys(data).length;
+        this.setState({ myTask: t });
+      } catch (e) {
+        if (e.name === "NotAuthenticated") {
+          await this.props.auth();
+        }
+        console.log(e)
+      } 
+    }else{
+      this.onPaging(1);
+    }
+       
+  }
+
+  onAdSearchClicked(){
+    this.setState({
+      advancedSearch: true
+    });
+
+    this.windowOffset = window.scrollY;
+    document.body.setAttribute('style', `position: fixed; top: -${this.windowOffset}px;left: 0;right:0`);
+  }
+
+  onAdSearchClosed(){
+    this.setState({ advancedSearch: false });
+    document.body.setAttribute('style', '');
+    window.scrollTo(0, this.windowOffset);
+  }
+
+  updateAdSearch(val){
+    this.setState({myTask: val});
+  }
+
   renderTasks() {
     // console.log(this.state.tasks);
     this.state.tasks.forEach((task, index) => {
@@ -413,8 +568,11 @@ class Proposals extends Component {
     return (
       <div>
         <div></div>
-        <div className="row justify-content-end no-gutters mt-3">
-          <div className="col mr-2 col-sm-auto">
+        <div className="row justify-content-between no-gutters mt-3">
+          <div className="col form-inline ml-2 col-sm-auto float-left">
+            <input type="text" className="form-control" style={{padding:"20px 25px", "marginBottom":"30px"}} placeholder="Search persons or works" onChange={(e)=>this.searchInputChange(e)}></input>
+            <button type="button" className="ml-2 blob-btn" onClick={this.simpleSearch.bind(this)}>SEARCH</button>
+            <button type="button" className="ml-2 blob-btn" onClick={this.onAdSearchClicked.bind(this)}>ADVANCED SEARCH</button> 
           </div>
 
           <div className="col mr-2 col-sm-auto float-right ">
@@ -454,7 +612,6 @@ class Proposals extends Component {
   }
   render() {
 
-
     return (
       <Fragment>
         <PickProposalModal isOpen={this.state.editingField}
@@ -462,7 +619,7 @@ class Proposals extends Component {
           onClosed={this.onFieldEditorClosed.bind(this)}
           comp={this.state.editingFieldComp}
           fieldDef={this.state.fieldDef}
-          client={this.props.client}
+          client={this.props.client} currTask={this.state.myTask}
           acceptedValue={this.state.editingFieldComp ? this.state.editingFieldComp.state.acceptedValue : null}
           origValue={this.state.editingFieldComp ? this.state.editingFieldComp.props.origValue : null}
           currField={this.state.currField}></PickProposalModal>
@@ -475,6 +632,15 @@ class Proposals extends Component {
           onSubmit={this.onSubmit.bind(this)}
           task={this.state.myTask}
           data={this.state.affectedRows}
+        />
+
+        <AdvancedSearchModal isOpen={this.state.advancedSearch}
+          onClosed={this.onAdSearchClosed.bind(this)}
+          client={this.props.client}
+          task={this.state.myTask}
+          update={this.updateAdSearch.bind(this)}
+          blankSearch={this.onPaging.bind(this)}
+          inproposal={true}
         />
 
         <div>

@@ -58,7 +58,7 @@ class MultiField extends Component {
     const type = this.props.fieldDef.type;
     
 
-    if (this.state.acceptedValue) {
+    if (this.state.acceptedValue && this.state.acceptedValue.page==this.props.page) {
       // console.log(this.state.acceptedValue);
         return this._renderByType(this.state.acceptedValue, type);
       
@@ -77,11 +77,16 @@ class MultiField extends Component {
   }
 
   render() {
-    
-    var icon = !this.state.acceptedValue ? "" : (<PinIcon></PinIcon>);
+    var icon = ""
+    var name = "multifield pending"
+    if(this.state.acceptedValue && this.state.acceptedValue.page==this.props.page){
+      icon=<PinIcon></PinIcon>
+      name="multifield accepted"
+    }
+    // var icon = !this.state.acceptedValue && this.state.acceptedValue.page==this.props.page ? "" : (<PinIcon></PinIcon>);
 
     return (
-      <div className={!this.state.acceptedValue ? 'multifield pending' : 'multifield accepted'} id={this.props.id} onClick={this.handleEdit.bind(this)}>
+      <div className={name} id={this.props.id} onClick={this.handleEdit.bind(this)}>
         {icon} &nbsp;
         <label ref={this._saveRef.bind(this)} className='' id={"_f_" + this.props.id}>
           {this.renderValue()}

@@ -58,6 +58,7 @@ class PickProposalModal extends Component {
     // else
     //   val = this.state.value;
 
+    value.page = this.props.currTask.page;    
     this.props.onSubmit(value)
     this.cleanup();
   }

@@ -42,7 +42,12 @@ class AdvancedSearchModal extends Component {
         this.handleCancel();
     }else{
         try {
-            const t = await this.props.client.service('tasks').create({id:this.props.task.id, dt:[]});
+            let t = null
+            if(this.props.inproposal){
+                t = await this.props.client.service('tasks').get(this.props.task.id, { query: { proposals: "all", proposedOnly: "true", page: 1, perPage: this.props.task.total } })
+            }else{
+                t = await this.props.client.service('tasks').create({id:this.props.task.id, dt:[]});
+            }
             console.log(t);
     
             var idx=[];
@@ -128,10 +133,10 @@ class AdvancedSearchModal extends Component {
             this.props.update(t);
             this.handleCancel();
         } catch (e) {
-        if (e.name === "NotAuthenticated") {
-            await this.props.auth();
-        }
-        console.log(e)
+            if (e.name === "NotAuthenticated") {
+                await this.props.auth();
+            }
+            console.log(e)
         }
     }
     

@@ -88,8 +88,13 @@ class ReviewProposalModal extends Component {
   renderValue(value, fieldDef) {
     // console.log("Rendeirng ...");
     // console.log(fieldDef);
-    if (fieldDef.type === "person" && value.hasOwnProperty("c_name_chn"))
-      return value.c_name_chn;
+    if (fieldDef.type === "person" && value.hasOwnProperty("c_name_chn")){
+      if(value.hasOwnProperty("c_personid")){
+        return value.c_name_chn+"("+value.c_personid+")";
+      }
+      else
+        return value.c_name_chn;
+    }
     else {
       return value;
     }

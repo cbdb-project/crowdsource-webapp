@@ -20,7 +20,7 @@ class TaskService {
     }
 
     async create(data) {
-        return this.search(data.id, data.dt);
+        return this.search(data.id, data.dt);        
     }
 
     async remove(id) {
@@ -445,6 +445,7 @@ class ProposalService {
         if (fieldDef.type === "person") {
             // console.log("Existing array:: " + JSON.stringify(arr));
             // console.log("item:  " + JSON.stringify(item));
+            // console.log("fieldDef:  " + JSON.stringify(fieldDef));
 
 
             var b = true;
@@ -454,12 +455,11 @@ class ProposalService {
                         // console.log("not unique")
                         b = false;
                     }
-                } else {
-                    if (a.c_name_chn === item.c_name_chn) {
-                        // console.log("not unique")
+                }else if(!a.c_personid && !item.c_personid){
+                    if(a.c_name_chn===item.c_name_chn){
                         b = false;
                     }
-                }
+                } 
             })
             // console.log("unique: " + b)
             return b;
@@ -517,7 +517,7 @@ class ProposalService {
     * 
     */
     async create(proposal, params) {
-        console.log(proposal);
+        console.log(proposal, JSON.stringify(proposal.data));
         if (!proposal.hasOwnProperty("task_id") || !proposal.hasOwnProperty("data") || !proposal.hasOwnProperty("author")) {
             const error = "Error creating new proposal: missing task_id, data, or author";
             console.log(error);
