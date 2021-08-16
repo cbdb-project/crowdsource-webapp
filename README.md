@@ -42,15 +42,15 @@ https://github.com/cbdb-project/crowdsource-webapp/tree/docker-local
 
 Step 1
 
-    docker pull oopus/csa
+    docker pull quay.io/oopus/csa
     
 Step 2
 
-    docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it oopus/csa --restart=always
+    docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it quay.io/oopus/csa --restart=always
 
 OR step 2
 
-    sudo docker run --mount src="$(pwd)"/data,target=/usr/src/cbdbapp/data,type=bind --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it oopus/csa --restart=always
+    sudo docker run --mount src="$(pwd)"/data,target=/usr/src/cbdbapp/data,type=bind --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it quay.io/oopus/csa --restart=always
 
 ~~The first command pulls the image from docker repo (run once). 
 The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
