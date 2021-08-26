@@ -1,7 +1,7 @@
 # CSA
 Crowdsourcing System for Association Data
 
- URL: [https://csa.cbdb.fas.harvard.edu:81](https://csa.cbdb.fas.harvard.edu:81)
+ URL: [https://csa.cbdb.fas.harvard.edu](https://csa.cbdb.fas.harvard.edu)
 
 Supports: 
  - Suggest new value or revise any current field value for CBDB
