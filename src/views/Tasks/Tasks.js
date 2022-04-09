@@ -247,16 +247,21 @@ class Tasks extends Component {
   renderTaskDropdown() {
     return (
       <div className="col">
-        <select className="task-selector custom-select" id="inputGroupSelect01">
+        <select onChange={(e) => {
+          console.log(e.target.value, '===select change===')
+          this.taskChanged(e.target.value)
+        }} className="task-selector custom-select" id="inputGroupSelect01">
           {
             this.state.tasks.length == 0 ? (<option> None </option>) : ""
           }
           {
             this.state.tasks.map((task, index) => {
+              // let self =this;
               return (
-                <option key={"task_" + task.id} onClick={this.taskChanged.bind(this, task.id)} >({task.id}) {task.title}
+                <option key={"task_" + task.id} value={task.id} >（{task.id}） {task.title}
                 </option>
               )
+
             })
           }
         </select>
@@ -409,7 +414,7 @@ class Tasks extends Component {
     document.body.setAttribute('style', '');
     window.scrollTo(0, this.windowOffset);
   }
-  
+
   searchInputChange(e){
     console.log(e.target.value);
     this.search_text = e.target.value;
@@ -424,11 +429,11 @@ class Tasks extends Component {
         console.log(t);
         const search_content = this.search_text.replaceAll(/\s*/g,"");
         console.log(search_content);
-  
+
         var data = {}
         for(var key in t.data){
           var item = t.data[key];
-  
+
           for(var val in item){
             if(typeof(item[val])=="object"){
               if(item[val]["c_name_chn"].includes(search_content)){
@@ -442,7 +447,7 @@ class Tasks extends Component {
               }
             }
           }
-  
+
         }
         t.data = data;
         t.pages =1;
@@ -455,11 +460,11 @@ class Tasks extends Component {
           await this.props.auth();
         }
         console.log(e)
-      } 
+      }
     }else{
       this.taskChanged(this.state.myTask.id);
     }
-       
+
   }
 
   onAdSearchClicked(){
