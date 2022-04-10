@@ -46,11 +46,11 @@ Step 1
     
 Step 2
 
-    docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it quay.io/oopus/csa --restart=always
+    docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it quay.io/oopus/csa --restart=always --name csa
 
 OR step 2
 
-    sudo docker run --mount src="$(pwd)"/data,target=/usr/src/cbdbapp/data,type=bind --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it quay.io/oopus/csa --restart=always
+    sudo docker run --mount src="$(pwd)"/data,target=/usr/src/cbdbapp/data,type=bind --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it quay.io/oopus/csa --restart=always --name csa
 
 ~~The first command pulls the image from docker repo (run once). 
 The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
