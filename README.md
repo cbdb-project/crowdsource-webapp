@@ -58,6 +58,12 @@ Make sure the "data" docker volume contains the required data files (cbdb.db, et
 
 ~~Now it should be available at http://localhost:3000.~~
 
+Notes:
+
+You can also rename it:
+
+    sudo docker rename xxxx csa
+
 ## Task CSV Format
 ### First line: column specification (mandatory)
 The first line of the CSV should be (column_name) or (column_name=column_type), where:
