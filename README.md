@@ -52,7 +52,23 @@ To rebuild from source:
 
     docker build -t quay.io/oopus/csa:latest .
 
-### Option 2: Local development
+### Option 2: Build from GitHub
+
+Build and run directly from the GitHub repository (no need to clone):
+
+    docker build -t csa https://github.com/cbdb-project/crowdsource-webapp.git
+
+    docker run -d \
+      -v /path/to/data:/usr/src/cbdbapp/data \
+      -p 3000:3000 \
+      -p 5001:5001 \
+      --restart=always \
+      --name csa \
+      csa
+
+Replace `/path/to/data` with the absolute path to your `data/` directory.
+
+### Option 3: Local development
 
 1. Replace `./src/config.js` with `./src/config_local.js`
 2. Install dependencies:
