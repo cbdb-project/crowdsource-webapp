@@ -47,7 +47,7 @@
     "enzyme-adapter-react-16": "^1.14.0",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
-    "feathers-authentication-hooks": "^1.0.2",
+    "feathers-authentication-hooks": "github:feathersjs/feathers-authentication-hooks",
     "feathers-hooks-common": "^5.0.6",
     "feathers-knex": "^6.1.0",
     "flag-icon-css": "^3.3.0",
