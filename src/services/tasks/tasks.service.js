@@ -164,8 +164,8 @@ class TaskService {
             // Filter to proposals that are being edited (i.e. proposal applied)
 
             const pq = params.query;
-            const pEdited = pq.hasOwnProperty("edited") ? pq.edited.toString() : null;
-            const pFinalized = pq.hasOwnProperty("finalized") ? pq.finalized.toString() : null;
+            const pEdited = (pq.hasOwnProperty("edited") && pq.edited != null) ? pq.edited.toString() : null;
+            const pFinalized = (pq.hasOwnProperty("finalized") && pq.finalized != null) ? pq.finalized.toString() : null;
 
             if (pEdited || pFinalized) {
                 // console.log("======================");

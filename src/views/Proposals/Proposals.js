@@ -90,6 +90,7 @@ class Proposals extends Component {
       affectedCols: {},
       reviewProposal: false,
       resetToggle: false,
+      showCompleted: false,
       isLoading: true,
     };
 
@@ -486,7 +487,8 @@ class Proposals extends Component {
     console.log(updated);
     const t = await this.props.client.service('tasks').update(this.state.myTask.id, updated);
 
-    // Force refresh the table
+    // Clear selections and refresh the table
+    this.setState({ affectedRows: {}, affectedCols: {} });
     this.loadTask();
   }
   onReviewClosed() {
