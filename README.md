@@ -12,57 +12,69 @@ Supports:
 
 ## Running the app
 
-### Setup local environment
-Replace the content in ./src/**config**.js by ./src/**config_local**.js
+### Option 1: Docker (recommended)
 
-### Pulling dependencies
-    npm install
+Pull and run the pre-built container:
 
-### Launching the app
-    node src/server.js &
-    npm start
+    docker pull quay.io/oopus/csa:latest
+
+Run with a Docker named volume:
+
+    docker run -d \
+      -v data:/usr/src/cbdbapp/data \
+      -p 3000:3000 \
+      -p 5001:5001 \
+      --restart=always \
+      --name csa \
+      quay.io/oopus/csa:latest
+
+Or bind-mount a local `data/` directory:
+
+    docker run -d \
+      -v $(pwd)/data:/usr/src/cbdbapp/data \
+      -p 3000:3000 \
+      -p 5001:5001 \
+      --restart=always \
+      --name csa \
+      quay.io/oopus/csa:latest
+
+The `data/` directory must contain the required database files (`cbdb.db`, `tasks.db`, `users.db`). Contact hongsuwang#fas.harvard.edu to obtain them.
+
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5001
+
+To stop / restart:
+
+    docker stop csa
+    docker start csa
+
+To rebuild from source:
+
+    docker build -t quay.io/oopus/csa:latest .
+
+### Option 2: Local development
+
+1. Replace `./src/config.js` with `./src/config_local.js`
+2. Install dependencies:
+
+        npm install
+
+3. Launch:
+
+        node src/server.js &
+        npm start
+
+### Production deployment (with TLS)
+
+In production, use a reverse proxy (e.g. Caddy, Nginx) for TLS termination:
+
+    Frontend(port=3000) >>> Reverse Proxy(TLS, port=443/5000) >>> Backend(port=5001)
 
 ## File / Directory structure
  - **src**: source JS / CSS files.
- - **data**: make sure cbdb.db, user.db, task.db etc. are accessible here in order for the app to function.
- - **Dockerfile**: you can use it to build your own docker container.
- - **public**: public html files.
- 
- Please contact hongsuwang#fas.harvard.edu to get the files in ./data.
-
-## Pre-packaged Docker Container
-
-https://github.com/cbdb-project/crowdsource-webapp/tree/docker-local
-
-~~Instead of running your own local setup, you could simply pull & run a docker container.~~
-
-~~**NOTICE:** we redirect 5001(HTTP) to 5000(Secure HTTP) as the secure http backend API server by using nginx for our container. Like this, Frontend(port=3000) >>> Nginx(tls, port=5000) >>> Backend(port=5001). If you would like to deploy this container in your local environment, you'd better also do this. Otherwise, this container can't work.~~
-
-~~### Example~~
-
-Step 1
-
-    docker pull quay.io/oopus/csa
-    
-Step 2
-
-    docker run --volume="data:/usr/src/cbdbapp/data" --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it quay.io/oopus/csa --restart=always --name csa
-
-OR step 2
-
-    sudo docker run --mount src="$(pwd)"/data,target=/usr/src/cbdbapp/data,type=bind --expose 3000 --expose 5001 -p 3000:3000 -p 5001:5001  -it quay.io/oopus/csa --restart=always --name csa
-
-~~The first command pulls the image from docker repo (run once). 
-The second one starts the container, and mounts a Docker volume named "data" onto the app data directory (the data are *required* for the app to function). 
-Make sure the "data" docker volume contains the required data files (cbdb.db, etc.) - you can create it with "docker volume create data". The last step, please redirect your 5001(HTTP) to 5000(TLS/SSL).~~
-
-~~Now it should be available at http://localhost:3000.~~
-
-Notes:
-
-You can also rename it:
-
-    sudo docker rename xxxx csa
+ - **data**: database files (`cbdb.db`, `tasks.db`, `users.db`) required for the app to function.
+ - **Dockerfile**: build your own Docker container.
+ - **public**: public HTML files.
 
 ## Task CSV Format
 ### First line: column specification (mandatory)

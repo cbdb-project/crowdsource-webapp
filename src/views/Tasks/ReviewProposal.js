@@ -186,32 +186,27 @@ class ReviewProposalModal extends Component {
     console.log(this.props.cols);
     return (
       <Modal isOpen={this.props.isOpen} className="confirm-dialog modal-lg width-50" >
-        <div className="container align-items-end">
 
           <div className="modal-header">
             Review proposals
-            </div>
+          </div>
 
-          <div className="modal-body " >
-            {/* <p>Modal body text goes here.</p> */}
-            <div className="container" style={!this.state.showMessaging ? { display: "none" } : {}}>
+          <div className="modal-body" >
+            <div style={!this.state.showMessaging ? { display: "none" } : {}}>
               {this.renderMessage()}
             </div>
-            <div className="container text-nowrap scrollable"  style={this.state.showMessaging ? { display: "none" } : {}}>
-              {/* <div className="container-fluid modal-table-wrapper mt-2 mb-2"> */}
+            <div className="text-nowrap"  style={this.state.showMessaging ? { display: "none" } : {}}>
               {(hasChanges) ? this.renderChanges() : "No changes proposed. "}
-              {/* </div> */}
             </div>
 
           </div>
-          <div className="modal-footer  align-self-end" >
+          <div className="modal-footer" >
             <div className="row mt-3">
               <div style={this.state.showMessaging ? { display: "none" } : {}}>
                 <button type="button" className="lite-button" data-dismiss="modal" onClick={this.handleCancel.bind(this)}>
                 <XIcon/>&nbsp;
                   Cancel</button>
                 <button type="button" className="ml-2 lite-button" onClick={this.handleSubmit.bind(this)} data-dismiss="modal">
-                  {/* <span class="iconify" data-icon="bi-arrow-up-right-square-fill" data-inline="false"></span> */}
                   <ArrowUpRightIcon/>&nbsp;
                   Submit
                 </button>
@@ -221,10 +216,6 @@ class ReviewProposalModal extends Component {
               </div>
             </div>
           </div>
-
-        </div>
-
-
 
       </Modal >
     )

@@ -1,21 +1,19 @@
-FROM node:12
+FROM node:12-slim
+
+# Install build tools for native modules (better-sqlite3)
+RUN apt-get update && apt-get install -y python make g++ && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /usr/src/cbdbapp
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
+
+# Install dependencies first (cached unless package.json changes)
 COPY package*.json ./
-
-RUN npm install
-RUN npm install better-sqlite3
+RUN npm install --production=false && npm cache clean --force
 RUN npm install nohup -g
-# If you are building your code for production
-# RUN npm ci --only=production
 
+# Copy source code (only this layer rebuilds on code changes)
 COPY . .
-COPY src src
 RUN node src/prep_tasks.js
+
 EXPOSE 3000
 EXPOSE 5000
-ENTRYPOINT "./run.sh"
-
-
+ENTRYPOINT ["./run.sh"]

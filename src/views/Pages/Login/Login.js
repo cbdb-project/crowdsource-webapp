@@ -46,20 +46,14 @@ class Login extends Component {
   }
   
 
-  async handleSubmit() {
+  async handleSubmit(e) {
+    if (e) e.preventDefault();
 
     console.log("Login::handleSubmit()");
     console.log("credentials: " + this.state.email + " / " + this.state.password)
     var client = this.props.client;
 
     try {
-      client.configure(
-        auth({
-          storage: window.localStorage,
-          storageKey: 'auth-token',
-          path: '/authentication'
-        })
-      )
       const { accessToken, user } = await client.authenticate({
         strategy: 'local',
         email: this.state.email,
@@ -128,7 +122,7 @@ class Login extends Component {
                       </InputGroup>
                       <Row>
                         <Col xs="6">
-                          <button className="lite-button-bordered px-4" onClick={this.handleSubmit.bind(this)} color="primary" >Login</button>
+                          <button type="button" className="lite-button-bordered px-4" onClick={this.handleSubmit.bind(this)} color="primary" >Login</button>
                         </Col>
                         <Col xs="6" className="text-right">
                           {/* <Button color="link" className="px-0">Forgot password?</Button> */}

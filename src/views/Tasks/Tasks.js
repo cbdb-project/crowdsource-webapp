@@ -320,19 +320,10 @@ class Tasks extends Component {
                   }
                   // console.log(row);
                   const pk = this.state.fields ? row[this.state.myTask.pkCol] : -1;
-                  if (!this.state.affectedRows[pk]) {
-                    this.state.affectedRows[pk] = {};
-                  }
                   return (
 
                     <tr key={"_c_" + index}>
                       {row.map((field, vindex) => {
-                        if (this.state.fields) {
-                          // console.log("This fields ...");
-                          // console.log(this.state.fields);
-                          // console.log(this.state.fields[vindex]);
-                        }
-
                         return (
                           <td id={"td_c_" + index + "_" + vindex} key={"td_c_" + index + "_" + vindex} className="td-bottom">
                             <EditableField fieldDef={this.state.fields ? Object.values(this.state.fields)[vindex] : null}
@@ -340,7 +331,7 @@ class Tasks extends Component {
                               primaryKey={pk}
                               onFieldClicked={this.onFieldClicked.bind(this)}
                               editable={(!this.state.fields) ? false : Object.entries(this.state.myTask.fields)[vindex][1].input}
-                              proposed={this.state.affectedRows[pk][vindex]}
+                              proposed={this.state.affectedRows[pk] ? this.state.affectedRows[pk][vindex] : undefined}
                               value={field}>
                             </EditableField>
                           </td>
@@ -368,7 +359,7 @@ class Tasks extends Component {
 
     const pk = comp.props.primaryKey;
     const col = comp.props.col;
-    const aRows = this.state.affectedRows
+    const aRows = Object.assign({}, this.state.affectedRows);
 
     if (!aRows[pk]) {
       aRows[pk] = {};
@@ -383,14 +374,12 @@ class Tasks extends Component {
     // HACKY: Standard headers
     const data = Object.values(this.state.myTask.data)[comp.props.row];
     const fields = this.state.fields;
-    var aCols = this.state.affectedCols;
-    aCols[col] = comp.props.fieldDef;
-    aCols[col].col = col;
+    var aCols = Object.assign({}, this.state.affectedCols);
+    aCols[col] = Object.assign({}, comp.props.fieldDef, { col: col });
     for (var i = 0; i < fields.length; i++) {
       if (fields[i].input)
         continue;
-      aCols[i] = fields[i];
-      aCols[i].col = i;
+      aCols[i] = Object.assign({}, fields[i], { col: i });
       aRows[pk][i] = {
         col: i,
         fieldDef: fields[i],
@@ -399,6 +388,7 @@ class Tasks extends Component {
       }
     }
     console.log(aRows[pk]);
+    this.setState({ affectedRows: aRows, affectedCols: aCols });
 
     this.onFieldEditorClosed();
   }

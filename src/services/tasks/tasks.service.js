@@ -26,8 +26,7 @@ class TaskService {
     async remove(id) {
         console.log("Task service: delete task " + id);
         var q = "delete from tasks where id=@id";
-        var dt = taskdb.prepare(q);
-        var stmt = dt.run({id: id});
+        var stmt = taskdb.prepare(q).run({ id: id });
         console.log(stmt);
         return stmt;
     }
@@ -38,7 +37,7 @@ class TaskService {
             page = 0;
         }
         var start = page * perPage;
-        var end = start + perPage - 1;
+        var end = start + perPage;
 
         const values = Object.values(data);
         const keys = Object.keys(data);
@@ -47,7 +46,7 @@ class TaskService {
             end = keys.length;
 
         const filtered = {};
-        for (var i = start; i <= end; i++) {
+        for (var i = start; i < end; i++) {
             filtered[keys[i]] = values[i];
         }
 
@@ -85,8 +84,8 @@ class TaskService {
     async getRaw(id) {
         console.log("Task service: getRaw");
 
-        var q = "select id,author,data from tasks where id=" + id;
-        var dt = taskdb.prepare(q).all();
+        var q = "select id,author,data from tasks where id=@id";
+        var dt = taskdb.prepare(q).all({ id: id });
         if (dt.length == 0) {
             return [];
         }
@@ -119,10 +118,10 @@ class TaskService {
             console.log("+++++++++++++++++++++++++++++++++++-----");
             console.log("Task service: get");
             // console.log(params);
-            if (params && params.query) 
+            if (params && params.query)
                 console.log(params.query);
-            var q = "select id,author,data from tasks where id=" + id;
-            var dt = taskdb.prepare(q).all();
+            var q = "select id,author,data from tasks where id=@id";
+            var dt = taskdb.prepare(q).all({ id: id });
             if (dt.length == 0) {
                 console.log("!! No task found for id=" + id);
                 return {};
@@ -220,6 +219,7 @@ class TaskService {
 
         } catch (e) {
             console.log(e);
+            throw e;
         }
     }
 
@@ -227,8 +227,8 @@ class TaskService {
         try {
             console.log("+++++++++++++++++++++++++++++++++++");
             console.log("Task service: search");
-            var q = "select id,author,data from tasks where id=" + id;
-            var dt = taskdb.prepare(q).all();
+            var q = "select id,author,data from tasks where id=@id";
+            var dt = taskdb.prepare(q).all({ id: id });
             if (dt.length == 0) {
                 console.log("!! No task found for id=" + id);
                 return {};
@@ -292,24 +292,34 @@ class TaskService {
             return this._paginate(filteredData, 1, perPage, task);
         } catch (e) {
             console.log(e);
+            throw e;
         }
     }
 
     async markFinalized(id, pk) {
         console.log("mark finalized:: " + id + ", pk=" + pk);
-        const data = await this.getRaw(id);
-        data.finalized[pk] = "true";
-        const q = "update tasks set data=json(@data) where id=@id";
-        const stmt = taskdb.prepare(q);
-        const t = stmt.run({ data: JSON.stringify(data), id: id })
+        const txn = taskdb.transaction((taskId, pkVal) => {
+            const dt = taskdb.prepare("select data from tasks where id=@id").all({ id: taskId });
+            if (dt.length == 0) return;
+            const data = JSON.parse(dt[0].data);
+            if (!data.finalized) data.finalized = {};
+            data.finalized[pkVal] = "true";
+            taskdb.prepare("update tasks set data=json(@data) where id=@id")
+                .run({ data: JSON.stringify(data), id: taskId });
+        });
+        txn(id, pk);
     }
 
     async markPending(id, pk) {
-        const data = await this.getRaw(id);
-        delete data.finalized[pk];
-        const q = "update tasks set data=json(@data) where id=@id";
-        const stmt = taskdb.prepare(q);
-        const t = stmt.run({ data: JSON.stringify(data), id: id })
+        const txn = taskdb.transaction((taskId, pkVal) => {
+            const dt = taskdb.prepare("select data from tasks where id=@id").all({ id: taskId });
+            if (dt.length == 0) return;
+            const data = JSON.parse(dt[0].data);
+            if (data.finalized) delete data.finalized[pkVal];
+            taskdb.prepare("update tasks set data=json(@data) where id=@id")
+                .run({ data: JSON.stringify(data), id: taskId });
+        });
+        txn(id, pk);
     }
 
     async mergeProposal(task, ps, pkField) {
@@ -378,41 +388,44 @@ class TaskService {
     */
     async update(id, nData, params) {
         console.log("task update ... ");
-        console.log(params.query);
+        console.log(params && params.query);
 
-        if (params.query.method == "finalize") {
+        if (params.query && params.query.method == "finalize") {
             return await this.markFinalized(id, params.query.pk);
         }
 
-        // console.log(task);
-        const info = await this.getRaw(id);
         console.log("Task::update ... " + id);
 
-        const q = "update tasks set data=json(@data) where id=@id";
-        const stmt = taskdb.prepare(q);
+        // Use a transaction to prevent race conditions with concurrent updates
+        const updateTransaction = taskdb.transaction((taskId, newData) => {
+            const q = "select id,author,data from tasks where id=@id";
+            const dt = taskdb.prepare(q).all({ id: taskId });
+            if (dt.length == 0) {
+                throw new Error("Task not found: " + taskId);
+            }
+            const info = JSON.parse(dt[0].data);
 
-        // Update the original data pkg with new updates
-        const pks = Object.keys(nData);
+            const pks = Object.keys(newData);
 
-        // Update flags
-        //   - edited: all rows that are different from initial value
-        //   - finalized: all rows that adopted a certain proposal. 
-        //                the flag could be flipped back though.
+            if (!info.edited)
+                info.edited = {};
+            if (!info.finalized)
+                info.finalized = {};
+            for (var i = 0; i < pks.length; i++) {
+                info.data[pks[i]] = newData[pks[i]];
+                info.edited[pks[i]] = "true";
+                info.finalized[pks[i]] = "true";
+            }
+            console.log("Total rows to be updated: " + pks.length);
+            const stmt = taskdb.prepare("update tasks set data=json(@data) where id=@id");
+            const t = stmt.run({ data: JSON.stringify(info), id: taskId });
+            console.log(t);
+            return info;
+        });
 
-        if (!info.edited)
-            info.edited = {};
-        if (!info.finalized)
-            info.finalized = {};
-        for (var i = 0; i < pks.length; i++) {
-            info.data[pks[i]] = nData[pks[i]];
-            info.edited[pks[i]] = "true";
-            info.finalized[pks[i]] = "true";
-        }
-        // console.log("new data to be upated ... ");
-        console.log("Total rows to be updated: " +  pks.length); 
-        const t = stmt.run({ data: JSON.stringify(info), id: id })
-        console.log(t);
+        const result = updateTransaction(id, nData);
         console.log("Task::update done");
+        return result;
     }
 
     // async find() {
@@ -440,8 +453,8 @@ class ProposalService {
 
     async byTaskId(tid) {
         console.log("Proposal service: by task id");
-        var q = "select * from proposals where task_id=" + tid;
-        var dt = taskdb.prepare(q).all();
+        var q = "select * from proposals where task_id=@tid";
+        var dt = taskdb.prepare(q).all({ tid: tid });
         if (dt.length == 0) {
             return [];
         }
@@ -518,13 +531,16 @@ class ProposalService {
 
     async get(id) {
         console.log("Proposal service get =" + id)
-        const q = "select * from proposals where id=" + id;
+        const q = "select * from proposals where id=@id";
         const st = taskdb.prepare(q);
-        const p = st.all()[0];
+        const p = st.all({ id: id })[0];
+        if (!p) {
+            return null;
+        }
         p.data = JSON.parse(p.data);
         console.log(p.data);
 
-        const t = (await new TaskService().get(proposal.task_id));
+        const t = (await new TaskService().get(p.task_id));
         const pkField = t.pkField;
         const fieldDef = t.fields[pkField];
         console.log(t.fields);
