@@ -24,6 +24,7 @@ Run with a Docker named volume:
       -v data:/usr/src/cbdbapp/data \
       -p 3000:3000 \
       -p 5001:5001 \
+      -e CI=true \
       --restart=always \
       --name csa \
       quay.io/oopus/csa:latest
@@ -31,9 +32,10 @@ Run with a Docker named volume:
 Or bind-mount a local `data/` directory:
 
     docker run -d \
-      -v $(pwd)/data:/usr/src/cbdbapp/data \
+      -v /path/to/data:/usr/src/cbdbapp/data \
       -p 3000:3000 \
       -p 5001:5001 \
+      -e CI=true \
       --restart=always \
       --name csa \
       quay.io/oopus/csa:latest
@@ -62,6 +64,7 @@ Build and run directly from the GitHub repository (no need to clone):
       -v /path/to/data:/usr/src/cbdbapp/data \
       -p 3000:3000 \
       -p 5001:5001 \
+      -e CI=true \
       --restart=always \
       --name csa \
       csa
