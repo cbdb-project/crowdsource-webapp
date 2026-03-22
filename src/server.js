@@ -3,8 +3,8 @@ const better = require('better-sqlite3')
 const multer = require('multer')
 const ImportTask = require('./import.js');
 const importer = new ImportTask();
-const taskdb = better('./tasks.db');
-const cbdb = better('./cbdb.db');
+const taskdb = better('./data/tasks.db');
+const cbdb = better('./data/cbdb.db');
 
 const feathers = require('@feathersjs/feathers')
 const express = require('@feathersjs/express')
