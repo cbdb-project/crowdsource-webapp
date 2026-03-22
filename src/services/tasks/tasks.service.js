@@ -268,9 +268,9 @@ class TaskService {
                 console.log("Matched rows: " + Object.keys(filteredData).length);
             }
 
-            const perPage = Object.keys(filteredData).length;
+            const { page, perPage } = this._pageOptions(params);
             Object.assign(task, {
-                page: 1,
+                page: page,
                 perPage: perPage,
                 id: orig.id,
                 author: orig.author,
@@ -289,7 +289,7 @@ class TaskService {
             task.pkField = pkField;
             task.pkCol = pkCol;
 
-            return this._paginate(filteredData, 1, perPage, task);
+            return this._paginate(filteredData, page, perPage, task);
         } catch (e) {
             console.log(e);
             throw e;

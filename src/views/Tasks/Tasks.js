@@ -103,7 +103,16 @@ class Tasks extends Component {
   async onPaging(page) {
     console.log("Query for page " + page);
     try {
-      const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { page: page } });
+      var t;
+      if (this.search_text) {
+        t = await this.props.client.service('tasks').create({
+          id: this.state.myTask.id,
+          search_text: this.search_text,
+          query: { page: page }
+        });
+      } else {
+        t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { page: page } });
+      }
       console.log("new data");
       console.log(t);
       this.setState({ myTask: t });

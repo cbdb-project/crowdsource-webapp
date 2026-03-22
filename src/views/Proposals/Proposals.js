@@ -101,7 +101,16 @@ class Proposals extends Component {
   async onPaging(page) {
     console.log("Query for page " + page);
     try {
-      const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { page: page, proposals: 'all', proposedOnly: 'true', finalized: this.state.showCompleted }, task: this.state.myTask});
+      var t;
+      if (this.search_text) {
+        t = await this.props.client.service('tasks').create({
+          id: this.state.myTask.id,
+          search_text: this.search_text,
+          query: { page: page }
+        });
+      } else {
+        t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { page: page, proposals: 'all', proposedOnly: 'true', finalized: this.state.showCompleted }, task: this.state.myTask});
+      }
       console.log("new data");
       console.log(t);
       this.setState({ myTask: t });
@@ -496,45 +505,23 @@ class Proposals extends Component {
 
     if(this.search_text!=""){
       try {
-        const t = await this.props.client.service('tasks').get(this.state.myTask.id, { query: { proposals: "all", proposedOnly: "true", finalized: this.state.showCompleted, page: 1, perPage: this.state.myTask.total } })
-        //create({id:this.state.myTask.id, dt:[], search_proposals: true});
+        const t = await this.props.client.service('tasks').create({
+          id: this.state.myTask.id,
+          search_text: this.search_text,
+          query: { page: 1 }
+        });
         console.log(t);
-        const search_content = this.search_text.replaceAll(/\s*/g,"");
-        console.log(search_content);
-  
-        var data = {}
-        for(var key in t.data){
-          var item = t.data[key];
-  
-          for(var val in item){
-            if(typeof(item[val])=="object"){
-              if(item[val]["c_name_chn"].includes(search_content)){
-                data[key]=item;
-                break;
-              }
-            }else{
-              if(item[val].includes(search_content)){
-                data[key]=item;
-                break;
-              }
-            }
-          }
-  
-        }
-        t.data = data;
-        t.pages =1;
-        t.perPage = Object.keys(data).length;
         this.setState({ myTask: t });
       } catch (e) {
         if (e.name === "NotAuthenticated") {
           await this.props.auth();
         }
         console.log(e)
-      } 
+      }
     }else{
       this.onPaging(1);
     }
-       
+
   }
 
   onAdSearchClicked(){
