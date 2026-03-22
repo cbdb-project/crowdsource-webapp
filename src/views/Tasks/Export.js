@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Card, Dropdown } from 'react-bootstrap';
 import { DesktopDownloadIcon} from '@primer/octicons-react'
+import {http_protocol, port_number} from '../../config.js';
 
 const { convertArrayToCSV } = require('convert-array-to-csv');
 
@@ -76,34 +77,19 @@ class Export extends Component {
         return true;
     } /* end download() */
 
-    async csvClicked(e) {
-        if (!this.state.myTask.data) {
-            await this.setTask(this.state.myTask.id);
-        }
-        var rows = Object.values(this.state.myTask.data);
-        const header = Object.keys(this.state.myTask.fields);
-        rows = this._flatten(rows, this.state.myTask.fields);
-        try {
-            // console.log(this.state.myTask.fields);
-            console.log(rows);
-            var s = convertArrayToCSV(rows, {
-                header: header,
-                separator: ','
-            });
-            console.log(s);
-            // var encodedUri = encodeURI(csvContent);
-            // window.open(encodedUri, "cbdb-export.csv");
-            this._download(s, "cbdb-export.csv", "text/csv");
-        } catch (e) {
-            console.log(e);
-        }
+    csvClicked(e) {
+        var taskId = this.state.myTask ? this.state.myTask.id : null;
+        if (!taskId) return;
+        // Download directly via HTTP, bypassing Socket.io timeout
+        var url = http_protocol + '://' + window.location.hostname + ':5000/export/' + taskId;
+        window.open(url, '_blank');
     }
 
-    async setTask(id) {
-        const t = await this.props.client.service('tasks').get(id, { query: { perPage: 100000 } });
-        console.log(t);
-        this.setState({ myTask: t });
-
+    setTask(id) {
+        var task = this.state.tasks.find(function(t) { return t.id == id; });
+        if (task) {
+            this.setState({ myTask: task });
+        }
     }
 
     async componentWillMount() {

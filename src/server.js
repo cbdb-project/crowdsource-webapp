@@ -91,6 +91,52 @@ app.post('/import', function (req, res) {
   })
 });
 
+// Export task data as CSV via HTTP (bypasses Socket.io timeout)
+app.get('/export/:id', function (req, res) {
+  try {
+    console.log(":: Export service: task " + req.params.id);
+    var q = "select id,data from tasks where id=@id";
+    var dt = taskdb.prepare(q).all({ id: req.params.id });
+    if (dt.length == 0) {
+      return res.status(404).send("Task not found");
+    }
+    var task = JSON.parse(dt[0].data);
+    var fields = task.fields;
+    var header = Object.keys(fields);
+    var headerNames = header.map(function(k) { return fields[k].name || k; });
+    var rows = Object.values(task.data);
+
+    // Build CSV
+    var lines = [];
+    lines.push(header.join(','));
+    lines.push(headerNames.join(','));
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var cols = [];
+      for (var j = 0; j < row.length; j++) {
+        var c = row[j];
+        if (c && c.hasOwnProperty && c.hasOwnProperty("c_name_chn")) {
+          var t = c.c_name_chn || "";
+          if (c.c_personid) t += " (" + c.c_personid + ")";
+          cols.push('"' + t.replace(/"/g, '""') + '"');
+        } else {
+          var val = (c == null) ? "" : String(c);
+          cols.push('"' + val.replace(/"/g, '""') + '"');
+        }
+      }
+      lines.push(cols.join(','));
+    }
+
+    var csv = "\uFEFF" + lines.join('\n');
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="export-task-' + req.params.id + '.csv"');
+    res.send(csv);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send("Export failed: " + e.message);
+  }
+});
+
 // Start the server
 app.listen(port).on('listening', () =>
   console.log('CBDB Crowdsource server listening on port:' + port)
