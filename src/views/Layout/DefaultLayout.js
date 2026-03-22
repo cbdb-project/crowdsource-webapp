@@ -27,7 +27,7 @@ const socketio = require('@feathersjs/socketio-client');
 const socket = io(SERVER, {withCredentials: true});
 const client = feathers();
 
-client.configure(socketio(socket));
+client.configure(socketio(socket, { timeout: 30000 }));
 client.configure(
   auth({
     storage: window.localStorage,

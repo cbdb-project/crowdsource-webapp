@@ -425,36 +425,12 @@ class Tasks extends Component {
 
     if(this.search_text!=""){
       try {
-        const t = await this.props.client.service('tasks').create({id:this.state.myTask.id, dt:[]});
+        const t = await this.props.client.service('tasks').create({
+          id: this.state.myTask.id,
+          search_text: this.search_text
+        });
         console.log(t);
-        const search_content = this.search_text.replaceAll(/\s*/g,"");
-        console.log(search_content);
-
-        var data = {}
-        for(var key in t.data){
-          var item = t.data[key];
-
-          for(var val in item){
-            if(typeof(item[val])=="object"){
-              if(item[val]["c_name_chn"].includes(search_content)){
-                data[key]=item;
-                break;
-              }
-            }else{
-              if(item[val].includes(search_content)){
-                data[key]=item;
-                break;
-              }
-            }
-          }
-
-        }
-        t.data = data;
-        t.pages =1;
-        t.perPage = Object.keys(data).length;
         this.setState({ myTask: t });
-        //Why not work???
-        // const t = await this.props.client.service('tasks').search(this.state.myTask.id);
       } catch (e) {
         if (e.name === "NotAuthenticated") {
           await this.props.auth();
