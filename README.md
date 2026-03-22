@@ -32,7 +32,7 @@ Run with a Docker named volume:
 Or bind-mount a local `data/` directory:
 
     docker run -d \
-      -v /path/to/data:/usr/src/cbdbapp/data \
+      -v $(pwd)/data:/usr/src/cbdbapp/data \
       -p 3000:3000 \
       -p 5001:5001 \
       -e CI=true \
@@ -61,7 +61,7 @@ Build and run directly from the GitHub repository (no need to clone):
     docker build -t csa https://github.com/cbdb-project/crowdsource-webapp.git
 
     docker run -d \
-      -v /path/to/data:/usr/src/cbdbapp/data \
+      -v $(pwd)/data:/usr/src/cbdbapp/data \
       -p 3000:3000 \
       -p 5001:5001 \
       -e CI=true \
