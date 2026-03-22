@@ -9,6 +9,7 @@ RUN npm install nohup -g
 
 # Copy source code (only this layer rebuilds on code changes)
 COPY . .
+RUN chmod +x run.sh
 RUN node src/prep_tasks.js
 
 EXPOSE 3000
